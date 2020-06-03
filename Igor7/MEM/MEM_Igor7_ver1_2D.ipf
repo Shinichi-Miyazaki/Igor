@@ -586,3 +586,13 @@ function SpeLoaderM([skip, frames, verbose, compact, fullpath])
 	endif
 	return num;
 end
+
+
+Function makeav_ms(inwv)
+	wave inwv
+	variable wavenum
+	wavenum = dimsize(inwv, 1)
+	matrixop/O sumwv = sumRows(inwv)
+	matrixop/O inwv = sumwv/wavenum
+end
+

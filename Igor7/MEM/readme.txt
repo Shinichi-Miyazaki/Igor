@@ -20,10 +20,10 @@ MEM_Igor7使い方　　　最終更新日 2020/6/3
 
 2, バックグラウンド、ノンレゾの平均化
 (以前使用していたmakeav_oonoはIgor7では動かなそうでした)
-↓コマンドウィンドウで makeav_miyazaki(bg0) などと入力
+↓コマンドウィンドウで makeav_ms(bg0) などと入力
 ↓bg0が平均化　
 (以前のmakeav_oonoでは別のwaveとして作成していましたが、今回はbg0を上書きするようになっています。
-↓同じく makeav_miyazaki(nr0)
+↓同じく makeav_ms(nr0)
 
 3, バックグラウンド、ノンレゾの処理
 ここは昔と同じ
@@ -44,8 +44,8 @@ display imchi3[][5][5] vs ramanshift_ei　などでグラフ化してくださ�
 •SpeLoaderM(compact=1)
 •SpeLoaderM(compact=1)
 •SpeLoaderM(compact=1)
-•makeav_miyazaki(bg0)
-•makeav_miyazaki(nr0)
+•makeav_ms(bg0)
+•makeav_ms(nr0)
 •darkV2(raw0, bg0, 101*301)
 •nonresV2(raw0, nr0, 101*301)
 •even_interval("raw0", "ramanshiftMS")
