@@ -1,0 +1,11 @@
+figure 1g average
+point spectrumのマクロを使用してav = 3でデータ読み込み
+この時点で2次元の3点平均となっているので
+このデータに関して
+darkV2(temp, 1, 1, 0)
+のように1点データとしてMEMの前処理を行ってCARS作成
+
+軸反転は
+duplicate ramanshift inv_ramanshift
+inv_ramanshift = -ramanshift
+で行った

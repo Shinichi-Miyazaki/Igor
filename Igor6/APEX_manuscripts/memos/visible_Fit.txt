@@ -1,0 +1,29 @@
+visible fit 
+
+000segawaをコンパイル
+make /n=5 W_coef111
+
+THG用
+W_coef111={550,0.00001,150,72,12} 
+#初期値のパラメータ設定, baseline, baselineの傾き, amp, 中心位置, 幅
+
+ce08_1point_x1y1z0av0のスペクトラムを表示してフィットしたい部分にカーソルを持っていく
+Funcfit/NTHR=0 gaussoffset W_coef111 ce08_1point_x1y1z0av2[pcsr(A),pcsr(B)]/D
+/Dはグラフ表示用
+
+
+
+000newestspeloaderコンパいる
+000MEM all ver5 コンパイル
+speloaderM(compact = 1)でフィットしたいデータを選択
+
+Fit_SHGを開いて最初のほうの
+ w_coef11[0]= {405.948,0.195558,534.106,913.3,3.31845}
+この部分を先ほどのfitで置き換えてコンパイル
+
+SPeloaderでrawとして読み込んだ場合
+wave2Dto4DV3(raw0,101,301,1)
+make2DimFitRSGaussOffSHG(889, 927)
+axis propertiesから
+
+Axis　rangeで軸反転可能

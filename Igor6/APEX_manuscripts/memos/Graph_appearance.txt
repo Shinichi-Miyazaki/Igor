@@ -1,0 +1,24 @@
+Garaph appearance
+
+
+CARS関連
+*ModifyGraph mirror=2
+Label left "\\F'Arial'\\Z28Intensity /(arb. units)"
+*ModifyGraph fStyle=1,fSize=24,font="Arial"
+*Label bottom "\\F'Arial'\\Z28Raman shift /cm\\S-1"
+*ModifyGraph lsize=1.3,rgb=(0,0,0)
+*SetAxis bottom 3200,500
+*ModifyGraph width={Aspect,5},height=141.732
+width aspect3
+hight 5
+
+
+Image
+ModifyGraph tick(left)=3,noLabel(left)=2
+ModifyGraph tick(bottom)=3,noLabel(bottom)=2
+ModifyGraph margin(right)=85
+ModifyGraph margin(left)=28
+
+
+ColorScale/C/N=text0/A=MC image=ce05_v_72_z1av3,lblRot=180
+ColorScale/C/N=text0 "\\F'Arial'"

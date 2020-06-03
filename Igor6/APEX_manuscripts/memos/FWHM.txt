@@ -1,0 +1,7 @@
+for FWHM
+
+rename SHG temp00
+MakeInitBase()
+make/n =5 wcoef1
+wcoef1 = {  19.0307,   0.0148367, 1500, 24, 10 }
+FuncFit/NTHR=0 gaussoffset wcoef1  temp00[pcsr(A),pcsr(B)] /D

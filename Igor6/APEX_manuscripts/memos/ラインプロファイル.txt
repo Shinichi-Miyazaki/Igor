@@ -1,0 +1,15 @@
+ラインプロファイルについて
+
+希望のピクセル位置(X)を見つける
+↓
+Display zposition vs SHGcor[31][0,50]
+↓
+ModifyGraph mirror=2
+ModifyGraph swapXY=1
+ModifyGraph height=283.465
+ModifyGraph width={Aspect,0.5}
+Label left "\\F'Arial'\Z16Z position /\F'Symbol'm\F'Arial'm"
+Label bottom "\\F'Arial'\\Z16Intensity /(arb. units)";DelayUpdate
+ModifyGraph fStyle=1,fSize=12,font="Arial"
+ModifyGraph rgb=(0,0,0)
+ModifyGraph lsize=1.3
