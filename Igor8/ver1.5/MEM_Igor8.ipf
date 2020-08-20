@@ -2,22 +2,23 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 
-Function MEM_Igor8(rawwave, xNum, yNum, zNum, axiswave, M,K_sq)
+Function MEM_Igor8(rawwave, xNum, yNum, zNum,a,b axiswave, M,K_sq)
 	wave rawwave, axiswave
-	variable M, xNum, yNum, zNum, K_sq
+	variable a,b, M, xNum, yNum, zNum, K_sq
 
 	wave tempwave
 	variable i, xyNum, startnum, endnum, waveNum
 	matrixop/o axiswave = abs(axiswave)
-	waveNum = numpnts(axiswave)
+	waveNum = b-a +1
 	xyNum = xNum * yNum
 	make/O/N=(waveNum,xNum,yNum,zNum) imchi3_data=0
 	i=0
 	do
 		startnum = i*xyNum
 		endnum = (i+1) * xyNum
-		Duplicate/O/R=[0,*][startnum,endnum]  rawwave, tempwave
-		wave temp_imchi3 = MEM_igor8_ex(tempwave, xNum, yNum, axiswave, M, K_sq)
+		Duplicate/O/R=[a,b][startnum,endnum]  rawwave, tempwave
+		Duplicate/O/R=[a,b] axiswave, newaxiswave
+		wave temp_imchi3 = MEM_igor8_ex(tempwave, xNum, yNum, newaxiswave, M, K_sq)
 		imchi3_data[][][][i] = temp_imchi3[p][q][r]
 		i+=1
 	while (i<zNum-1)

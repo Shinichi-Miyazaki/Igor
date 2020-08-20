@@ -1,7 +1,5 @@
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-
-
 Function MEM_Igor8(rawwave, xNum, yNum, zNum, axiswave, M,K_sq)
 	wave rawwave, axiswave
 	variable M, xNum, yNum, zNum, K_sq
@@ -45,7 +43,7 @@ Function/wave MEM_Igor8_ex(rawwv,xNum,yNum,axiswv,M,K_sq)
 	do
 		MatrixOp/O/FREE tempwv = col(rawwv, i)
 		wave tempwv_ei = even_interval(tempwv,axiswv,ramanshift_ei)
-		wave mem_wave = MEM_5_2(tempwv_ei, ramanshift_ei,M,K_sq)
+		wave mem_wave = MEM_5(tempwv_ei, ramanshift_ei,M,K_sq)
 		exp_wv[][i] = mem_wave[p]
 		i+=1
 		killwaves tempwv_ei, mem_wave
@@ -65,11 +63,12 @@ Function/wave MEM_Igor8_ex(rawwv,xNum,yNum,axiswv,M,K_sq)
 	return imchi3
 end
 
-Function/wave MEM_5_2(pow_spectrum,ramanshift,M,K_sq)
+Function/wave MEM_5(pow_spectrum,ramanshift,M,K_sq)
 	wave pow_spectrum,ramanshift
 	variable M,K_sq
 	//M: The number of correlation coefficient
 	//K: Squeezing parameter (normally 1)
+
 
 	variable N
 	variable N_sq,N_add_half
@@ -90,31 +89,17 @@ Function/wave MEM_5_2(pow_spectrum,ramanshift,M,K_sq)
 		killwaves rs_temp,ps_temp
 	endif
 
+
 	N_add_half = floor(K_sq/(2*K_sq+1)*(N*(2*K_sq+1)))
 	N_sq = N+2*N_add_half
-	variable val_expol = background_value(pow_spectrum,ramanshift)
-
-	Make/O/D/N=4 temp_expol_1,temp_expol_2
-	temp_expol_1[0] = val_expol
-	temp_expol_1[1] = val_expol
-	temp_expol_1[2] = val_expol
-	temp_expol_1[3] = pow_spectrum[0]
-	temp_expol_2[0] = pow_spectrum[N-1]
-	temp_expol_2[1] = val_expol
-	temp_expol_2[2] = val_expol
-	temp_expol_2[3] = val_expol
-	Interpolate2/T=2/N=(N_add_half)/E=2/Y=temp_expol_1_2  temp_expol_1
-	Interpolate2/T=2/N=(N_add_half)/E=2/Y=temp_expol_2_2  temp_expol_2
-
-
 	Make/O/D/N=(N_sq) pow_spectrum_sq
 	val_sq_low = mean(pow_spectrum,0,5)
 	val_sq_high = mean(pow_spectrum,N-6,N-1)
 	for(k=0;k<N_sq;k+=1)
 		if(k<N_add_half)
-			pow_spectrum_sq[k] = temp_expol_1_2[k]
+			pow_spectrum_sq[k] = val_sq_low
 		elseif(k>=N+N_add_half)
-			pow_spectrum_sq[k] = temp_expol_2_2[k-N-N_add_half]
+			pow_spectrum_sq[k] = val_sq_high
 		else
 			pow_spectrum_sq[k] = pow_spectrum[k-N_add_half]
 		endif
@@ -155,7 +140,7 @@ Function/wave MEM_5_2(pow_spectrum,ramanshift,M,K_sq)
 			b_mat[l][0] = -C_wave[l+1]
 	endfor
 
-	MatrixLinearSolve/M=1 toeplitz_mat b_mat
+	MatrixLinearSolve/M=8 toeplitz_mat b_mat
 	mem_beta_2 = C_wave[0]
 	for(l=1;l<M+1;l+=1)
 		mem_beta_2 += C_wave[l]*M_B[l-1]
@@ -190,70 +175,12 @@ Function/wave MEM_5_2(pow_spectrum,ramanshift,M,K_sq)
 	mem_sp_real = real(mem_cmp_sp)
 	mem_sp_imag = imag(mem_cmp_sp)
 
-	return mem_sp_imag
+  return mem_sp_imag
 end
 
 
-Function background_value(ps_wv,ramanshift_wv)
-	wave ps_wv,ramanshift_wv
 
-	variable rs_low,rs_high
-	rs_low = 500
-	rs_high = 3200
-	variable ch_elim_low,ch_elim_high
-	ch_elim_low = 2750
-	ch_elim_high = 3200
-	variable elim_th = 0.02
-	variable N_mean,Val_back
 
-	variable N
-	N=numpnts(ramanshift_wv)
-	variable k,l
-	Make/O/D/N=(N) weighting_wv
-	weighting_wv = 1
-	variable prefit_order = 5
-
-	for(k=0;k<N;k+=1)
-		if(ramanshift_wv[k]<rs_low || ramanshift_wv[k]>rs_high)
-			weighting_wv[k] = 0
-		endif
-		if(ramanshift_wv[k]>ch_elim_low && ramanshift_wv[k]<ch_elim_high)
-			weighting_wv[k] = 0
-		endif
-	endfor
-
-	Make/O/D/N=(prefit_order) W_coef
-	W_coef = 0
-
-	CurveFit/Q poly prefit_order, ps_wv /X=ramanshift_wv /M=weighting_wv /D
-	Make/O/D/N=(N) dist_wv,prefit_wv
-	prefit_wv = 0
-	for(k=0;k<N;k+=1)
-		for(l=0;l<prefit_order;l+=1)
-			prefit_wv[k] += W_coef[l]*ramanshift_wv[k]^l
-		endfor
-	endfor
-	dist_wv = abs(ps_wv - prefit_wv)
-
-	for(k=0;k<N;k+=1)
-		if(dist_wv[k]>elim_th)
-			weighting_wv[k] = 0
-		endif
-	endfor
-
-	N_mean = 0
-	Val_back = 0
-	for(k=0;k<N;k+=1)
-		if(weighting_wv[k] == 1)
-			N_mean+=1
-			Val_back+=ps_wv[k]
-		endif
-	endfor
-
-	Val_back/=N_mean
-	return Val_back
-
-end
 
 Function/wave even_interval(CARSwv,rswv,rswv_ei)
 	wave CARSwv, rswv, rswv_ei
