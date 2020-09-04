@@ -96,3 +96,31 @@ while(i<xyNum)
 temp00/=cts
 
 end
+
+
+function SumfromImage_MS3(xNum1,xNum2,yNum1,yNum2,oriwv)
+wave oriwv
+variable xNum1,xNum2,yNum1,yNum2;
+variable pts;
+variable i,j,cts;
+
+Silent 1; PauseUpdate
+make /o/n=1 temp00
+temp00=0;
+cts=0;
+
+i=xNum1
+do
+	j=yNum1
+	do	
+		temp00[]+=oriwv[i][j]
+		cts+=1
+		j+=1
+	while(j<yNum2)
+	i+=1
+while(i<xNum2)
+temp00/=cts
+variable ans = temp00[0][0]
+return ans
+
+end
