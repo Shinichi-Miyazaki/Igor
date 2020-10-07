@@ -1,39 +1,26 @@
 #pragma rtGlobals=1		// Use modern global access method.
-Function wave2Dto4DV3(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
+Function wave2Dto4DMS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
 	wave	wv;
 	variable	Numx,Numy,Numz;
 	variable	SampleNum,i,j,k,l, wvNum;
+	variable startnum, endnum
 
 	Silent 1;
 	Pauseupdate
-	wvNum = dimsize(wv, 1)
+	wvNum = dimsize(wv, 0)
 
 	make/O/N=(wvNum,Numx,Numy,Numz)/D CARS;
 	k = 0;
 	j = 0;
 
 
-//なんとなくの開発方針
-//入力 (1340, xyz)
-//出力 (1340, x, y, z)
-//matrixopのredimensionを使えば何とかなりそう
-//そのためには入力を転置して2, 3次元目を追加して
-//redimensionを行う？？
-//イメージとしては(xyz, 0, 0, 1340)→(x, y, z, 1340)
-//最後に次元を並び替え
-
-
 	do
-		for(i=0;i<Numx;i=i+1)
-			for(l=0;l<1340;l=l+1)
-				CARS[l][i][j][0] = wv[l][k];
-			endfor
-			k = k+1;
+		for(j=0;j<Numy;j=j+1)
+			startnum = j * Numx
+			endnum = (j+1) * Numx
+			Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+			CARS[][][j][k] = tempwv[p][q];
 		endfor
-		j = j+1;
-		if(j == Numy)
-			break
-
-		endif
-	while(j <Numy)
+		k += 1
+	while(k < Numz)
 end
