@@ -70,7 +70,19 @@ Function nonresV2(wv3, wv4)
 	matrixop/o wv3 = wv3/temp
 end
 
-
+Function/wave makeramanshift4(wv)		//making new Ramanshift wave after MEM
+	wave	wv;
+	variable	pixNum;
+	variable	i;
+	
+	pixNum=DimSize(wv,0);
+	print pixNum
+	make/O/N=(pixNum) /D re_ramanshift2;
+	for(i=0;i<pixNum;i=i+1)
+		re_ramanshift2[i] = -wv[pixNum-1-i];
+	endfor
+	return	re_ramanshift2;
+end
 
 // WinSpec file (*.spe) loader v 1.0
 //
