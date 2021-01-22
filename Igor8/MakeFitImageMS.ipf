@@ -1,6 +1,48 @@
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Function gaussoffset(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0] + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2);
+	return	ans;	
+end
+
+Function Dualgaussoffset(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0] + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2);
+	return	ans;
+end
+
+
+Function Triplegauss(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0]  + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2) + W[8]*exp(-((X-W[9])/W[10])^2);
+	return	ans;
+end
+
+Function Quadruple_gauss(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0]  + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2) + W[8]*exp(-((X-W[9])/W[10])^2)+ W[11]*exp(-((X-W[12])/W[13])^2);
+	return	ans;
+end
+
+Function Gauss7(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0]  + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2) + W[8]*exp(-((X-W[9])/W[10])^2)+ W[11]*exp(-((X-W[12])/W[13])^2)+ W[14]*exp(-((X-W[15])/W[16])^2)+ W[17]*exp(-((X-W[18])/W[19])^2)+W[20]*exp(-((X-W[21])/W[22])^2);
+	return	ans;
+end
+
+
 
 function MakeFitImageMS(frompix, endpix, gausNum, wcoef, zNum)
 variable frompix,endpix,gausNum,zNum;
@@ -56,5 +98,10 @@ if (gausNum==1)
 	
 	//SetAxis/A/R left;
 endif
+
+
+
+//Double gauss
+
 
 end
