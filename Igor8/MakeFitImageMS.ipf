@@ -2,8 +2,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 
-function MakeFitImageMS(frompix, endpix, gausNum, wcoef, prefix, zNum)
-variable frompix,endpix,gausNum, prefix, zNum;
+function MakeFitImageMS(frompix, endpix, gausNum, wcoef, zNum)
+variable frompix,endpix,gausNum,zNum;
 wave wcoef
 variable i,j, k,pts;
 wave imchi3_data, re_ramanshift2
@@ -30,17 +30,17 @@ if (gausNum==1)
 			i=0;
 			do 
 				temp= imchi3_data[p][j][i][k];
-				W_coefQrG=wcoef
+				W_coefQrG[0,4]=wcoef[p]
 				W_coefQrG[5]=0;
 				W_coefQrG[8]=0;
 				W_coefQrG[11]=0;
 				W_coefQrG[14]=0;
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00011111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011111111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				wavestr="FitimageZ="+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				wave tempwv = $wavestr
-				wavestr="FitimageZ="+num2str(k)
 				SetScale/I x 0,(xNum-1)/2,"", tempwv;
 				SetScale/I y 0,(yNum-1)/2,"", tempwv;
 				tempwv[j][i]=W_coefQrG[2];
