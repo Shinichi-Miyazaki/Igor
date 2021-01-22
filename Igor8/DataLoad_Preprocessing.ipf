@@ -3,7 +3,7 @@ Function wave2Dto4DMS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
 	wave	wv;
 	variable	Numx,Numy,Numz;
 	variable	SampleNum,i,j,k,l, wvNum;
-	variable startnum, endnum
+	variable start, startnum, endnum
 
 	Silent 1;
 	Pauseupdate
@@ -16,8 +16,9 @@ Function wave2Dto4DMS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
 
 	do
 		for(j=0;j<Numy;j=j+1)
-			startnum = j * Numx
-			endnum = (j+1) * Numx
+			start = k * Numx * Numy
+			startnum =  start + j * Numx
+			endnum = start + (j+1) * Numx
 			Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
 			CARS[][][j][k] = tempwv[p][q];
 		endfor
@@ -82,22 +83,6 @@ Function/wave makeramanshift4(wv)		//making new Ramanshift wave after MEM
 		re_ramanshift2[i] = -wv[pixNum-1-i];
 	endfor
 	return	re_ramanshift2;
-end
-
-Function ImageMS(wv,pixel,Numx,Numy)	//make 2d data at particular pixel point
-	wave	wv;
-	variable	pixel, Numx,Numy;
-	variable imagesize
-
-	Silent 1;
-	Pauseupdate
-	imagesize = Numx*Numy
-
-	make/O/N=(Numx,Numy)/D im;
-	duplicate/O/R=[pixel][0, imagesize] wv im
-	redimension/n=(imagesize) im
-	redimension/n = (Numx, Numy) im
-	newimage im
 end
 
 // WinSpec file (*.spe) loader v 1.0
