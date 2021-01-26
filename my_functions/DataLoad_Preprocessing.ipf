@@ -26,6 +26,38 @@ Function wave2Dto4DMS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
 	while(k < Numz)
 end
 
+//pick up nonres from specific region in the data (medium, coverglass, etc)
+//xsize: x range of which you want to analyze the image   
+//xNum, yNum: your interested region, please use CTRL + I (cursor)
+//oriwv: 2D wave, loaded by speloaderM(compact = 1) 
+//return: 2D wave, tempnr (1340 * 100) it can be used as nr wave in func. darknonres
+
+function Pickup_nr(xsize, xNum1,xNum2,yNum1,yNum2, oriwv)
+wave oriwv
+variable xsize, xNum1,xNum2,yNum1,yNum2;
+variable pts;
+variable i,cts,first, last;
+
+Silent 1; PauseUpdate
+pts=dimsize(oriwv,0)
+make /o/n=(pts) tempnrwv
+tempnrwv=0;
+cts=0;
+
+first = xsize * (yNum1-1) + xNum1
+last = xsize*(yNum2-1) + xNum2
+
+i=first
+do	
+	tempnrwv[]+=oriwv[p][i]
+	cts+=1
+	i+=1
+while(i<last)
+tempnrwv/=cts
+matrixop/o tempnr = colrepeat(tempnrwv, 100)
+
+end
+
 Function/wave darkNonres(rawwv, bgwv, nrwv)
 	wave rawwv, bgwv, nrwv
 	variable numofwv, bgnum, nrnum
