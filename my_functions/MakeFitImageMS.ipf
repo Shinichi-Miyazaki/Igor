@@ -34,6 +34,14 @@ Function Quadruple_gauss(W,X)
 	return	ans;
 end
 
+Function Gauss6(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0]  + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2) + W[8]*exp(-((X-W[9])/W[10])^2)+ W[11]*exp(-((X-W[12])/W[13])^2)+ W[14]*exp(-((X-W[15])/W[16])^2)+ W[17]*exp(-((X-W[18])/W[19])^2);
+	return	ans;
+end
+
 Function Gauss7(W,X)
 	wave	W;
 	variable	X;
@@ -80,7 +88,7 @@ if (gausNum==1)
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
 				Funcfit/Q/H="00011111111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				wave tempwv = $wavestr
 				SetScale/I x 0,(xNum-1)/2,"", tempwv;
@@ -119,8 +127,8 @@ if (gausNum==2)
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
 				Funcfit/Q/H="00011011111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
-				wavestr2="Fitimage2Z="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
+				wavestr2="Fitimage2Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $wavestr2
 				wave tempwv = $wavestr
@@ -161,9 +169,9 @@ if (gausNum==3)
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
 				Funcfit/Q/H="00011011011111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
-				wavestr2="Fitimage2Z="+num2str(k)
-				wavestr3="Fitimage3Z="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
+				wavestr2="Fitimage2Z"+num2str(k)
+				wavestr3="Fitimage3Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $wavestr2
 				make /o/n=(xNum,yNum) $wavestr3
@@ -209,10 +217,10 @@ if (gausNum==4)
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
 				Funcfit/Q/H="00011011011011111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
-				wavestr2="Fitimage2Z="+num2str(k)
-				wavestr3="Fitimage3Z="+num2str(k)
-				wavestr4="Fitimage4Z="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
+				wavestr2="Fitimage2Z"+num2str(k)
+				wavestr3="Fitimage3Z"+num2str(k)
+				wavestr4="Fitimage4Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $wavestr2
 				make /o/n=(xNum,yNum) $wavestr3
@@ -262,11 +270,11 @@ if (gausNum==5)
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
 				Funcfit/Q/H="00011011011011011111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
-				wavestr2="Fitimage2Z="+num2str(k)
-				wavestr3="Fitimage3Z="+num2str(k)
-				wavestr4="Fitimage4Z="+num2str(k)
-				wavestr5="Fitimage5Z="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
+				wavestr2="Fitimage2Z"+num2str(k)
+				wavestr3="Fitimage3Z"+num2str(k)
+				wavestr4="Fitimage4Z"+num2str(k)
+				wavestr5="Fitimage5Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $wavestr2
 				make /o/n=(xNum,yNum) $wavestr3
@@ -322,12 +330,12 @@ if (gausNum==6)
 				W_coefQrG[0,19]=wcoef[p]
 				W_coefQrG[20]=0;
 				Funcfit/Q/H="00011011011011011011111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
-				wavestr2="Fitimage2Z="+num2str(k)
-				wavestr3="Fitimage3Z="+num2str(k)
-				wavestr4="Fitimage4Z="+num2str(k)
-				wavestr5="Fitimage5Z="+num2str(k)
-				wavestr6="Fitimage6Z="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
+				wavestr2="Fitimage2Z"+num2str(k)
+				wavestr3="Fitimage3Z"+num2str(k)
+				wavestr4="Fitimage4Z"+num2str(k)
+				wavestr5="Fitimage5Z"+num2str(k)
+				wavestr6="Fitimage6Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $wavestr2
 				make /o/n=(xNum,yNum) $wavestr3
@@ -387,13 +395,13 @@ if (gausNum==7)
 				temp= imchi3_data[p][j][i][k];
 				W_coefQrG[0,22]=wcoef[p]
 				Funcfit/Q/H="00011011011011011011011"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
-				wavestr="FitimageZ="+num2str(k)
-				wavestr2="Fitimage2Z="+num2str(k)
-				wavestr3="Fitimage3Z="+num2str(k)
-				wavestr4="Fitimage4Z="+num2str(k)
-				wavestr5="Fitimage5Z="+num2str(k)
-				wavestr6="Fitimage6Z="+num2str(k)
-				wavestr7="Fitimage7Z="+num2str(k)
+				wavestr="FitimageZ"+num2str(k)
+				wavestr2="Fitimage2Z"+num2str(k)
+				wavestr3="Fitimage3Z"+num2str(k)
+				wavestr4="Fitimage4Z"+num2str(k)
+				wavestr5="Fitimage5Z"+num2str(k)
+				wavestr6="Fitimage6Z"+num2str(k)
+				wavestr7="Fitimage7Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $wavestr2
 				make /o/n=(xNum,yNum) $wavestr3
