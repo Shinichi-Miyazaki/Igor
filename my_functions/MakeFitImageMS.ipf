@@ -1,6 +1,8 @@
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+
+//gauss functions
 Function gaussoffset(W,X)
 	wave	W;
 	variable	X;
@@ -33,6 +35,15 @@ Function Quadruple_gauss(W,X)
 	ans = W[0]  + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2) + W[8]*exp(-((X-W[9])/W[10])^2)+ W[11]*exp(-((X-W[12])/W[13])^2);
 	return	ans;
 end
+
+Function Gauss5(W,X)
+	wave	W;
+	variable	X;
+	variable	ans;
+	ans = W[0]  + W[1]*X + W[2]*exp(-((X-W[3])/W[4])^2) + W[5]*exp(-((X-W[6])/W[7])^2) + W[8]*exp(-((X-W[9])/W[10])^2)+ W[11]*exp(-((X-W[12])/W[13])^2)+ W[14]*exp(-((X-W[15])/W[16])^2);
+	return	ans;
+end
+
 
 Function Gauss6(W,X)
 	wave	W;
