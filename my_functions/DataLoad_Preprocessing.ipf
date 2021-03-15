@@ -364,6 +364,20 @@ Static function dump_header(h)
 end
 
 
+Function ImageMS(wv,pixel,Numx,Numy)    //make 2d data at particular pixel point
+    wave    wv;
+    variable    pixel, Numx,Numy;
+    variable imagesize
+    Silent 1;
+    Pauseupdate
+    imagesize = Numx*Numy
+    make/O/N=(Numx,Numy)/D im;
+    duplicate/O/R=[pixel][0, imagesize] wv im
+    redimension/n=(imagesize) im
+    redimension/n = (Numx, Numy) im
+    newimage im
+end
+
 function SpeLoaderM([skip, frames, verbose, compact, fullpath])
 	Variable skip; // number of frames to skip
 	Variable frames; // number of frames to read. 0 will beinterpreted as Inf.
