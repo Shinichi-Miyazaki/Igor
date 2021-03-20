@@ -3,7 +3,6 @@
 
 0. 用意するもの  
    Igor8  
-
    測定データ (.spe)  
    バックグラウンドデータ (.spe)  
    ノンレゾナントバックグラウンド(.spe)  
@@ -89,7 +88,9 @@ makeramanshift4(m_ramanshift1)
 ```Igor
 save/C re_ramanshift2
 save/C imchi3_data
-	//すべて終わっていれば, 軸の名前がre_ramanshift2, データの名前がimchi3_dataになっているはずです. これらを希望の位置に保存しましょう
+	//すべて終わっていれば, 軸の名前がre_ramanshift2,
+    //データの名前がimchi3_dataになっているはずです. 
+    //これらを希望の位置に保存しましょう
 ```
 
 
