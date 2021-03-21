@@ -19,7 +19,6 @@ rawdata (MEM前のデータ)
 
 4. 画像の左側にツールバーが出現するので, 好きなツールを選択してROIを囲む  
 
-
 5. roi などの適当な名前で保存  
-![roi_setting](.\roi_setting.jpg)
+
 
