@@ -21,4 +21,6 @@ rawdata (MEM前のデータ)
 
 5. roi などの適当な名前で保存  
 
+![roi_setting](https://user-images.githubusercontent.com/59829168/111895116-afb93000-8a53-11eb-9003-e7ae4fcd92e2.jpg)
+
 
