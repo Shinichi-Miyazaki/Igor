@@ -8,7 +8,7 @@
 imchi3_data  
 re_ramanshift2  
 rawdata (MEM前のデータ)  
-region_analysis.ipf
+region_analysis.ipf  
 
 1. Data/Load Data/Load ZigZag SPE File Noshifted and Make Each Z swap AV Quickly LF PIXIS NO zigzagを使って画像を出す.   
 (これらはextensionを入れていないとIgorで表示されません. extensionの導入方法は別に示します.)
@@ -31,5 +31,24 @@ region_analysis(imchi3_data, roiwave, znum)
 	//average_wvという名前で保存されるので, 好きな名前に変更
 rename average_wv region_av
 ```
+
+
+---
+#### 表示している画像内の画素値が一定以上の空間点の平均スペクトルを求める  
+例)  
+SHが一定値以上の強度の空間点の平均スペクトルを求めたいとき  
+すでにフィットしたが, ある波数で強度の強いピクセルを足しこみたいとき  
+
+0. 用意するもの  
+imchi3_data  
+re_ramanshift2  
+rawdata (MEM前のデータ)  
+1. 画像の表示  
+
+ 
+2. 平均 
+
+
+
 
 
