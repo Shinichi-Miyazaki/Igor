@@ -10,7 +10,7 @@ re_ramanshift2
 rawdata (MEM前のデータ)  
 region_analysis.ipf  
 
-1. Data/Load Data/Load ZigZag SPE File Noshifted and Make Each Z swap AV Quickly LF PIXIS NO zigzagを使って画像を出す.   
+1. Data/Load Data/Load ZigZag SPE File Noshifted and Make Each Z swap AV Quickly LF PIXIS NO zigzagを使って画像を出す.  
 (これらはextensionを入れていないとIgorで表示されません. extensionの導入方法は別に示します.)
 
 2. Image/Image ROI からROIマネージャーを起動  
@@ -43,10 +43,31 @@ SHが一定値以上の強度の空間点の平均スペクトルを求めたい
 imchi3_data  
 re_ramanshift2  
 rawdata (MEM前のデータ)  
-1. 画像の表示  
+SumFromImage_MS2
 
- 
-2. 平均 
+1. 画像の表示  
+適当な方法で画像を出します.  
+ImageMSでも良いですし, Data/Load Data/Load ZigZag SPE File Noshifted and Make Each Z swap AV Quickly LF PIXIS NO zigzagでもOKです.  
+Fit後の画像で実行したいときはFitImageが出ていればOKです.  
+
+2. 閾値を決めるために, 画像内の適当な位置の輝度値の確認  
+足し込みする閾値を決めるために, 画像内の適当な点の輝度値を取得します  
+![スクリーンショット 2021-03-24 22 00 08](https://user-images.githubusercontent.com/59829168/112314542-7c450280-8cec-11eb-85f6-b1900411a19c.png)  
+
+上の図のように, 画像を出してカーソル (ctrl + i)で見ても良いですし, Windows/New tableから, 画像を数値データとして表示して閾値を見るのも良いです. 
+
+3. 閾値を決めて, それ以上の領域の足し込み  
+閾値が決まったら以下のコードで足し込みをおこないます.   
+```Igor
+SumFromImage_MS(wv, discri, oriwv)
+	//wvにはimageの名前をいれてください.  
+	//discriには2. で決めた閾値を入れます.
+	//oriwvにはimchi3_dataなどを入れます
+rename temp00 discriwv
+	//temp00という名前でwaveが作成されるので, 適当に名前をつけてください. 
+	
+```
+
 
 
 
