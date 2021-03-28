@@ -40,8 +40,7 @@ make/O/N = 20 wcoef
 	//適当にwcoefという名前にしています. 
 wcoef = {-2.6, 0.001,0.5, 2850, 10, 0.9 2870, 10, 0.5,2930, 10, 0.3, 2950, 10, 0.5. 2910, 10, 0.2, 3000, 10}  
 	//適当に, ピークを見ながら値を代入します
-FuncFit gauss6 wcoef20 temp00[pcsr(A),pcsr(B)]/X=re_ramanshift2/D
-fit_temp00= gauss6(wcoef,x)
+FuncFit gauss6 wcoef20 temp00[pcsr(A),pcsr(B)]/X=re_ramanshift2/D fit_temp00= gauss6(wcoef,x)
 	//gauss 6つなので, gauss6という名前を使います. 
 ```
 fitがうまくいくと, このようになります.  
