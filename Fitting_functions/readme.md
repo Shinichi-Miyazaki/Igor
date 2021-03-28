@@ -4,12 +4,11 @@
 領域平均スペクトル  
 imchi3_data  
 re_ramanshift2  
-MakeFitImageMS.ipf  
-MakeInitBase.ipf  
+MakeFitImageMS.ipf   
 
 1. フィット領域の定義のため, グラフを表示  
-まずは, 領域平均スペクトルを表示して, どの波数をフィットするかを考えます.  
-平均スペクトルを読み込んだら, 以下のコードで適当に図を出します.  
+  まずは, 領域平均スペクトルを表示して, どの波数をフィットするかを考えます.  
+  平均スペクトルを読み込んだら, 以下のコードで適当に図を出します.  
 ```Igor
 display waveav vs re_ramanshift2
 ```
