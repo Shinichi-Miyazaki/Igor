@@ -14,12 +14,14 @@ MakeInitBase.ipf
 display waveav vs re_ramanshift2
 ```
 以下のような図が出るはずなので, フィットしたい領域を拡大しましょう.  
+<img width="852" alt="im1" src="https://user-images.githubusercontent.com/59829168/112760635-ba1a9180-9032-11eb-9599-b76f88b09e4c.png">  
 拡大は適当なところを四角で囲って, 右クリック expandです.   
+<img width="852" alt="im2" src="https://user-images.githubusercontent.com/59829168/112760652-c30b6300-9032-11eb-910d-7e5827c970c6.png">  
 
 2. baselineの取得  
 次に, fitする範囲を決めて, baselineを取得します.  
 カーソル (ctrl + i) でfitしたい領域の高波数側と低波数側に置きます.  
-
+<img width="852" alt="im3" src="https://user-images.githubusercontent.com/59829168/112760653-c3a3f980-9032-11eb-88be-84798bdabd93.png">  
 この状態で, コマンド (ctrl + j)から MakeinitBaseを実行します.  
 ```Igor
 rename waveav temp00
@@ -44,6 +46,7 @@ fit_temp00= gauss6(wcoef,x)
 ```
 fitがうまくいくと, このようになります.  
 (わかりやすいように, fitした曲線を青色に変えています. やり方はグラフをダブルクリックして色変更です. )
+<img width="852" alt="im4" src="https://user-images.githubusercontent.com/59829168/112760654-c3a3f980-9032-11eb-8fe6-4fd138678481.png">  
 
 4. Fit Imageの作成
 Fitがある程度うまくいったら, Fit imageを作成します.  
@@ -58,6 +61,7 @@ MakeFitImageMS(V_startRow,V_endRow, 6, wcoef, 0)
 これはすなわち, 先ほどの例では, CHの部分を6つのガウスでフィットしましたが, そのガウス一つ一つの強度で画像を作るということです.  
 2850でフィットすれば, それは画像内の脂質のイメージになるでしょうし, 1003のフィット画像はタンパク質になるというような感じです.  
 うまくいけば以下のように, いくつかの画像が表示されます.  
+<img width="960" alt="im5" src="https://user-images.githubusercontent.com/59829168/112760646-c1da3600-9032-11eb-94ff-dce8ed03ea5e.png">  
 
 ----
 
