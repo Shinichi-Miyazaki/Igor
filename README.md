@@ -1,6 +1,21 @@
 # Igor8 functions
 このレポジトリは, 加納研究室で使うIgor8の関数をまとめたものです.  
 
+
+---
+## Igorインストールについて (from Igorインストール虎の巻, modified by Miyazaki)
+1. マイドキュメント→wavemetrics→Igor Pro8 User Filesという名でフォルダ作成(この中にigor8インストール)  
+2. google ドライブ→研究室共用ソフト→igor8をダウンロード  
+3. 全て展開→setupIgor8開いて進んでいきinstallまで進む(上のフォルダに保存)  
+4. MEMを実行するには以下も必要  
+5. google drive上のMEM最新→64bit対応コード.zip→ダウンロード  
+6. 以下に従って, マイドキュメントのIgor Pro8 User Filesの該当するところに入れていく  
+
+Igor Extension(64-bit)→そのままコピペ  
+User Procedure→そのままコピペ  
+IgorProcedure →CARS_GenerateTileImage, CARS_GenerateTileImagePMT, mem_approximate, MM procedures, Other_fitのみ移動  
+
+---
 ## 関数の種類
 
 1. MEM related functions  
@@ -14,19 +29,6 @@ MEM後のスペクトルをガウスフィットして, 画像化したりする
 
 4. Other functions  
 その他の関数です.  
-
----
-## Igorインストールについて (from Igorインストール虎の巻, modified by Miyazaki)
-マイドキュメント→wavemetrics→Igor Pro8 User Filesという名でフォルダ作成(この中にigor8インストール)  
-google ドライブ→研究室共用ソフト→igor8をダウンロード→全て展開→setupIgor8開いて進んでいきinstallまで進む(上のフォルダに保存)  
-MEMを実行するには以下も必要  
-MEM最新→64bit対応コード.zip→ダウンロード  
-これマイドキュメントのIgor Pro8 User Filesの該当するところに入れていく  
-
-Igor Extension(64-bit)→そのままコピペ  
-User Procedure→そのままコピペ  
-IgorProcedure →CARS_GenerateTileImage, CARS_GenerateTileImagePMT, mem_approximate, MM procedures, Other_fitのみ移動  
-
 
 ---
 # License
