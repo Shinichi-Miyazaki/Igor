@@ -21,30 +21,30 @@ style macroにチェックして, OKを押します.
 2. 複数のプロットに別の色を付ける  
 ここでは, 一つのグラフに複数のプロットをした際の便利な機能を紹介します.  
 まずは適当にwaveを作ります.  
-image0
+<img width="960" alt="image0" src="https://user-images.githubusercontent.com/59829168/115130596-e15df080-a02b-11eb-885d-f3c5b35efc99.png">
 例として5つのグラフに色を付けてみます. このようにWindow/new graphで出てくるウィンドウから, y waveを複数選択してdo itで複数プロットを一つにまとめることができます.  
-image1
+<img width="960" alt="image1" src="https://user-images.githubusercontent.com/59829168/115130597-e1f68700-a02b-11eb-9d0d-aa4699740eb9.png">
 最初に出てくるグラフはこのように, 全て同じ色になっています.  
-image2
+<img width="960" alt="image2" src="https://user-images.githubusercontent.com/59829168/115130599-e28f1d80-a02b-11eb-871e-fb7ade50be08.png">
 この状態で, Graph/Packages/make traces differentを選択します.  
-image2.5
+<img width="960" alt="image2 5" src="https://user-images.githubusercontent.com/59829168/115130598-e1f68700-a02b-11eb-98b9-5cf38b4990b9.png">
 ポップアップするウィンドウの中の, Colors Quick Setで好きなカラーセットをSet Traces To のコンボボックスから選びます. (ここではRainbowにしています)  
 その後, commonly used colorsをクリックするとこのようにプロットに色がつきます.  
-image4
+<img width="960" alt="image4" src="https://user-images.githubusercontent.com/59829168/115130601-e327b400-a02b-11eb-97d4-f87cdd7830c6.png">
 ちなみに, 上のLine styles quick setをクリックするとこのように実線や点線などを変えることができます.  
-image5  
+<img width="960" alt="image5" src="https://user-images.githubusercontent.com/59829168/115130602-e327b400-a02b-11eb-9c75-d13e1dc852ff.png">
 
 
 ---
 3. 複数プロットの平均値とsd (or se, 95% CI)をプロットする  
 こちらはあまり使わないかもしれませんが, 念のために  
 上記で紹介したような, 複数プロットが表示されている状態で, (正確にはプロットしておく必要はないですが) Analysis/Pakages/Average Wavesを選択します.  
-image6
+<img width="960" alt="image6" src="https://user-images.githubusercontent.com/59829168/115130603-e3c04a80-a02b-11eb-812a-65ce1e36b3ad.png">
 出現するウィンドウでOutput Wavesの中で, デフォルトではConfidence Intervalとなっている部分を変更すると, エラーバーを変更できます.  
-image7
+<img width="960" alt="image7" src="https://user-images.githubusercontent.com/59829168/115130604-e3c04a80-a02b-11eb-946f-47c75e99d613.png">
 この状態で, Do itをクリックすると平均とエラーバーのwaveが生成されます.  
 次にNew graphをクリックすると先に得たwaveでグラフが生成されます.  
-Image8
+<img width="960" alt="image8" src="https://user-images.githubusercontent.com/59829168/115130595-e0c55a00-a02b-11eb-85b7-d6f2cef3ffba.png">
 
 
 
