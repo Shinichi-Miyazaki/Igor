@@ -27,8 +27,14 @@ MEM後のデータで, 領域平均スペクトルを得るための関数です
 3. Fitting functions  
 MEM後のスペクトルをガウスフィットして, 画像化したりするための関数です.  
 
-4. Other functions  
-その他の関数です.  
+4. Ratiometric_analysis  
+強度比を用いて解析を行う際に使用する関数です.  
+
+5. Igor_tips  
+Igorの便利技等を書いていきます.   
+
+6. Other_functions  
+その他関数, 古い関数などです.   
 
 ---
 # License
