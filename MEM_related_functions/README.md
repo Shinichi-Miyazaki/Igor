@@ -12,7 +12,7 @@
 1. Igor8の起動  
 
 2. 関数をドラッグアンドドロップしてcompile (下のほうに小さくcompileとあるのでクリック)  
-![1](https://user-images.githubusercontent.com/59829168/121981606-edb2bf80-cdc8-11eb-9b03-f840dd8414e3.png)  
+![1](https://user-images.githubusercontent.com/59829168/121983212-e93bd600-cdcb-11eb-948c-b44269385f91.png)  
 
 3. コマンドラインを呼び出して(ctrl+j), 以下のコード実行  
 ```Igor
