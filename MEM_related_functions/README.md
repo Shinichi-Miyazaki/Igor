@@ -12,6 +12,7 @@
 1. Igor8の起動  
 
 2. 関数をドラッグアンドドロップしてcompile (下のほうに小さくcompileとあるのでクリック)  
+![1](https://user-images.githubusercontent.com/59829168/121981606-edb2bf80-cdc8-11eb-9b03-f840dd8414e3.png)  
 
 3. コマンドラインを呼び出して(ctrl+j), 以下のコード実行  
 ```Igor
@@ -23,6 +24,7 @@ SpeloaderM(compact=1)
 4. 読み込みの際に名前を付けられるので, 適当に名前を付ける (rawなどとすると, "raw0"という名前になる. データブラウザ(ctrl+b)で確認可能)  
 
 5. 3を2回繰り返して, bg, nrを読みこむ (bg, nrと名付けるとbg0, nr0みたいな名前になる)  
+![2](https://user-images.githubusercontent.com/59829168/121981675-163ab980-cdc9-11eb-9d2c-c07f827cde26.png)  
 
 6. x軸を読み込むため, .itxデータをドラッグアンドドロップ  
 
@@ -59,7 +61,8 @@ Display cars[][20][20][0] vs ramanshift
 	//CARS[][20][20][0] はcARSという4次元waveのうち, 
 	//1次元目(波数)はすべてのデータ点, 
 	//空間点を示す2次元目以降はx=20, y=20, z=0の点を参照しています. 
-```
+```  
+![4](https://user-images.githubusercontent.com/59829168/121981766-39fdff80-cdc9-11eb-8706-832ef731aade.png)  
 
 11. MEMをかける波数範囲の指定  
 以下のコードで波数の範囲を指定します  
@@ -76,7 +79,9 @@ MEMit()
 	//もしくは, mem_time.ipfを読み込んでからmem_time()で実行すると実行時間を出してくれます. 
 	//(自分で作っといてなんですが, ほかの方法もある気がします)
 	//数分以上かかります
-```
+```  
+![5](https://user-images.githubusercontent.com/59829168/121981786-441ffe00-cdc9-11eb-820d-1ed8d821f09d.png)  
+
 
 13. 横軸の取得  
 ```Igor
@@ -104,9 +109,14 @@ display imchi3_data
 	//これで, 横軸ramanshiftではなく, 点数のグラフが出ます. 
 	//見たいピークにカーソル(ctrl+i)を合わせたら, ピークの波数位置がでます
 	//これを記憶しておきます
+```
+![6](https://user-images.githubusercontent.com/59829168/121981955-96611f00-cdc9-11eb-8739-af1569d5c572.png)
+
+```Igor
 ImageMS(imchi3_data,230,41,41)
 	//2つ目の引数, 230は可視化したいピークの波数位置です. 
 ```
+![7](https://user-images.githubusercontent.com/59829168/121982202-0c658600-cdca-11eb-9002-fd207bd97eec.png)
 
 17. nonresonant backgroundを測定データから作りたい  
 nonresonant backgroudを, カバーガラスではなく, 細胞の横の培地からとりたい時などに  
