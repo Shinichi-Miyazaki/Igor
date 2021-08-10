@@ -1,4 +1,4 @@
-## Image plotで横軸を設定する方法  
+## Image plotで縦軸, 横軸を設定する方法  
 Image plotを普通に作成すると, 下の図のように横軸, 縦軸はともにwave pointとなります.   
 ![Graph0](https://user-images.githubusercontent.com/59829168/128812831-16161ac8-1630-4fa8-838b-b1f881b248e9.png)
 
