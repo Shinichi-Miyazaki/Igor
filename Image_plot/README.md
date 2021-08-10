@@ -9,7 +9,7 @@ Image plotを普通に作成すると, 下の図のように横軸, 縦軸はと
 0. 用意するもの  
 	1. 出したいイメージ (2次元waveとして読み込んでください. 誤って1次元wave の集まりとして読み込んだ場合にはData/Concatenate wavesでくっつけてください)   
 	2. 縦の軸 (1次元wave), 横の軸 (1次元wave)  
-	3. Make_edge_wave.ipf  
+	3. MakeEdgeWave.ipf  
 
 1. 以下の命令を実行します  
 ```Igor
