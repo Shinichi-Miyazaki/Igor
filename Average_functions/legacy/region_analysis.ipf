@@ -13,7 +13,7 @@ Function region_analysis(wv, roiwv, znum)
     duplicate/O/R=[0,*][0,*][0,*][znum] wv tempwv
 
     //inverse roiwv
-    matrixop/O temproi = -(roiwv-1)
+    matrixop/O temproi = roiwv
     
     //make new wave 
     make/o/n=(pts, xNum, yNum) extractedwv
