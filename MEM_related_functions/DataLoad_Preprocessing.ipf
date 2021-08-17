@@ -548,3 +548,27 @@ tempnrwv/=cts
 matrixop/o tempnr = colrepeat(tempnrwv, 100)
 
 end
+
+Function wave4Dto2DMS(wv,Numx,Numy)	//rearrange the 4D wave to 2Dwave
+	wave	wv;
+	variable	Numx,Numy;
+	variable	SampleNum,i,j,k,l, wvNum;
+	variable start, startnum, endnum, pixelnum, num
+
+	Silent 1;
+	Pauseupdate
+	wvNum = dimsize(wv, 0)
+	pixelnum = Numx*Numy
+
+	make/O/N=(wvNum,pixelnum)/D imchi3_2d;
+	k = 0;
+	num=0
+
+	do
+		for(j=0;j<Numx;j=j+1)
+			imchi3_2D[][num] = wv[p][j][k][0];
+			num+=1
+		endfor
+		k += 1
+	while(k < Numy)
+end
