@@ -9,9 +9,16 @@ from sklearn.decomposition import PCA
 import matplotlib.ticker as ticker
 from sklearn.cluster import KMeans
 
-extracted_class_num = 5
-x = 41
-y = 41
+
+"""
+To do 
+指紋領域のみでPCA 
+"""
+
+
+extracted_class_num = 15
+x = 401
+y = 101
 
 
 def ask_directory():
@@ -78,7 +85,7 @@ def PCA_analysis(image_file_path, axis_path):
         fig, ax = plt.subplots()
         Class_data = data.T * Class_list[i]
         Class_data = np.mean(Class_data.T.values, axis = 0)
-        ax.set_ylim([-0.5, 1])
+        ax.set_ylim([-0.2, 1])
         ax.grid(False)
         ax.invert_xaxis()
         ax.plot(x_axis, Class_data, color="black")
