@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="1ee7c399-efe4-488a-b0db-9ebe583c6f19" name="変更" comment="" />
+=======
+    <list default="true" id="1ee7c399-efe4-488a-b0db-9ebe583c6f19" name="変更" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PCA/test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PCA/test.ipynb" afterDir="false" />
+    </list>
+>>>>>>> c0b98a9d4d5b13edef81e61a1670e686924e5c4e
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,7 +38,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Pycharm_projects/Igor" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -105,7 +112,12 @@
       <workItem from="1629433467516" duration="176000" />
       <workItem from="1629433781174" duration="203000" />
       <workItem from="1629434001393" duration="98000" />
+<<<<<<< HEAD
       <workItem from="1629547151111" duration="657000" />
+=======
+      <workItem from="1629699474803" duration="260000" />
+      <workItem from="1629699738210" duration="32000" />
+>>>>>>> c0b98a9d4d5b13edef81e61a1670e686924e5c4e
     </task>
     <servers />
   </component>
