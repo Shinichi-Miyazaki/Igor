@@ -33,9 +33,12 @@ MEM後のスペクトルをガウスフィットして, 画像化したりする
 5. Igor_tips  
 Igorの便利技等を書いていきます.   
 
-6. Other_functions  
+6. Image_plot
+Image plot用の関数を置いてあります. 
+
+7. Other_functions  
 その他関数, 古い関数などです.   
 
 ---
-# License
+## License
 The source code is licensed MIT. The website content is licensed MIT license.

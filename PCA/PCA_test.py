@@ -91,7 +91,13 @@ def PCA_analysis(data_file_path, axis_path):
         plt.savefig("./spectrum/Class_{}.png".format(i), transparent=True, bbox_inches="tight", pad_inches=0.1)
         pd.DataFrame(Class_data).to_csv("./spectrum/Class_{}.csv".format(i))
 
+
 def normalization(data_array):
+    """
+    normalize the data array withing 0~255
+    :param data_array: numpy array
+    :return: data_array: numpy array (overwrite)
+    """
     amin = np.amin(data_array)
     amax = np.amax(data_array)
     scale = 255.0 / (amax - amin)
@@ -101,9 +107,11 @@ def normalization(data_array):
     return data_array
 
 
-
-
 def calc_entropy(tempdata):
+    """
+    :param tempdata: numpy array
+    :return: entropy: float32, entropy value (shannon's entropy) of input array
+    """
     tempdata = tempdata.values
     histgram = [0] * 256
     # normalization
