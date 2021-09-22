@@ -33,7 +33,7 @@ MEM後のスペクトルをガウスフィットして, 画像化したりする
 5. Igor_tips  
 Igorの便利技等を書いていきます.   
 
-6. Image_plot
+6. Image_plot  
 Image plot用の関数を置いてあります. 
 
 7. Other_functions  
