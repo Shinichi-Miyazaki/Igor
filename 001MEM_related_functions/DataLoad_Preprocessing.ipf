@@ -8,7 +8,7 @@
 /// @parameter Numz
 /// @parameter DataType: If the z direction is zigzag order, please put 1
 
-Function Wave2Dto4DMS(wv,Numx,Numy,Numz,DataType)	
+Function Wave2Dto4DMS(wv,Numx,Numy,Numz,[DataType])	
 	wave	wv;
 	variable	Numx,Numy,Numz,DataType;
 	variable	i,j,k,wvNum;
