@@ -6,36 +6,67 @@
 /// @parameter Numx
 /// @parameter Numy
 /// @parameter Numz
+/// @parameter DataType: If the z direction is zigzag order, please put 1
 
-/// [to do] Currently, the data was obtained as zigzag only along z direction
-/// add the reconstruction function 
-/// add params, 1. the data is zigzag or not, 2. the data is xyz or xzy
-
-Function wave2Dto4DMS(wv,Numx,Numy,Numz)	
+Function Wave2Dto4DMS(wv,Numx,Numy,Numz,DataType)	
 	wave	wv;
-	variable	Numx,Numy,Numz;
-	variable	SampleNum,i,j,k,l, wvNum;
-	variable start, startnum, endnum
-
-	Silent 1;
-	Pauseupdate
+	variable	Numx,Numy,Numz,DataType;
+	variable	i,j,k,wvNum;
+	variable start,startnum,endnum, ZCenter, nextstartnum,nextendnum
 	wvNum = dimsize(wv, 0)
-
 	make/O/N=(wvNum,Numx,Numy,Numz)/D CARS;
-	k = 0;
-	j = 0;
-
-
-	do
-		for(j=0;j<Numy;j=j+1)
-			start = k * Numx * Numy
-			startnum =  start + j * Numx
-			endnum = start + (j+1) * Numx
-			Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
-			CARS[][][j][k] = tempwv[p][q];
-		endfor
-		k += 1
-	while(k < Numz)
+	Switch (DataType)
+		case 1:
+			print "z direction zigzag, axis order is xZy"
+			//judgement for even or odd
+			if(mod(Numy,2)==0)
+				ZCenter=(Numy)/2
+			else
+				ZCenter=(Numy-1)/2
+			endif
+				i=0;
+				j=0;
+				k=0;
+				do
+					do
+						start = i * Numx * Numy
+						startnum =  start + k * Numx
+						endnum = start + (k+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						
+						nextstartnum =  start + (k+1) * Numx
+						nextendnum = start + (k+2) * Numx
+						Duplicate/Free/R=[0,*][nextstartnum,nextendnum] wv nexttempwv
+						if(j==0)
+							CARS[][][ZCenter][i]=tempwv[p][q]
+							j+=1
+							k+=1
+						else
+							CARS[][][ZCEnter+j][i]=tempwv[p][q]
+							CARS[][][ZCenter-j][i]=nexttempwv[p][q]
+							j+=1
+							k+=2
+						endif
+					while(j<=ZCenter)
+					i+=1
+				while(i<Numz)
+			break
+			
+		default:
+			print "no z direction zigzag, axis order is xyz"
+			i=0;
+			j=0;
+			do
+				for(j=0;j<Numy;j=j+1)
+					start = i * Numx * Numy
+					startnum =  start + j * Numx
+					endnum = start + (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					CARS[][][j][i] = tempwv[p][q];
+				endfor
+				i+=1
+			while(i<Numz)
+		Endswitch
 end
 
 Function/wave darkNonres(rawwv, bgwv, nrwv)
