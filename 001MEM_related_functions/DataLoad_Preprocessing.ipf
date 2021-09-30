@@ -1,5 +1,17 @@
-#pragma rtGlobals=1		// Use modern global access method.
-Function wave2Dto4DMS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
+#pragma TextEncoding = "Shift_JIS"
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+
+/// This function rearrange the 2D wave to 4D wave
+/// @parameter wv: 2D wave (wavenum, xyz)
+/// @parameter Numx
+/// @parameter Numy
+/// @parameter Numz
+
+/// [to do] Currently, the data was obtained as zigzag only along z direction
+/// add the reconstruction function 
+/// add params, 1. the data is zigzag or not, 2. the data is xyz or xzy
+
+Function wave2Dto4DMS(wv,Numx,Numy,Numz)	
 	wave	wv;
 	variable	Numx,Numy,Numz;
 	variable	SampleNum,i,j,k,l, wvNum;
