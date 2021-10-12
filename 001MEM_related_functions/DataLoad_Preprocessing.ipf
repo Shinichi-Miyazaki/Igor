@@ -8,7 +8,7 @@
 /// @parameter Numz
 /// @parameter DataType: If the z direction is zigzag order, please put 1
 
-Function Wave2Dto4DMS(wv,Numx,Numy,Numz,[DataType])	
+Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])	
 	wave	wv;
 	variable	Numx,Numy,Numz,DataType;
 	variable	i,j,k,wvNum;
@@ -75,14 +75,19 @@ Function/wave darkNonres(rawwv, bgwv, nrwv)
 
 	numofwv = dimsize(rawwv, 1)
 	bgnum = dimsize(bgwv, 1)
+	if(bgnum==0)
+		bgnum=1
+	endif
 	nrnum = dimsize(nrwv, 1)
+	if(nrnum==0)
+		nrnum=1
+	endif
 
 	matrixOP/free/O sumbgwv = sumRows(bgwv)
 	matrixOP/free/O bgwv = sumbgwv / bgnum
 	matrixOP/free/O sumnrwv = sumRows(nrwv)
 	matrixOP/free/O nrwv = sumnrwv / nrnum
 	matrixOP/free/o nrwv = nrwv-bgwv
-
 	matrixop/free/o tempbg = colRepeat(bgwv, numofwv)
 	matrixop/o rawwv = rawwv - tempbg
 	matrixop/free/o tempnr = colRepeat(nrwv, numofwv)
@@ -592,7 +597,7 @@ matrixop/o tempnr = colrepeat(tempnrwv, 100)
 
 end
 
-Function wave4Dto2DMS(wv,Numx,Numy)	//rearrange the 4D wave to 2Dwave
+Function wave4Dto2D(wv,Numx,Numy)	//rearrange the 4D wave to 2Dwave
 	wave	wv;
 	variable	Numx,Numy;
 	variable	SampleNum,i,j,k,l, wvNum;
