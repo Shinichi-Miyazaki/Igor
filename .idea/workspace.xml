@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ead19c2c-7109-4ed5-9100-4c5b00e7bdc6" name="デフォルト変更リスト" comment="">
-      <change beforePath="$PROJECT_DIR$/001MEM_related_functions/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/001MEM_related_functions/README.md" afterDir="false" />
+    <list default="true" id="ead19c2c-7109-4ed5-9100-4c5b00e7bdc6" name="デフォルト変更リスト" comment="rewrite the readme">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,8 +40,23 @@
       <option name="presentableId" value="Default" />
       <updated>1632312013369</updated>
       <workItem from="1632312015562" duration="677000" />
-      <workItem from="1633995566544" duration="638000" />
+      <workItem from="1633995566544" duration="1857000" />
     </task>
+    <task id="LOCAL-00001" summary="rewrite the readme">
+      <created>1633997581113</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1633997581113</updated>
+    </task>
+    <task id="LOCAL-00002" summary="rewrite the readme">
+      <created>1633998868835</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1633998868835</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -58,5 +73,9 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="rewrite the readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="rewrite the readme" />
   </component>
 </project>
