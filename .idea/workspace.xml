@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ead19c2c-7109-4ed5-9100-4c5b00e7bdc6" name="デフォルト変更リスト" comment="rewrite the readme">
-      <change afterPath="$PROJECT_DIR$/PCA/pCA_debug.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="ead19c2c-7109-4ed5-9100-4c5b00e7bdc6" name="デフォルト変更リスト" comment="rewrite the readme" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -80,7 +76,7 @@
       <workItem from="1632312015562" duration="677000" />
       <workItem from="1633995566544" duration="1857000" />
       <workItem from="1634029456810" duration="765000" />
-      <workItem from="1634871159373" duration="1447000" />
+      <workItem from="1634871159373" duration="1462000" />
     </task>
     <task id="LOCAL-00001" summary="rewrite the readme">
       <created>1633997581113</created>
@@ -103,7 +99,14 @@
       <option name="project" value="LOCAL" />
       <updated>1634029622401</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="rewrite the readme">
+      <created>1634895222058</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1634895222058</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

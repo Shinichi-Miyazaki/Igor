@@ -27,33 +27,36 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])
 				i=0;
 				j=0;
 				k=0;
+			do
 				do
-					do
-						start = i * Numx * Numy
-						startnum =  start + k * Numx
-						endnum = start + (k+1) * Numx
-						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
-						
-						nextstartnum =  start + (k+1) * Numx
-						nextendnum = start + (k+2) * Numx
-						Duplicate/Free/R=[0,*][nextstartnum,nextendnum] wv nexttempwv
-						if(j==0)
-							CARS[][][ZCenter][i]=tempwv[p][q]
-							j+=1
-							k+=1
-						else
-							CARS[][][ZCEnter+j][i]=tempwv[p][q]
-							CARS[][][ZCenter-j][i]=nexttempwv[p][q]
-							j+=1
-							k+=2
-						endif
-					while(j<=ZCenter)
-					i+=1
-				while(i<Numz)
-			break
+					start = i * Numx * Numy
+					startnum =  start + k * Numx
+					endnum = start + (k+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					nextstartnum =  start + (k+1) * Numx
+					nextendnum = start + (k+2) * Numx
+					Duplicate/Free/R=[0,*][nextstartnum,nextendnum] wv nexttempwv
+					if(j==0)
+						CARS[][][ZCenter][i]=tempwv[p][q]
+						j+=1
+						k+=1
+					else
+						CARS[][][ZCEnter+j][i]=tempwv[p][q]
+						CARS[][][ZCenter-j][i]=nexttempwv[p][q]
+						j+=1
+						k+=2
+					endif
+				while(j<=ZCenter)
+				i+=1
+			while(i<Numz)
+		break
 			
+		case 2:
+			print "z direction zigzag, axis order is xyZ"
+		break
+		
 		default:
-			print "no z direction zigzag, axis order is xyz"
+			print "no z direction zigzag, axis order is xyZ"
 			i=0;
 			j=0;
 			do
