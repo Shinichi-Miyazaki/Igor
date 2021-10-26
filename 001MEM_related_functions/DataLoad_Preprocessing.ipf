@@ -53,6 +53,50 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])
 			
 		case 2:
 			print "z direction zigzag, axis order is xyZ"
+			//judgement for even or odd
+			if(mod(Numz,2)==0)
+				ZCenter=(Numz)/2
+			else
+				ZCenter=(Numz-1)/2
+			endif
+			//i for z num 
+			i=0;
+			j=0;
+			// count for mod
+			k=0;
+			do
+				j=0
+				do
+					if(i==0)
+						start = i * Numx * Numy
+						startnum = start + j * Numx
+						endnum = start + (j+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						CARS[][][j][Zcenter] =tempwv[p][q]
+						j+=1
+					elseif(mod(i,2)==1)
+						start = i * Numx * Numy
+						startnum = start + j * Numx
+						endnum = start + (j+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						CARS[][][j][Zcenter+k] =tempwv[p][q]
+						j+=1
+					elseif(mod(i,2)==0)
+						start = i * Numx * Numy
+						startnum = start + j * Numx
+						endnum = start + (j+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						CARS[][][j][Zcenter-k] =tempwv[p][q]
+						j+=1
+					endif
+				while(j<Numy)
+				i+=1
+				if(mod(i,2)==1)
+					k=(i+1)/2
+				else
+					k=i/2
+				endif
+			while(i<Numz)
 		break
 		
 		default:
