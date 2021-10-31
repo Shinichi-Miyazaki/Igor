@@ -459,6 +459,31 @@ Static function dump_header(h)
 end
 
 
+Function ImageCreate(wv,pixel,Numx,Numy,Numz)    
+	// make 2d image at particular pixel point
+   // written by Miyazaki Shinichi
+   
+   wave wv;
+   variable pixel,Numx,Numy,Numz;
+   variable ImageSize,i
+   String ImageName
+   
+	ImageSize = Numx*Numy
+	// i:current z position
+	i=0
+	do
+		ImageName="ImageZ="+num2str(i)
+		make/O/N=(Numx,Numy) $ImageName;
+		duplicate/O/R=[pixel][0,Numx][0,Numy][i] wv $ImageName
+		redimension/n=(imagesize) $ImageName
+    	redimension/n=(Numx, Numy) $ImageName
+		newimage $ImageName
+		ModifyGraph width=283.465,height={Aspect,1}
+		i+=1
+	while(i<=Numz)
+end
+
+
 Function ImageMS(wv,pixel,Numx,Numy)    //make 2d data at particular pixel point
     wave    wv;
     variable    pixel, Numx,Numy;
@@ -472,6 +497,7 @@ Function ImageMS(wv,pixel,Numx,Numy)    //make 2d data at particular pixel point
     redimension/n = (Numx, Numy) im
     newimage im
 end
+
 
 function SpeLoaderM([skip, frames, verbose, compact, fullpath])
 	Variable skip; // number of frames to skip
