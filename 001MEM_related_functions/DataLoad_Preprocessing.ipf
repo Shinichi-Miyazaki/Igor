@@ -98,7 +98,7 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])
 				endif
 			while(i<Numz)
 		break
-		
+			
 		default:
 			print "no z direction zigzag, axis order is xyZ"
 			i=0;
@@ -693,3 +693,37 @@ Function wave4Dto2D(wv,Numx,Numy)	//rearrange the 4D wave to 2Dwave
 		k += 1
 	while(k < Numy)
 end
+
+Function TransposeLayersAndChunks(w4DIn, nameOut)
+    Wave w4DIn
+    String nameOut          // Desired name for new wave
+   
+    // Get information about input wave
+    Variable rows = DimSize(w4DIn, 0)
+    Variable columns = DimSize(w4DIn, 1)
+    Variable layers = DimSize(w4DIn, 2)
+    Variable chunks = DimSize(w4DIn, 3)
+    Variable type = WaveType(w4DIn)
+   
+    // Make output wave. Note that numLayers and numChunks are swapped
+    Make/O/N=(rows,columns,chunks,layers)/Y=(type) $nameOut
+    Wave w4DOut = $nameOut
+   
+    // Copy scaling and units
+    CopyScales w4DIn, w4DOut
+   
+    // Swap layer and chunk scaling
+    Variable v0, dv
+    String units
+    v0 = DimOffset(w4DIn, 2)
+    dv = DimDelta(w4DIn, 2)
+    units = WaveUnits(w4DIn, 2)
+    SetScale t, v0, dv, units,  w4DOut  // Copy layer dimensions and units to chunk dimension
+    v0 = DimOffset(w4DIn, 3)
+    dv = DimDelta(w4DIn, 3)
+    units = WaveUnits(w4DIn, 3)
+    SetScale z, v0, dv, units,  w4DOut  // Copy chunk dimensions and units to layer dimension
+   
+    // Transfer data
+    w4DOut = w4DIn[p][q][s][r]          // s and r are reversed from normal
+End
