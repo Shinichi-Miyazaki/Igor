@@ -49,9 +49,34 @@ style macroにチェックして, OKを押します.
 ### 箱ひげ図, バイオリンプロットで一つ一つの系列を塗分ける
 実はこれはマニュアルにも記載ありません.  
 (Igorがカテゴリプロットを苦手としているのは, 作り手があまりカテゴリプロットを使ったことがなかったかららしいです. )
-追記  
+-> Igor pro9で実装とのこと, 需要があれば記載予定
 
- 
+---
+
+## Igor redimensionの挙動について  
+Igor のredimensionは便利そうだが, 挙動がよくわからなかったのでメモ  
+
+```igor
+•make/o/n=6 test = p
+•redimension/n = (1,2,3) test
+```
+
+これは, 0,1,2・・・と続くtestという名前の1次元waveを3次元に変換している.  
+![image](https://user-images.githubusercontent.com/59829168/139604611-9f889f68-07bc-4fbf-ab37-a5d582083e31.png)  
+から
+![image](https://user-images.githubusercontent.com/59829168/139604620-af9a07f0-a15d-469e-b585-4c0656a72e68.png)
+![image](https://user-images.githubusercontent.com/59829168/139604625-c2ed892e-36db-4ce0-9d28-19a5daad1d35.png)  
+へ  
+変換後は1行2列3レイヤの行列で, 数値はきちんと保持されている. 望ましいredimensionの挙動  
+しかし次元の総数があっていても以下はうまくいかない  
+```igor
+•redimension/n = (1,2,3) test 
+•redimension/n = (1,3,2) test
+```  
+![image](https://user-images.githubusercontent.com/59829168/139604678-e8dea93f-c24a-4dbd-9576-b4754e0dec91.png)  
+見ての通り, 3列目が0で埋められている.  
+このように, redimensionを成功させるには, 次元総数があっているだけではなく, 移動先の次元が元の次元と同じデータ点数か多くないとデータが0で埋められてしまう.  
+
 ---
 
 ## 解析虎の巻よりフィット時の初期値まとめ  
