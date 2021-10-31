@@ -63,7 +63,7 @@ Igor のredimensionは便利そうだが, 挙動がよくわからなかった�
 
 これは, 0,1,2・・・と続くtestという名前の1次元waveを3次元に変換している.  
 ![image](https://user-images.githubusercontent.com/59829168/139604611-9f889f68-07bc-4fbf-ab37-a5d582083e31.png)  
-から
+から  
 ![image](https://user-images.githubusercontent.com/59829168/139604620-af9a07f0-a15d-469e-b585-4c0656a72e68.png)
 ![image](https://user-images.githubusercontent.com/59829168/139604625-c2ed892e-36db-4ce0-9d28-19a5daad1d35.png)  
 へ  
