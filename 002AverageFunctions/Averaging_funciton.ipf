@@ -1,7 +1,7 @@
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function region_analysis(wv, roiwv, znum)
+Function RegionAveraging(wv, roiwv, znum)
     wave wv, roiwv;
     variable znum
     variable pts, xNum, yNum;
