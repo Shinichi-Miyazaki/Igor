@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ead19c2c-7109-4ed5-9100-4c5b00e7bdc6" name="デフォルト変更リスト" comment="rewrite the readme">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Regression_analysis/readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/002AverageFunctions/Averaging_funciton.ipf" beforeDir="false" afterPath="$PROJECT_DIR$/002AverageFunctions/Averaging_funciton.ipf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/003FittingFunctions/MakeFitImageMS.ipf" beforeDir="false" afterPath="$PROJECT_DIR$/003FittingFunctions/MakeFitImageMS.ipf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/004RatiometricAnalysis/Ratiometric_analysis.ipf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/003FittingFunctions/FittingFunctions.ipf" beforeDir="false" afterPath="$PROJECT_DIR$/003FittingFunctions/FittingFunctions.ipf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,6 +82,7 @@
       <workItem from="1634029456810" duration="765000" />
       <workItem from="1634871159373" duration="1462000" />
       <workItem from="1635945540803" duration="1468000" />
+      <workItem from="1636289238937" duration="1098000" />
     </task>
     <task id="LOCAL-00001" summary="rewrite the readme">
       <created>1633997581113</created>
