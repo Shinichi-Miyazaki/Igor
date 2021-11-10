@@ -5,6 +5,18 @@
 // CUrrently, upper limit for the number of funciton is 7 (=coef23)
 // Written by Shinichi Miyazaki, 2021/11/03
 
+<<<<<<< HEAD
+=======
+//preprocessing the coefs
+Function CoefProcess(WCoef)
+// WCoef: coef wave
+	wave WCoef
+	variable CoefNum = dimsize(WCoef,0)
+	make/o/d/n=23 TempCoef = 0
+	TempCoef[0,CoefNum-1]= WCoef[p]
+	wave TempCoef
+end
+>>>>>>> 40b5054b7df6453f6814b5006865d284695fa3bb
 
 //Define Gauss Function
 Function GaussFunc(W,X)
@@ -16,7 +28,7 @@ Function GaussFunc(W,X)
 	wave w;
 	variable	X;
 	variable Amp;
-	Amp=W[0]+W[1]*X+W[2]*exp(-((X-W[3])/W[4])^2)+W[5]*exp(-((X-W[6])/W[7])^2)//+W[8]*exp(-((X-W[9])/W[10])^2)+W[11]*exp(-((X-W[12])/W[13])^2)+ W[14]*exp(-((X-W[15])/W[16])^2)+W[17]*exp(-((X-W[18])/W[19])^2)+W[20]*exp(-((X-W[21])/W[22])^2);
+	Amp=W[0]+W[1]*X+W[2]*exp(-((X-W[3])/W[4])^2)+W[5]*exp(-((X-W[6])/W[7])^2)+W[8]*exp(-((X-W[9])/W[10])^2)+W[11]*exp(-((X-W[12])/W[13])^2)+ W[14]*exp(-((X-W[15])/W[16])^2)+W[17]*exp(-((X-W[18])/W[19])^2)+W[20]*exp(-((X-W[21])/W[22])^2);
 	return	Amp;
 end
 
@@ -25,6 +37,7 @@ end
 function InitialFit(wcoef)
 // arguments
 wave wcoef
+<<<<<<< HEAD
 // predifined waves
 wave temp00, re_ramanshift2
 variable NumOfGauss 
@@ -87,15 +100,75 @@ switch (NumofGauss)
 	break
 endswitch 
 end 
+=======
+wave temp00, re_ramanshift2, TempCoef
 
+// variables
+variable NumOfCoef = dimsize(wcoef,0)
+variable NumOfGaussCoef = NumOfCoef-2
 
-// to do (problems)
-// T_constraintsを入れているのに, 値をH flagで固定しようとするとエラー
-// constrainと固定は同時にはできない. 何かうまい方法を考える. 
-// 可能なら, w_coefが何であれ, 問題なくfitしたいが
-// /H flagに関しては removeEndingで後ろから削って必要なもののみ残す
-// T_constraintsに関しては, removefromListで削除しておく
-// amp0のガウスは残ってしまうが, amp0で固定されているはずなので問題ないか？
+// check the number of Gauss coef
+if (mod(NumOfGaussCoef, 3)!=0)
+	print "Inadequate number of coef"
+else
+	variable NumOfGauss = NumOfGaussCoef/3
+endif
+
+switch (NumOfGauss)
+	case 1:
+		print "Single gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=1 Constraints={"K2>0"}
+		Funcfit/H="00000111111111111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+	case 2:
+		print "Double gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=2 Constraints={"K2>0","k5>0"}
+		Funcfit/H="00000000111111111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+	case 3:
+		print "Triple gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
+		Funcfit/H="00000000000111111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+	case 4:
+		print "Four gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
+		Funcfit/H="00000000000000111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+	case 5:
+		print "Five gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
+		Funcfit/H="00000000000000000111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+	case 6:
+		print "Six gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
+		Funcfit/H="00000000000000000000111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+	case 7:
+		print "Seven gauss fit"
+		CoefProcess(WCoef)
+		Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+		Funcfit/H="00000000000000000000000" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+	break
+	
+endswitch
+		
+end
+>>>>>>> 40b5054b7df6453f6814b5006865d284695fa3bb
+
 
 
 function MakeFitImages(frompix, endpix, wcoef, zNum)
@@ -105,7 +178,6 @@ wave wcoef
 // defined waves and variables
 variable i,j, k,pts;
 wave imchi3_data, re_ramanshift2, temp00, W
-Variable V_fitOptions=4
 variable xNum,yNum
 String wavestr,wavestr2,wavestr3,wavestr4,wavestr5,wavestr6,wavestr7
 
