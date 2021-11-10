@@ -93,6 +93,11 @@ def PCA_analysis(data, x_axis, flag):
     # data normalization
     norm_data = data.iloc[:, 1:].apply(lambda x: (x - x.mean()) / x.std(), axis=0)
     pca = PCA()
+
+
+
+
+
     pca.fit(norm_data)
     feature = pca.transform(norm_data)
     data_PCA = pd.DataFrame(feature,
