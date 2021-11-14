@@ -5,18 +5,6 @@
 // CUrrently, upper limit for the number of funciton is 7 (=coef23)
 // Written by Shinichi Miyazaki, 2021/11/03
 
-<<<<<<< HEAD
-=======
-//preprocessing the coefs
-Function CoefProcess(WCoef)
-// WCoef: coef wave
-	wave WCoef
-	variable CoefNum = dimsize(WCoef,0)
-	make/o/d/n=23 TempCoef = 0
-	TempCoef[0,CoefNum-1]= WCoef[p]
-	wave TempCoef
-end
->>>>>>> 40b5054b7df6453f6814b5006865d284695fa3bb
 
 //Define Gauss Function
 Function GaussFunc(W,X)
@@ -34,176 +22,192 @@ end
 
 
 // Initial fitting function
-function InitialFit(wcoef)
-// arguments
-wave wcoef
-<<<<<<< HEAD
-// predifined waves
-wave temp00, re_ramanshift2
-variable NumOfGauss 
-
-
-// check the num of coef, and gauss
-variable NumOfCoef = dimsize(wcoef,0)
-variable NumOfGaussCoef =NumOfCoef-2 
-if (mod(NumOfGaussCoef, 3)!=0)
-	print "The number of coef is not adequate"
-	print "The number of coef should be 2+3*NumOfGauss"
-else
-	NumOfGauss = NumOfGaussCoef/3
-endif	
-print NumOfGauss
-
-
-// make initial flag and constraints wave 
-switch (NumofGauss)
-	case 1:
-		print "The number of gauss is 1"
-		Make/O/T/N=1 InitConstraints={"K2>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
+function InitialFit(wv, wcoef)
+	// arguments
+	wave wv, wcoef
+	// predifined waves
+	wave temp00, re_ramanshift2, ProcessedWCoef
+	variable NumOfGauss 
 	
-	case 2:
-		print "The number of gauss is 2"
-		Make/O/T/N=1 InitConstraints={"K2>0","K5>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
 	
-	case 3:
-		print "The number of gauss is 3"
-		Make/O/T/N=1 InitConstraints={"K2>0","K5>0","K8>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
+	// check the num of coef, and gauss
+	variable NumOfCoef = dimsize(wcoef,0)
+	variable NumOfGaussCoef =NumOfCoef-2 
+	if (mod(NumOfGaussCoef, 3)!=0)
+		print "The number of coef is not adequate"
+		print "The number of coef should be 2+3*NumOfGauss"
+	else
+		NumOfGauss = NumOfGaussCoef/3
+	endif	
+	print NumOfGauss
 	
-	case 4:
-		print "The number of gauss is 4"
-		Make/O/T/N=1 InitConstraints={"K2>0","K5>0","K8>0","K11>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
-
-	case 5:
-		print "The number of gauss is 5"
-		Make/O/T/N=1 InitConstraints={"K2>0","K5>0","K8>0","K11>0","K14>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
-	
-	case 6:
-		print "The number of gauss is 6"
-		Make/O/T/N=1 InitConstraints={"K2>0","K5>0","K8>0","K11>0","K14>0","K17>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
-	
-	case 7:
-		print "The number of gauss is 7"
-		Make/O/T/N=1 InitConstraints={"K2>0","K5>0","K8>0","K11>0","K14>0","K17>0","K20>0"}
-		Funcfit/Q gaussfunc wcoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=InitConstraints
-	break
-endswitch 
-end 
-=======
-wave temp00, re_ramanshift2, TempCoef
-
-// variables
-variable NumOfCoef = dimsize(wcoef,0)
-variable NumOfGaussCoef = NumOfCoef-2
-
-// check the number of Gauss coef
-if (mod(NumOfGaussCoef, 3)!=0)
-	print "Inadequate number of coef"
-else
-	variable NumOfGauss = NumOfGaussCoef/3
-endif
-
-switch (NumOfGauss)
-	case 1:
-		print "Single gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=1 Constraints={"K2>0"}
-		Funcfit/H="00000111111111111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-	case 2:
-		print "Double gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-		Funcfit/H="00000000111111111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-	case 3:
-		print "Triple gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-		Funcfit/H="00000000000111111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-	case 4:
-		print "Four gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
-		Funcfit/H="00000000000000111111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-	case 5:
-		print "Five gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
-		Funcfit/H="00000000000000000111111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-	case 6:
-		print "Six gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
-		Funcfit/H="00000000000000000000111" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-	case 7:
-		print "Seven gauss fit"
-		CoefProcess(WCoef)
-		Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-		Funcfit/H="00000000000000000000000" gaussfunc TempCoef temp00[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
-	break
-	
-endswitch
+	// make initial flag and constraints wave 
+	switch (NumOfGauss)
+		case 1:
+			print "Single gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=1 Constraints={"K2>0"}
+			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
 		
-end
->>>>>>> 40b5054b7df6453f6814b5006865d284695fa3bb
+		case 2:
+			print "Double gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
+			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 3:
+			print "Triple gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
+			Funcfit/H="00000000000111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 4:
+			print "Four gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
+			Funcfit/H="00000000000000111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 5:
+			print "Five gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
+			Funcfit/H="00000000000000000111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 6:
+			print "Six gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
+			Funcfit/H="00000000000000000000111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 7:
+			print "Seven gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+	endswitch 
+end 
 
 
-
-function MakeFitImages(frompix, endpix, wcoef, zNum)
-// arguments
-variable frompix,endpix,zNum;
-wave wcoef
-// defined waves and variables
-variable i,j, k,pts;
-wave imchi3_data, re_ramanshift2, temp00, W
-variable xNum,yNum
-String wavestr,wavestr2,wavestr3,wavestr4,wavestr5,wavestr6,wavestr7
-
-xNum=dimsize(imchi3_data,1);
-yNum=dimsize(imchi3_data,2);
-pts=dimsize(imchi3_data,0);
-
-//GaussFit
-// the amplitude constraints, the amplitude must be greater than 0
-Make/O/T/N=7 T_Constraints={"K2 > 0", "K5 > 0","K8 > 0","K11 > 0","K14 > 0","K17 > 0","K20 > 0"}
-// Q: silent, just for speedup
-// H: which cofficient should be static, 1 = static (can not change)
-// (old) NTHR: it is no longer necessary (from Igor pro7)
-
-Funcfit/Q/H="00011011011011011011111" Gaussfunc W temp00 /X=re_ramanshift2/D /C=T_constraints;
-
+function MakeFitImages(frompix, endpix, wv,wcoef, zNum)
+	// arguments
+	wave wv, wcoef
+	variable frompix,endpix,zNum;
+	// defined waves and variables
+	variable i,j, k,pts;
+	wave imchi3_data, re_ramanshift2, ProcessedWCoef, W
+	variable xNum,yNum
+	String wavestr,wavestr2,wavestr3,wavestr4,wavestr5,wavestr6,wavestr7
+	
+	xNum=dimsize(imchi3_data,1);
+	yNum=dimsize(imchi3_data,2);
+	pts=dimsize(imchi3_data,0);
+	
+	// check the num of coef, and gauss
+	variable NumOfCoef = dimsize(wcoef,0)
+	variable NumOfGaussCoef =NumOfCoef-2 
+	if (mod(NumOfGaussCoef, 3)!=0)
+		print "The number of coef is not adequate"
+		print "The number of coef should be 2+3*NumOfGauss"
+	else
+		variable NumOfGauss = NumOfGaussCoef/3
+	endif	
+	print NumOfGauss
+	
+	make /n=(pts)/o temp
+	switch (NumOfGauss)
+		case 1:
+			print "Single gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=1 Constraints={"K2>0"}
+			
+			String FitImagename="FitimageZ"+num2str(k)
+			make/O/N=(xNum,yNum)/D $FitImagename
+			wave FitImage = $FitImagename
+			k=0
+			do
+				j=0
+				do
+					i=0
+					do
+						temp = wv[p][i][j][k]
+						Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef wv[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						Fitimage[i][j] = processedWcoef[2]
+					while(i<xNum)
+				while(j<yNum)
+			while(k<zNUm)
+		break
+		
+		case 2:
+			print "Double gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
+			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 3:
+			print "Triple gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
+			Funcfit/H="00000000000111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 4:
+			print "Four gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
+			Funcfit/H="00000000000000111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 5:
+			print "Five gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
+			Funcfit/H="00000000000000000111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 6:
+			print "Six gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
+			Funcfit/H="00000000000000000000111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+		
+		case 7:
+			print "Seven gauss fit"
+			CoefProcess(WCoef)
+			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+		break
+	endswitch 
+		
+	
+	
+	//GaussFit
+	// the amplitude constraints, the amplitude must be greater than 0
+	//Make/O/T/N=7 T_Constraints={"K2 > 0", "K5 > 0","K8 > 0","K11 > 0","K14 > 0","K17 > 0","K20 > 0"}
+	// Q: silent, just for speedup
+	// H: which cofficient should be static, 1 = static (can not change)
+	// (old) NTHR: it is no longer necessary (from Igor pro7)
+	
+	//Funcfit/Q/H="00011011011011011011111" Gaussfunc W temp00 /X=re_ramanshift2/D /C=T_constraints;
+	
 
 end
 
 //preprocessing the coefs
 Function CoefProcess(WCoef)
 // WCoef: coef wave
-wave WCoef
-variable CoefNum = dimsize(WCoef,0)
-make/o/n=23 ProcessedWCoef = 0 
-ProcessedWCoef[0,CoefNum-1]= WCoef[p]
+	wave WCoef
+	variable CoefNum = dimsize(WCoef,0)
+	make/o/n=23 ProcessedWCoef = 0 
+	ProcessedWCoef[0,CoefNum-1]= WCoef[p]
 end
 
 
