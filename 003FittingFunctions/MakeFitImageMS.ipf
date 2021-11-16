@@ -60,9 +60,9 @@ if (gausNum==1)
 				SetScale/I y 0,(yNum-1)/2,"", tempwv;
 				tempwv[j][i]=W_coefQrG[2];
 				i+=1;
-			while(i<yNum)
+			while(i<xNum)
 			j+=1;
-		while(j<xNum)
+		while(j<yNum)
 		display;appendimage $wavestr;
 		ModifyGraph width=283.465,height={Aspect,yNum/xNum}
 		ModifyImage $wavestr ctab= {0,*,Grays,0}	

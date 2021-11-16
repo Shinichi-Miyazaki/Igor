@@ -20,6 +20,13 @@ Function GaussFunc(W,X)
 	return	Amp;
 end
 
+function InitBase(wv, wcoef)
+	wave wv, wcoef
+	wave re_ramanshift2
+	wcoef[0] = (wv[pcsr(B)]-wv[pcsr(A)])/(re_ramanshift2[pcsr(B)]-re_ramanshift2[pcsr(A)])*(-re_ramanshift2[pcsr(A)])+wv[pcsr(A)]
+	wcoef[1] = (wv[pcsr(B)]-wv[pcsr(A)])/(re_ramanshift2[pcsr(B)]-re_ramanshift2[pcsr(A)])
+end
+
 
 // Initial fitting function
 function InitialFit(wv, wcoef)
@@ -29,6 +36,8 @@ function InitialFit(wv, wcoef)
 	wave temp00, re_ramanshift2, ProcessedWCoef
 	variable NumOfGauss 
 	
+	// Initial baseline 
+	InitBase(wv, wcoef)
 	
 	// check the num of coef, and gauss
 	variable NumOfCoef = dimsize(wcoef,0)
@@ -124,23 +133,29 @@ function MakeFitImages(frompix, endpix, wv,wcoef, zNum)
 	switch (NumOfGauss)
 		case 1:
 			print "Single gauss fit"
-			CoefProcess(WCoef)
 			Make/O/T/N=1 Constraints={"K2>0"}
 			
-			String FitImagename="FitimageZ"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImagename
-			wave FitImage = $FitImagename
 			k=0
 			do
+				String FitImagename="FitimageZ"+num2str(k)
+				make/O/N=(xNum,yNum)/D $FitImagename
+				wave FitImage = $FitImagename
 				j=0
 				do
 					i=0
 					do
 						temp = wv[p][i][j][k]
-						Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef wv[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						LinearBaseline(frompix, endpix, temp, re_ramanshift2)
+						Funcfit/Q/H="00011111111111111111111"/NTHR=0 gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
 						Fitimage[i][j] = processedWcoef[2]
+						i+=1
 					while(i<xNum)
+					j+=1
 				while(j<yNum)
+				display;appendimage $FitImagename;
+				ModifyGraph width=283.465,height={Aspect,yNum/xNum}
+				ModifyImage $FitImagename ctab= {0,*,Grays,0}
+				k+=1
 			while(k<zNUm)
 		break
 		
@@ -148,42 +163,42 @@ function MakeFitImages(frompix, endpix, wv,wcoef, zNum)
 			print "Double gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/Q/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 		
 		case 3:
 			print "Triple gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-			Funcfit/H="00000000000111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/Q/H="00000000000111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 		
 		case 4:
 			print "Four gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
-			Funcfit/H="00000000000000111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/Q/H="00000000000000111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 		
 		case 5:
 			print "Five gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
-			Funcfit/H="00000000000000000111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/Q/H="00000000000000000111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 		
 		case 6:
 			print "Six gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
-			Funcfit/H="00000000000000000000111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/Q/H="00000000000000000000111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 		
 		case 7:
 			print "Seven gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/Q/H="00000000000000000000000" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 	endswitch 
 		
@@ -211,3 +226,10 @@ Function CoefProcess(WCoef)
 end
 
 
+function LinearBaseline(FromPx, EndPx, wv, axis)
+	wave wv, axis
+	variable FromPx, EndPx
+	wave ProcessedWCoef
+	ProcessedWcoef[0] = (wv[EndPx]-wv[FromPx])/(axis[EndPx]-axis[FromPx])*(-axis[FromPx])+wv[FromPx]
+	ProcessedWCoef[1] = (wv[EndPx]-wv[FromPx])/(axis[EndPx]-axis[FromPx])
+end
