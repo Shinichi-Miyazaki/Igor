@@ -728,3 +728,43 @@ Function TransposeLayersAndChunks(w4DIn, nameOut)
     // Transfer data
     w4DOut = w4DIn[p][q][s][r]          // s and r are reversed from normal
 End
+
+Function wave2Dto4DIIIS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
+	wave	wv;
+	variable	Numx,Numy,Numz;
+	variable	SampleNum,i,j,k,l;
+	
+	Silent 1;
+	Pauseupdate 
+	//prompt	SampleNum, "enter the number of image pixels";
+	//prompt	Numx, "enter the number of x direction";
+	//prompt	Numy, "enter the number of y direction";
+	//prompt	Numz, "enter the number of z direction";
+	//doprompt	"",SampleNum,Numx,Numy,Numz;
+	//doprompt	"",Numx,Numy,Numz;
+	//SampleNum=6561;
+	//Numx=81;
+	//Numy=81;
+	//Numz=1;
+	
+	make/O/N=(1340,Numx,Numy,Numz)/D CARS;
+	k = 0;
+	j = 0;
+	do
+		for(i=0;i<Numx;i=i+1)
+			for(l=0;l<1340;l=l+1)
+				if(mod(j,2)==0)
+					CARS[l][i][j][0] = wv[l][k];
+				else
+					CARS[l][Numx-1-i][j][0] = wv[l][k];
+				endif
+			endfor
+			k = k+1;
+		endfor
+		j = j+1;
+		if(j == Numy)
+			break
+
+		endif	
+	while(j <Numy)
+end
