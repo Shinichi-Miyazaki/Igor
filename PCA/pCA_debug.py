@@ -12,9 +12,10 @@ from sklearn.cluster import KMeans
 
 
 # データのパス
-data_path = "C:/Users/Shinichi/Downloads/drive-download-20211022T025100Z-001/imchi3_2d.csv"
+data_path = "C:/Users/Miyazaki/Desktop/MCR-ALS_test/Sample_data/imchi3_2d.csv"
 # 横軸のパス
-axis_path = "C:/Users/Shinichi/Downloads/drive-download-20211022T025100Z-001/re_ramanshift2.csv"
+axis_path = "C:/Users/Miyazaki/Desktop/MCR-ALS_test/Sample_data/re_ramanshift2.csv"
+
 # PCA後のデータをいくつのクラスターに分けるか
 cluster_num = 5
 # データの縦幅
@@ -93,15 +94,12 @@ def PCA_analysis(data, x_axis, flag):
     # data normalization
     norm_data = data.iloc[:, 1:].apply(lambda x: (x - x.mean()) / x.std(), axis=0)
     pca = PCA()
-
-
-
-
-
     pca.fit(norm_data)
     feature = pca.transform(norm_data)
     data_PCA = pd.DataFrame(feature,
                             columns=["PC{}".format(x + 1) for x in range(len(norm_data.columns))])
+
+    Spectrum = []
 
     # make graph for PC scatter
     os.makedirs("./results/figures", exist_ok=True)
@@ -169,14 +167,15 @@ def PCA_analysis(data, x_axis, flag):
                     transparent=True, bbox_inches="tight", pad_inches=0.1)
 
         pd.DataFrame(Class_data).to_csv("./results/spectrum_{0}/Class_{1}.csv".format(flag, i))
-
+        Spectrum.append(Class_data)
+    return Spectrum
 
 def execute_analysis(data_path, axis_path):
     os.chdir(os.path.dirname(data_path))
     # all range analysis
     data = pd.read_csv(data_path, header=None).T[0:x * y]
     x_axis = np.loadtxt(axis_path)
-    PCA_analysis(data, x_axis, flag="full")
+    Spectrum = PCA_analysis(data, x_axis, flag="full")
     Entropy_analysis(data, x_axis, flag="full")
 
     # subrange analysis
@@ -185,5 +184,8 @@ def execute_analysis(data_path, axis_path):
     PCA_analysis(subrange_data, subrange_axis, flag="subrange")
     Entropy_analysis(data, x_axis, flag="subrange")
 
+    return Spectrum
 
-execute_analysis(data_path, axis_path)
+
+Spectrum = execute_analysis(data_path, axis_path)
+print(Spectrum)
