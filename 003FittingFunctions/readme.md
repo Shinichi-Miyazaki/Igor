@@ -37,12 +37,14 @@ wcoef = {0, 0 ,0.5, 2850, 10, 0.9, 2870, 10, 0.5,2930, 10, 0.3, 2950, 10, 0.5, 2
 この時に, ガウスの位置や幅, ベースラインを決めています
 カーソル (ctrl + i) でfitしたい領域の高波数側と低波数側に置きます.  
 <img width="852" alt="im3" src="https://user-images.githubusercontent.com/59829168/112760653-c3a3f980-9032-11eb-88be-84798bdabd93.png">  
-この状態で, コマンド (ctrl + j)から initialfitを実行します.  
+この状態で, コマンド (ctrl + j)から initialfitを実行します.
+
 ```Igor
 InitialFit(wv, wcoef)
 	//wvは平均スペクトル (グラフ化したもの) の名前です. 
 	//temp00という名前以外でも大丈夫です
-``` 
+```
+
 fitがうまくいくと, このようになります.  
 (わかりやすいように, fitした曲線を青色に変えています. やり方はグラフをダブルクリックして色変更です. )
 <img width="852" alt="im4" src="https://user-images.githubusercontent.com/59829168/112760654-c3a3f980-9032-11eb-8fe6-4fd138678481.png">  
