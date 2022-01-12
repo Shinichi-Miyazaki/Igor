@@ -106,37 +106,37 @@ temp00/=cts
 
 end
 
-function SumFromImage_MS(wv, discri, oriwv)
-wave wv,oriwv;
-variable discri;
-
-wave imchi3_data
-wave wav;
-variable pts,xyNum,pixnum;
+function AveragingWithImageAndDiscri(ImageWv,Threshold,OriginalWv)
+// This script return averaged imchi3 wave (AverageWv) 
+// from region where the pixel value of the image (imagewv) 
+// above threshold
+wave ImageWv,OriginalWv;
+variable Threshold;
+variable Wavenum,xNum,yNum, pixnum;
 variable i,j,cts;
 
-
-Silent 1; PauseUpdate
-pts=dimsize(oriwv,0)
-make /o/n=(pts) temp00
-temp00=0;
+// get wavenum 
+wavenum=dimsize(OriginalWv,0)
+// get xnum, ynUm
+xnum = dimsize(Imagewv, 0)
+ynum = dimsize(Imagewv, 1)
+// make AverageWv
+make /o/n=(wavenum) AverageWv = 0
 cts=0;
 
 i=0
 do
 	j=0
 	do
-		if(wv[i][j]>discri)
-		//if(imchi3_data[pixnum][i][j][0]>discri)
-			temp00[]+=oriwv[p][i][j][0]
+		if(Imagewv[i][j]>Threshold)
+			AverageWv[]+=OriginalWv[p][i][j][0]
 			cts+=1
 		endif
 		j+=1
-	while(j<xyNum)
+	while(j<yNum)
 	i+=1
-while(i<xyNum)
-temp00/=cts
-
+while(i<xNum)
+AverageWv/=cts
 end
 
 
