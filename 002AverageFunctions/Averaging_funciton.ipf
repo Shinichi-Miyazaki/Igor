@@ -39,8 +39,6 @@ end
 
 
 
-
-
 function SumFromImage_MS2(refwv,discri,refwv2,discri2,oriwv)
 wave refwv,refwv2, oriwv;
 variable discri, discri2;
