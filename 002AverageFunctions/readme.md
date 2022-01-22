@@ -59,10 +59,10 @@ Fit後の画像で実行したいときはFitImageが出ていればOKです.
 3. 閾値を決めて, それ以上の領域の足し込み  
 閾値が決まったら以下のコードで足し込みをおこないます.   
 ```Igor
-SumFromImage_MS(wv, discri, oriwv)
-	//wvにはimageの名前をいれてください.  
-	//discriには2. で決めた閾値を入れます.
-	//oriwvにはimchi3_dataなどを入れます
+AveragingWithImageAndDiscri(ImageWv,Threshold,OriginalWv)
+	//imagewvにはimageの名前をいれてください.  
+	//thresholdには2. で決めた閾値を入れます.
+	//originalwvにはimchi3_dataなどを入れます
 rename temp00 discriwv
 	//temp00という名前でwaveが作成されるので, 適当に名前をつけてください. 
 	
