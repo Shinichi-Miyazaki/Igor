@@ -20,7 +20,7 @@ Function GaussFunc(W,X)
 	return	Amp;
 end
 
-Function singlegauss(axis, coef)
+Function SingleGauss(axis, coef)
 	wave axis
 	wave coef
 	make/o/n = (dimsize(axis, 0)) singlegausswv = coef[0]*exp(-((axis-coef[1])/coef[2])^2)
@@ -35,14 +35,21 @@ end
 
 
 // Initial fitting function
-function InitialFit(wv, wcoef)
+function InitialFit(wv, axis, wcoef)
 	// arguments
-	wave wv, wcoef
+	wave wv, axis, wcoef
 	// predifined waves
-	wave re_ramanshift2, ProcessedWCoef
+	wave ProcessedWCoef, re_ramanshift2
 	variable NumOfGauss 
 	// for display each gauss 
+	wave singlegausswv
 	wave gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
+	wave fit_tempwv
+	
+	// Duplicate wv
+	Duplicate/o wv tempwv
+	// Reference name 
+	String RefTempWv = "tempwv" 
 	
 	// Initial baseline 
 	InitBase(wv, wcoef)
@@ -58,79 +65,237 @@ function InitialFit(wv, wcoef)
 	endif	
 	print NumOfGauss
 	
+	// Kill waves and remove graph, for repeated use
+	Killwaves/z fit_tempwv
+	Killwaves/z gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
+	RemoveFromGraph/z fit_tempwv
+	RemoveFromGraph/z gauss1,gauss2,gauss3, gauss4, gauss5, gauss6, gauss7
+	
 	// make initial flag and constraints wave 
 	switch (NumOfGauss)
 		case 1:
 			print "Single gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=1 Constraints={"K2>0"}
-			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// show gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			rename singlegausswv gauss1
+			AppendToGraph gauss1 vs axis
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 		break
 		
 		case 2:
 			print "Double gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// show gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			rename singlegausswv gauss1
+			AppendToGraph gauss1 vs re_ramanshift2
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+			
+			duplicate/o/R = [5,7] Processedwcoef coef2
+			singlegauss(re_ramanshift2, coef2)
+			rename singlegausswv gauss2
+			AppendToGraph gauss2 vs axis
+			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 		break
 		
 		case 3:
 			print "Triple gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-			Funcfit/H="00010010010111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000000000111111111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// display each gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			duplicate/o singlegausswv gauss1
+			AppendToGraph gauss1 vs re_ramanshift2
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+			
+			duplicate/o/R = [5,7] Processedwcoef coef2
+			singlegauss(axis, coef2)
+			duplicate/o singlegausswv gauss2
+			AppendToGraph gauss2 vs re_ramanshift2
+			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
+			
+			duplicate/o/R = [8,10] Processedwcoef coef3
+			singlegauss(axis, coef3)
+			duplicate/o singlegausswv gauss3
+			AppendToGraph gauss3 vs re_ramanshift2
+			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 		break
 		
 		case 4:
 			print "Four gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
-			Funcfit/H="00000000000000111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000000000000111111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// display each gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			rename singlegausswv gauss1
+			AppendToGraph gauss1 vs axis
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+			
+			duplicate/o/R = [5,7] Processedwcoef coef2
+			singlegauss(axis, coef2)
+			rename singlegausswv gauss2
+			AppendToGraph gauss2 vs axis
+			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
+			
+			duplicate/o/R = [8,10] Processedwcoef coef3
+			singlegauss(axis, coef3)
+			rename singlegausswv gauss3
+			AppendToGraph gauss3 vs axis
+			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
+			
+			duplicate/o/R = [11,13] Processedwcoef coef4
+			singlegauss(axis, coef4)
+			rename singlegausswv gauss4
+			AppendToGraph gauss4 vs axis
+			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
 		break
 		
 		case 5:
 			print "Five gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
-			Funcfit/H="00000000000000000111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000000000000000111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// display each gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			rename singlegausswv gauss1
+			AppendToGraph gauss1 vs axis
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+			
+			duplicate/o/R = [5,7] Processedwcoef coef2
+			singlegauss(axis, coef2)
+			rename singlegausswv gauss2
+			AppendToGraph gauss2 vs axis
+			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
+			
+			duplicate/o/R = [8,10] Processedwcoef coef3
+			singlegauss(axis, coef3)
+			rename singlegausswv gauss3
+			AppendToGraph gauss3 vs axis
+			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
+			
+			duplicate/o/R = [11,13] Processedwcoef coef4
+			singlegauss(axis, coef4)
+			rename singlegausswv gauss4
+			AppendToGraph gauss4 vs axis
+			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
+			
+			duplicate/o/R = [14,16] Processedwcoef coef5
+			singlegauss(axis, coef5)
+			rename singlegausswv gauss5
+			AppendToGraph gauss5 vs axis
+			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
 		break
 		
 		case 6:
 			print "Six gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
-			Funcfit/H="00000000000000000000111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000000000000000000111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// display each gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			rename singlegausswv gauss1
+			AppendToGraph gauss1 vs axis
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+			
+			duplicate/o/R = [5,7] Processedwcoef coef2
+			singlegauss(axis, coef2)
+			rename singlegausswv gauss2
+			AppendToGraph gauss2 vs axis
+			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
+			
+			duplicate/o/R = [8,10] Processedwcoef coef3
+			singlegauss(axis, coef3)
+			rename singlegausswv gauss3
+			AppendToGraph gauss3 vs axis
+			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
+			
+			duplicate/o/R = [11,13] Processedwcoef coef4
+			singlegauss(axis, coef4)
+			rename singlegausswv gauss4
+			AppendToGraph gauss4 vs axis
+			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
+			
+			duplicate/o/R = [14,16] Processedwcoef coef5
+			singlegauss(axis, coef5)
+			rename singlegausswv gauss5
+			AppendToGraph gauss5 vs axis
+			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
+			
+			duplicate/o/R = [17,19] Processedwcoef coef6
+			singlegauss(axis, coef6)
+			rename singlegausswv gauss6
+			AppendToGraph gauss6 vs axis
+			ModifyGraph lstyle(gauss6)=3,rgb(gauss6)=(0,0,0)
 		break
 		
 		case 7:
 			print "Seven gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			// display each gauss
+			duplicate/o/R = [2,4] Processedwcoef coef1
+			singlegauss(axis, coef1)
+			rename singlegausswv gauss1
+			AppendToGraph gauss1 vs axis
+			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+			
+			duplicate/o/R = [5,7] Processedwcoef coef2
+			singlegauss(axis, coef2)
+			rename singlegausswv gauss2
+			AppendToGraph gauss2 vs axis
+			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
+			
+			duplicate/o/R = [8,10] Processedwcoef coef3
+			singlegauss(axis, coef3)
+			rename singlegausswv gauss3
+			AppendToGraph gauss3 vs axis
+			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
+			
+			duplicate/o/R = [11,13] Processedwcoef coef4
+			singlegauss(axis, coef4)
+			rename singlegausswv gauss4
+			AppendToGraph gauss4 vs axis
+			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
+			
+			duplicate/o/R = [14,16] Processedwcoef coef5
+			singlegauss(axis, coef5)
+			rename singlegausswv gauss5
+			AppendToGraph gauss5 vs axis
+			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
+			
+			duplicate/o/R = [17,19] Processedwcoef coef6
+			singlegauss(axis, coef6)
+			rename singlegausswv gauss6
+			AppendToGraph gauss6 vs axis
+			ModifyGraph lstyle(gauss6)=3,rgb(gauss6)=(0,0,0)
+			
+			duplicate/o/R = [20,22] Processedwcoef coef7
+			singlegauss(axis, coef7)
+			rename singlegausswv gauss7
+			AppendToGraph gauss7 vs axis
+			ModifyGraph lstyle(gauss7)=3,rgb(gauss7)=(0,0,0)
 		break
 	endswitch 
 	
+	//display fit 
+	AppendToGraph fit_tempwv
 	// change fit color 
-	ModifyGraph rgb(fit_ce02)=(1,12815,52428)
-	
-	// display each gauss
-	duplicate/R = [2,4] Processedwcoef coef1
-	singlegauss(re_ramanshift2, coef1)
-	rename singlegausswv gauss1
-	AppendToGraph gauss1 vs re_ramanshift2
-	ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-	
-	duplicate/R = [5,7] Processedwcoef coef2
-	singlegauss(re_ramanshift2, coef2)
-	rename singlegausswv gauss2
-	AppendToGraph gauss2 vs re_ramanshift2
-	ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-	
-	duplicate/R = [8,10] Processedwcoef coef3
-	singlegauss(re_ramanshift2, coef3)
-	rename singlegausswv gauss3
-	AppendToGraph gauss3 vs re_ramanshift2
-	ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
+	ModifyGraph rgb(fit_tempwv)=(1,12815,52428)
+
 end 
 
 
