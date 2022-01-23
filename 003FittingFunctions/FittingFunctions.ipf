@@ -20,6 +20,12 @@ Function GaussFunc(W,X)
 	return	Amp;
 end
 
+Function singlegauss(axis, coef)
+	wave axis
+	wave coef
+	make/o/n = (dimsize(axis, 0)) singlegausswv = coef[0]*exp(-((axis-coef[1])/coef[2])^2)
+end
+
 function InitBase(wv, wcoef)
 	wave wv, wcoef
 	wave re_ramanshift2
@@ -33,8 +39,10 @@ function InitialFit(wv, wcoef)
 	// arguments
 	wave wv, wcoef
 	// predifined waves
-	wave temp00, re_ramanshift2, ProcessedWCoef
+	wave re_ramanshift2, ProcessedWCoef
 	variable NumOfGauss 
+	// for display each gauss 
+	wave gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
 	
 	// Initial baseline 
 	InitBase(wv, wcoef)
@@ -101,6 +109,28 @@ function InitialFit(wv, wcoef)
 			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 	endswitch 
+	
+	// change fit color 
+	ModifyGraph rgb(fit_ce02)=(1,12815,52428)
+	
+	// display each gauss
+	duplicate/R = [2,4] Processedwcoef coef1
+	singlegauss(re_ramanshift2, coef1)
+	rename singlegausswv gauss1
+	AppendToGraph gauss1 vs re_ramanshift2
+	ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
+	
+	duplicate/R = [5,7] Processedwcoef coef2
+	singlegauss(re_ramanshift2, coef2)
+	rename singlegausswv gauss2
+	AppendToGraph gauss2 vs re_ramanshift2
+	ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
+	
+	duplicate/R = [8,10] Processedwcoef coef3
+	singlegauss(re_ramanshift2, coef3)
+	rename singlegausswv gauss3
+	AppendToGraph gauss3 vs re_ramanshift2
+	ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 end 
 
 
