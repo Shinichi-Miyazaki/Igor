@@ -70,7 +70,7 @@ function InitialFit(wv, wcoef)
 			print "Triple gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-			Funcfit/H="00000000000111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+			Funcfit/H="00010010010111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
 		break
 		
 		case 4:
@@ -186,7 +186,7 @@ function MakeFitImages(wv,wcoef, zNum)
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						i+=1;
@@ -229,7 +229,7 @@ function MakeFitImages(wv,wcoef, zNum)
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						Fitimage3[i][j] = processedWcoef[8]

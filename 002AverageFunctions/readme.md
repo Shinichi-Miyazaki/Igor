@@ -43,7 +43,7 @@ SHが一定値以上の強度の空間点の平均スペクトルを求めたい
 imchi3_data  
 re_ramanshift2  
 rawdata (MEM前のデータ)  
-SumFromImage_MS2
+averaging_function
 
 1. 画像の表示  
 適当な方法で画像を出します.  
