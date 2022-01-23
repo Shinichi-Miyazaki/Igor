@@ -48,6 +48,7 @@ InitialFit(wv,axis, wcoef)
 
 fitがうまくいくと, このようになります.  
 1/23の更新で個別のガウスを点線で表示するようになりました. 
+![fit1650](https://user-images.githubusercontent.com/59829168/150676215-189cf2f0-0abc-446e-9651-b55a1c2a3ad3.png)
 
 
 4. Fit Imageの作成
