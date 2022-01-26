@@ -14,8 +14,14 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])
 	variable	Numx,Numy,Numz,DataType;
 	variable	i,j,k,wvNum;
 	variable start,startnum,endnum, ZCenter, nextstartnum,nextendnum
+	
+	// make destination wave. the name is CARS
 	wvNum = dimsize(wv, 0)
 	make/O/N=(wvNum,Numx,Numy,Numz)/D CARS;
+	
+	// Switch depend on data type
+	// The default is "no zigzag, xyZ"
+	
 	Switch (DataType)
 		case 1:
 			print "z direction zigzag, axis order is xZy"

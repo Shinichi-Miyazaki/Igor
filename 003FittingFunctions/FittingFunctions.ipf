@@ -26,6 +26,12 @@ Function SingleGauss(axis, coef)
 	make/o/n = (dimsize(axis, 0)) singlegausswv = coef[0]*exp(-((axis-coef[1])/coef[2])^2)
 end
 
+Function SingleGaussWithLinearBaseline(axis, coef)
+	wave axis
+	wave coef
+	make/o/n = (dimsize(axis, 0)) singlegausswv = coef[0]+coef[1]*axis+coef[2]*exp(-((axis-coef[3])/coef[4])^2)
+end
+
 function InitBase(wv, wcoef)
 	wave wv, wcoef
 	wave re_ramanshift2
@@ -35,9 +41,10 @@ end
 
 
 // Initial fitting function
-function InitialFit(wv, axis, wcoef)
+function InitialFit(wv, xaxis, wcoef)
 	// arguments
-	wave wv, axis, wcoef
+	wave wv, xaxis, wcoef
+	//String wvref, axisref
 	// predifined waves
 	wave ProcessedWCoef, re_ramanshift2
 	variable NumOfGauss 
@@ -46,13 +53,24 @@ function InitialFit(wv, axis, wcoef)
 	wave gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
 	wave fit_tempwv
 	
+	// Kill waves and remove graph, for repeated use
+	RemoveFromGraph/z fit_tempwv
+	RemoveFromGraph/z gauss1,gauss2,gauss3, gauss4, gauss5, gauss6, gauss7
+	Killwaves/z fit_tempwv
+	Killwaves/z gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
+	
+	// obtain cursor position from graph
+	variable WaveStart = pcsr(A)
+	variable WaveEnd = pcsr(B)
+	
+	String FitRef = "Fitref" 
+	
 	// Duplicate wv
 	Duplicate/o wv tempwv
-	// Reference name 
-	String RefTempWv = "tempwv" 
+	Duplicate/o xaxis Axis
 	
 	// Initial baseline 
-	InitBase(wv, wcoef)
+	InitBase(tempwv, wcoef)
 	
 	// check the num of coef, and gauss
 	variable NumOfCoef = dimsize(wcoef,0)
@@ -65,11 +83,6 @@ function InitialFit(wv, axis, wcoef)
 	endif	
 	print NumOfGauss
 	
-	// Kill waves and remove graph, for repeated use
-	Killwaves/z fit_tempwv
-	Killwaves/z gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
-	RemoveFromGraph/z fit_tempwv
-	RemoveFromGraph/z gauss1,gauss2,gauss3, gauss4, gauss5, gauss6, gauss7
 	
 	// make initial flag and constraints wave 
 	switch (NumOfGauss)
@@ -77,11 +90,11 @@ function InitialFit(wv, axis, wcoef)
 			print "Single gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=1 Constraints={"K2>0"}
-			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef Tempwv[wavestart,waveend] /X=axis/D /C=Constraints;
 			// show gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
-			rename singlegausswv gauss1
+			duplicate/o singlegausswv gauss1
 			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 		break
@@ -90,17 +103,17 @@ function InitialFit(wv, axis, wcoef)
 			print "Double gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[pcsr(A),pcsr(B)] /X=xaxis/D /C=Constraints;
 			// show gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
-			rename singlegausswv gauss1
-			AppendToGraph gauss1 vs re_ramanshift2
+			duplicate/o singlegausswv gauss1
+			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 			
 			duplicate/o/R = [5,7] Processedwcoef coef2
-			singlegauss(re_ramanshift2, coef2)
-			rename singlegausswv gauss2
+			singlegauss(axis, coef2)
+			duplicate/o singlegausswv gauss2
 			AppendToGraph gauss2 vs axis
 			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 		break
@@ -114,19 +127,19 @@ function InitialFit(wv, axis, wcoef)
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
 			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs re_ramanshift2
+			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 			
 			duplicate/o/R = [5,7] Processedwcoef coef2
 			singlegauss(axis, coef2)
 			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs re_ramanshift2
+			AppendToGraph gauss2 vs axis
 			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 			
 			duplicate/o/R = [8,10] Processedwcoef coef3
 			singlegauss(axis, coef3)
 			duplicate/o singlegausswv gauss3
-			AppendToGraph gauss3 vs re_ramanshift2
+			AppendToGraph gauss3 vs axis
 			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 		break
 		
@@ -138,25 +151,25 @@ function InitialFit(wv, axis, wcoef)
 			// display each gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
-			rename singlegausswv gauss1
+			duplicate/o singlegausswv gauss1
 			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 			
 			duplicate/o/R = [5,7] Processedwcoef coef2
 			singlegauss(axis, coef2)
-			rename singlegausswv gauss2
+			duplicate/o singlegausswv gauss2
 			AppendToGraph gauss2 vs axis
 			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 			
 			duplicate/o/R = [8,10] Processedwcoef coef3
 			singlegauss(axis, coef3)
-			rename singlegausswv gauss3
+			duplicate/o singlegausswv gauss3
 			AppendToGraph gauss3 vs axis
 			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 			
 			duplicate/o/R = [11,13] Processedwcoef coef4
 			singlegauss(axis, coef4)
-			rename singlegausswv gauss4
+			duplicate/o singlegausswv gauss4
 			AppendToGraph gauss4 vs axis
 			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
 		break
@@ -169,31 +182,31 @@ function InitialFit(wv, axis, wcoef)
 			// display each gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
-			rename singlegausswv gauss1
+			duplicate/o singlegausswv gauss1
 			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 			
 			duplicate/o/R = [5,7] Processedwcoef coef2
 			singlegauss(axis, coef2)
-			rename singlegausswv gauss2
+			duplicate/o singlegausswv gauss2
 			AppendToGraph gauss2 vs axis
 			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 			
 			duplicate/o/R = [8,10] Processedwcoef coef3
 			singlegauss(axis, coef3)
-			rename singlegausswv gauss3
+			duplicate/o singlegausswv gauss3
 			AppendToGraph gauss3 vs axis
 			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 			
 			duplicate/o/R = [11,13] Processedwcoef coef4
 			singlegauss(axis, coef4)
-			rename singlegausswv gauss4
+			duplicate/o singlegausswv gauss4
 			AppendToGraph gauss4 vs axis
 			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
 			
 			duplicate/o/R = [14,16] Processedwcoef coef5
 			singlegauss(axis, coef5)
-			rename singlegausswv gauss5
+			duplicate/o singlegausswv gauss5
 			AppendToGraph gauss5 vs axis
 			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
 		break
@@ -206,37 +219,37 @@ function InitialFit(wv, axis, wcoef)
 			// display each gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
-			rename singlegausswv gauss1
+			duplicate/o singlegausswv gauss1
 			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 			
 			duplicate/o/R = [5,7] Processedwcoef coef2
 			singlegauss(axis, coef2)
-			rename singlegausswv gauss2
+			duplicate/o singlegausswv gauss2
 			AppendToGraph gauss2 vs axis
 			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 			
 			duplicate/o/R = [8,10] Processedwcoef coef3
 			singlegauss(axis, coef3)
-			rename singlegausswv gauss3
+			duplicate/o singlegausswv gauss3
 			AppendToGraph gauss3 vs axis
 			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 			
 			duplicate/o/R = [11,13] Processedwcoef coef4
 			singlegauss(axis, coef4)
-			rename singlegausswv gauss4
+			duplicate/o singlegausswv gauss4
 			AppendToGraph gauss4 vs axis
 			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
 			
 			duplicate/o/R = [14,16] Processedwcoef coef5
 			singlegauss(axis, coef5)
-			rename singlegausswv gauss5
+			duplicate/o singlegausswv gauss5
 			AppendToGraph gauss5 vs axis
 			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
 			
 			duplicate/o/R = [17,19] Processedwcoef coef6
 			singlegauss(axis, coef6)
-			rename singlegausswv gauss6
+			duplicate singlegausswv gauss6
 			AppendToGraph gauss6 vs axis
 			ModifyGraph lstyle(gauss6)=3,rgb(gauss6)=(0,0,0)
 		break
@@ -249,52 +262,54 @@ function InitialFit(wv, axis, wcoef)
 			// display each gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
-			rename singlegausswv gauss1
+			duplicate/o singlegausswv gauss1
 			AppendToGraph gauss1 vs axis
 			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
 			
 			duplicate/o/R = [5,7] Processedwcoef coef2
 			singlegauss(axis, coef2)
-			rename singlegausswv gauss2
+			duplicate/o singlegausswv gauss2
 			AppendToGraph gauss2 vs axis
 			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
 			
 			duplicate/o/R = [8,10] Processedwcoef coef3
 			singlegauss(axis, coef3)
-			rename singlegausswv gauss3
+			duplicate/o singlegausswv gauss3
 			AppendToGraph gauss3 vs axis
 			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
 			
 			duplicate/o/R = [11,13] Processedwcoef coef4
 			singlegauss(axis, coef4)
-			rename singlegausswv gauss4
+			duplicate/o singlegausswv gauss4
 			AppendToGraph gauss4 vs axis
 			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
 			
 			duplicate/o/R = [14,16] Processedwcoef coef5
 			singlegauss(axis, coef5)
-			rename singlegausswv gauss5
+			duplicate/o singlegausswv gauss5
 			AppendToGraph gauss5 vs axis
 			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
 			
 			duplicate/o/R = [17,19] Processedwcoef coef6
 			singlegauss(axis, coef6)
-			rename singlegausswv gauss6
+			duplicate singlegausswv gauss6
 			AppendToGraph gauss6 vs axis
 			ModifyGraph lstyle(gauss6)=3,rgb(gauss6)=(0,0,0)
 			
 			duplicate/o/R = [20,22] Processedwcoef coef7
 			singlegauss(axis, coef7)
-			rename singlegausswv gauss7
+			duplicate/o singlegausswv gauss7
 			AppendToGraph gauss7 vs axis
 			ModifyGraph lstyle(gauss7)=3,rgb(gauss7)=(0,0,0)
 		break
 	endswitch 
 	
 	//display fit 
-	AppendToGraph fit_tempwv
+	
+	String fitName = "fit_" + nameOfWave(wv)
+	wave fitResult = $fitname
 	// change fit color 
-	ModifyGraph rgb(fit_tempwv)=(1,12815,52428)
+	ModifyGraph rgb($fitname)=(1,12815,52428)
 
 end 
 
