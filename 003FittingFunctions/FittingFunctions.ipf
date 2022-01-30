@@ -90,7 +90,7 @@ function InitialFit(wv, xaxis, wcoef)
 			print "Single gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=1 Constraints={"K2>0"}
-			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef Tempwv[wavestart,waveend] /X=axis/D /C=Constraints;
+			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=Constraints;
 			// show gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			singlegauss(axis, coef1)
