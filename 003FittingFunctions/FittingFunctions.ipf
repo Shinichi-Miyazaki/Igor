@@ -346,10 +346,6 @@ function MakeFitImages(wv,wcoef, zNum)
 		case 1:
 			print "Single gauss fit"
 			Make/O/T/N=1 Constraints={"K2>0"}
-			// define image name 
-			FitImage1name="FitimageZ"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1name
-			wave FitImage = $FitImage1name
 			
 			k=0
 			do
@@ -357,6 +353,11 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0
 					do
+						// define image name 
+						FitImage1name="FitimageZ"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1name
+						wave FitImage = $FitImage1name
+						
 						temp = wv[p][i][j][k]
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
@@ -377,19 +378,19 @@ function MakeFitImages(wv,wcoef, zNum)
 			print "Double gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-			// define image name 
-			FitImage1Name="Fitimage1Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-			wave FitImage1 = $FitImage1name
-			FitImage2Name="Fitimage2Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-			wave FitImage2 = $FitImage2Name	
 			k=0;
 			do
 				j=0;
 				do
 					i=0;
 					do 
+						// define image name 
+						FitImage1Name="Fitimage1Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
+						wave FitImage1 = $FitImage1name
+						FitImage2Name="Fitimage2Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
+						wave FitImage2 = $FitImage2Name	
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
@@ -415,16 +416,6 @@ function MakeFitImages(wv,wcoef, zNum)
 			print "Triple gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-			// define image names
-			FitImage1Name="Fitimage1Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-			wave FitImage1 = $FitImage1name
-			FitImage2Name="Fitimage2Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-			wave FitImage2 = $FitImage2Name
-			FitImage3Name="Fitimage3Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-			wave FitImage3 = $FitImage3Name
 			
 			//loop 
 			k=0;
@@ -433,6 +424,17 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
+						// define image names
+						FitImage1Name="Fitimage1Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
+						wave FitImage1 = $FitImage1name
+						FitImage2Name="Fitimage2Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
+						wave FitImage2 = $FitImage2Name
+						FitImage3Name="Fitimage3Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
+						wave FitImage3 = $FitImage3Name
+						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
@@ -461,19 +463,6 @@ function MakeFitImages(wv,wcoef, zNum)
 			print "Four gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
-			// define image names 
-			FitImage1Name="Fitimage1Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-			wave FitImage1 = $FitImage1name
-			FitImage2Name="Fitimage2Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-			wave FitImage2 = $FitImage2Name
-			FitImage3Name="Fitimage3Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-			wave FitImage3 = $FitImage3Name
-			FitImage4Name="Fitimage4Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-			wave FitImage4 = $FitImage4Name
 			
 			k=0
 			do
@@ -481,6 +470,21 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
+						// define image names 
+						FitImage1Name="Fitimage1Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
+						wave FitImage1 = $FitImage1name
+						FitImage2Name="Fitimage2Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
+						wave FitImage2 = $FitImage2Name
+						FitImage3Name="Fitimage3Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
+						wave FitImage3 = $FitImage3Name
+						FitImage4Name="Fitimage4Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
+						wave FitImage4 = $FitImage4Name
+						
+						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
@@ -513,22 +517,6 @@ function MakeFitImages(wv,wcoef, zNum)
 			print "Five gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
-			// define image names 
-			FitImage1Name="Fitimage1Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-			wave FitImage1 = $FitImage1name
-			FitImage2Name="Fitimage2Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-			wave FitImage2 = $FitImage2Name
-			FitImage3Name="Fitimage3Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-			wave FitImage3 = $FitImage3Name
-			FitImage4Name="Fitimage4Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-			wave FitImage4 = $FitImage4Name
-			FitImage5Name="Fitimage5Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-			wave FitImage5 = $FitImage5Name
 			
 			k=0
 			do
@@ -536,6 +524,23 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
+						// define image names 
+						FitImage1Name="Fitimage1Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
+						wave FitImage1 = $FitImage1name
+						FitImage2Name="Fitimage2Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
+						wave FitImage2 = $FitImage2Name
+						FitImage3Name="Fitimage3Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
+						wave FitImage3 = $FitImage3Name
+						FitImage4Name="Fitimage4Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
+						wave FitImage4 = $FitImage4Name
+						FitImage5Name="Fitimage5Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
+						wave FitImage5 = $FitImage5Name
+						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
@@ -572,25 +577,6 @@ function MakeFitImages(wv,wcoef, zNum)
 			print "Six gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
-			// define image names
-			FitImage1Name="Fitimage1Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-			wave FitImage1 = $FitImage1name
-			FitImage2Name="Fitimage2Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-			wave FitImage2 = $FitImage2Name
-			FitImage3Name="Fitimage3Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-			wave FitImage3 = $FitImage3Name
-			FitImage4Name="Fitimage4Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-			wave FitImage4 = $FitImage4Name
-			FitImage5Name="Fitimage5Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-			wave FitImage5 = $FitImage5Name
-			FitImage6Name="Fitimage6Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage6Name = 0
-			wave FitImage6 = $FitImage6Name
 			
 			k=0
 			do
@@ -598,6 +584,26 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
+						// define image names
+						FitImage1Name="Fitimage1Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
+						wave FitImage1 = $FitImage1name
+						FitImage2Name="Fitimage2Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
+						wave FitImage2 = $FitImage2Name
+						FitImage3Name="Fitimage3Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
+						wave FitImage3 = $FitImage3Name
+						FitImage4Name="Fitimage4Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
+						wave FitImage4 = $FitImage4Name
+						FitImage5Name="Fitimage5Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
+						wave FitImage5 = $FitImage5Name
+						FitImage6Name="Fitimage6Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage6Name = 0
+						wave FitImage6 = $FitImage6Name
+			
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
@@ -638,34 +644,36 @@ function MakeFitImages(wv,wcoef, zNum)
 			print "Seven gauss fit"
 			CoefProcess(WCoef)
 			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-			//define image names 
-			FitImage1Name="Fitimage1Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-			wave FitImage1 = $FitImage1name
-			FitImage2Name="Fitimage2Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-			wave FitImage2 = $FitImage2Name
-			FitImage3Name="Fitimage3Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-			wave FitImage3 = $FitImage3Name
-			FitImage4Name="Fitimage4Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-			wave FitImage4 = $FitImage4Name
-			FitImage5Name="Fitimage5Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-			wave FitImage5 = $FitImage5Name
-			FitImage6Name="Fitimage6Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage6Name = 0
-			wave FitImage6 = $FitImage6Name
-			FitImage7Name="Fitimage7Z"+num2str(k)
-			make/O/N=(xNum,yNum)/D $FitImage7Name = 0
-			wave FitImage7 = $FitImage7Name
+			
 			k=0
 			do
 				j=0;
 				do
 					i=0;
 					do 
+						//define image names 
+						FitImage1Name="Fitimage1Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
+						wave FitImage1 = $FitImage1name
+						FitImage2Name="Fitimage2Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
+						wave FitImage2 = $FitImage2Name
+						FitImage3Name="Fitimage3Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
+						wave FitImage3 = $FitImage3Name
+						FitImage4Name="Fitimage4Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
+						wave FitImage4 = $FitImage4Name
+						FitImage5Name="Fitimage5Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
+						wave FitImage5 = $FitImage5Name
+						FitImage6Name="Fitimage6Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage6Name = 0
+						wave FitImage6 = $FitImage6Name
+						FitImage7Name="Fitimage7Z"+num2str(k)
+						make/O/N=(xNum,yNum)/D $FitImage7Name = 0
+						wave FitImage7 = $FitImage7Name
+						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
