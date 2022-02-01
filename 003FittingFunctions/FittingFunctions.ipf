@@ -647,7 +647,7 @@ function MakeFitImages(wv,wcoef, zNum)
 				j=0;
 				do
 					i=0;
-					do 
+					do
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
 						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
