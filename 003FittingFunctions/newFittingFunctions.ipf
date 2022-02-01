@@ -1,4 +1,19 @@
-#pragma TextEncoding = "UTF-8"
+﻿#pragma TextEncoding = "UTF-8"
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+
+function test()
+	variable i
+	make/T textmessages = {"Single Gauss fit",\
+								  "Double Gauss Fit"}
+	i=0
+	do
+		print textmessages[i]
+		i+=1
+	while(i<2)
+end
+	
+	
+	#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 // Following function fit the data with gauss function
@@ -311,476 +326,94 @@ function InitialFit(wv, xaxis, wcoef)
 end 
 
 
-function MakeFitImages(wv,wcoef, zNum)
+function MakeFitImages(wv,wcoef, axis, zNum)
 	// arguments
-	wave wv, wcoef
+	wave wv,axis, wcoef
 	variable zNum;
 	// defined waves and variables
-	variable i,j, k,pts, frompix,endpix;
-	wave imchi3_data, re_ramanshift2, ProcessedWCoef, W
+	variable i,j, k,l,pts, frompix,endpix;
+	wave imchi3_data, re_ramanshift2,ProcessedWCoef
 	variable xNum,yNum
-	string FitImage1name, FitImage2name, FitImage3name, FitImage4name
-	string FitImage5name, FitImage6name, FitImage7name
+	string FitImagename
 	
-	xNum=dimsize(imchi3_data,1);
-	yNum=dimsize(imchi3_data,2);
-	pts=dimsize(imchi3_data,0);
+	// obtain dimension size
+	xNum=dimsize(wv,1);
+	yNum=dimsize(wv,2);
+	pts=dimsize(wv,0);
 	
 	// check the num of coef, and gauss
-	variable NumOfCoef = dimsize(wcoef,0)
-	variable NumOfGaussCoef =NumOfCoef-2 
+	variable NumOfGaussCoef = dimsize(wcoef,0)-2
 	if (mod(NumOfGaussCoef, 3)!=0)
 		print "The number of coef is not adequate"
 		print "The number of coef should be 2+3*NumOfGauss"
 	else
 		variable NumOfGauss = NumOfGaussCoef/3
 	endif	
-	print NumOfGauss
 	
 	// get frompix and endpix
 	frompix = pcsr(A)
 	endpix = pcsr(B)
 	
+	//make text waves
+	make/o/T GasuuNumMessages={"One Gauss fit",\
+									   "Two Gauss Fit",\
+									   "Three Gauss Fit",\
+									   "Four Gauss Fit",\
+									   "Five Gauss Fit",\
+									   "Six Gauss Fit",\
+									   "Seven Gauss Fit"}
+	
+	make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+	
+	make/o/T FittingParameters={"11011111111111111111111",\
+									    "11011011111111111111111",\
+									    "11011011011111111111111",\
+									    "11011011011011111111111",\
+									    "11011011011011011111111",\
+									    "11011011011011011011111",\
+									    "11011011011011011011011"}
+	// print guass num
+	print GasuuNumMessages[NumOfGauss-1]
+	
 	make /n=(pts)/o temp
-	switch (NumOfGauss)
-		case 1:
-			print "Single gauss fit"
-			Make/O/T/N=1 Constraints={"K2>0"}
+	
+	//Loop for Gauss
+	i=0
+	do
+		//Loop for z direction 
+		j=0
+		do
+			// define image name 
+			FitImagename="FitimageGauss"+num2str(i)+"Z"+num2str(j)
+			make/O/N=(xNum,yNum)/D $FitImagename
+			wave FitImage = $FitImagename
 			
+			//Loop for y direction
 			k=0
 			do
-				// define image name 
-				FitImage1name="FitimageZ"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1name
-				wave FitImage = $FitImage1name
-				j=0
+				//Loop for x direction
+				l=0
 				do
-					i=0
-					do
-						// define image name 
-						FitImage1name="FitimageZ"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1name
-						wave FitImage = $FitImage1name
-						
-						temp = wv[p][i][j][k]
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011111111111111111111"/NTHR=0 gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
-						Fitimage[i][j] = processedWcoef[2]
-						i+=1
-					while(i<xNum)
-					j+=1
-				while(j<yNum)
-				display;appendimage $FitImage1name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage1name ctab= {0,*,Grays,0}
+					temp = wv[p][l][k][j]
+					make/t/o/n = (NumofGauss) tempConstraints = Constraints
+					wave ProcessedWCoef = CoefProcess(WCoef)
+					wave processedWcoef = LinearBaseline(frompix, endpix, temp, axis)
+					Funcfit/Q/H=FittingParameters[NumOfGauss] gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=tempConstraints;
+					Fitimage[l][k] = processedWcoef[2]
+					l+=1
+				while(l<xNum)
 				k+=1
-			while(k<zNUm)
-		break
-		
-		case 2:
-			print "Double gauss fit"
-			CoefProcess(WCoef)
-			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-			k=0;
-			do
-				// define image name 
-				FitImage1Name="Fitimage1Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-				wave FitImage1 = $FitImage1name
-				FitImage2Name="Fitimage2Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-				wave FitImage2 = $FitImage2Name	
-				j=0;
-				do
-					i=0;
-					do
-						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
-						Fitimage1[i][j] = processedWcoef[2]
-						Fitimage2[i][j] = processedWcoef[5]
-						i+=1;
-					while(i<xNum)
-					j+=1;
-				while(j<yNum)
-				display;appendimage $FitImage1name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage1name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage2name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage2name ctab= {0,*,Grays,0}	
-				k+=1;
-			while(k<zNum)
-			
-		break
-		
-		case 3:
-			print "Triple gauss fit"
-			CoefProcess(WCoef)
-			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-			
-			//loop 
-			k=0;
-			do
-				// define image names
-				FitImage1Name="Fitimage1Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1Name
-				wave FitImage1 = $FitImage1name
-				FitImage2Name="Fitimage2Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage2Name
-				wave FitImage2 = $FitImage2Name
-				FitImage3Name="Fitimage3Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage3Name
-				wave FitImage3 = $FitImage3Name
-
-				j=0;
-				do
-					i=0;
-					do 
-						// define image names
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						
-						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;					
-						Fitimage1[i][j] = processedWcoef[2]
-						Fitimage2[i][j] = processedWcoef[5]
-						Fitimage3[i][j] = processedWcoef[8]
-						i+=1;
-					while(i<xNum)
-					j+=1;
-				while(j<yNum)
-				k+=1;
-			while(k<zNum)
-			display;appendimage $FitImage1name;
+			while(k<yNum)
+			display;appendimage $FitImagename;
 			ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-			ModifyImage $FitImage1name ctab= {0,*,Grays,0}	
-			display;appendimage $FitImage2name;
-			ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-			ModifyImage $FitImage2name ctab= {0,*,Grays,0}	
-			display;appendimage $FitImage3name;
-			ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-			ModifyImage $FitImage3name ctab= {0,*,Grays,0}	
-				
-		break
-		
-		case 4:
-			print "Four gauss fit"
-			CoefProcess(WCoef)
-			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
-			
-			k=0
-			do
-				// define image names 
-				FitImage1Name="Fitimage1Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-				wave FitImage1 = $FitImage1name
-				FitImage2Name="Fitimage2Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-				wave FitImage2 = $FitImage2Name
-				FitImage3Name="Fitimage3Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-				wave FitImage3 = $FitImage3Name
-				FitImage4Name="Fitimage4Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-				wave FitImage4 = $FitImage4Name
-				j=0;
-				do
-					i=0;
-					do 
-						// define image names 
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						FitImage4Name="Fitimage4Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-						wave FitImage4 = $FitImage4Name
-						
-						
-						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
-						Fitimage1[i][j] = processedWcoef[2]
-						Fitimage2[i][j] = processedWcoef[5]
-						Fitimage3[i][j] = processedWcoef[8]
-						Fitimage4[i][j] = processedWcoef[11]
-						i+=1;
-					while(i<xNum)
-					j+=1;
-				while(j<yNum)
-				display;appendimage $FitImage1name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage1name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage2name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage2name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage3name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage3name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage4name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage4name ctab= {0,*,Grays,0}	
-				k+=1;
-			while(k<zNum)
-		break
-		
-		case 5:
-			print "Five gauss fit"
-			CoefProcess(WCoef)
-			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
-			
-			k=0
-			do
-				// define image names 
-				FitImage1Name="Fitimage1Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-				wave FitImage1 = $FitImage1name
-				FitImage2Name="Fitimage2Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-				wave FitImage2 = $FitImage2Name
-				FitImage3Name="Fitimage3Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-				wave FitImage3 = $FitImage3Name
-				FitImage4Name="Fitimage4Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-				wave FitImage4 = $FitImage4Name
-				FitImage5Name="Fitimage5Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-				wave FitImage5 = $FitImage5Name
-				j=0;
-				do
-					i=0;
-					do 
-						// define image names 
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						FitImage4Name="Fitimage4Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-						wave FitImage4 = $FitImage4Name
-						FitImage5Name="Fitimage5Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-						wave FitImage5 = $FitImage5Name
-						
-						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
-						Fitimage1[i][j] = processedWcoef[2]
-						Fitimage2[i][j] = processedWcoef[5]
-						Fitimage3[i][j] = processedWcoef[8]
-						Fitimage4[i][j] = processedWcoef[11]
-						Fitimage5[i][j] = processedWcoef[14]
-						i+=1;
-					while(i<xNum)
-					j+=1;
-				while(j<yNum)
-				display;appendimage $FitImage1name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage1name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage2name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage2name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage3name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage3name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage4name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage4name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage5name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage5name ctab= {0,*,Grays,0}	
-				k+=1;
-			while(k<zNum)
-		break
-		
-		case 6:
-			print "Six gauss fit"
-			CoefProcess(WCoef)
-			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
-			
-			k=0
-			do
-				// define image names
-				FitImage1Name="Fitimage1Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-				wave FitImage1 = $FitImage1name
-				FitImage2Name="Fitimage2Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-				wave FitImage2 = $FitImage2Name
-				FitImage3Name="Fitimage3Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-				wave FitImage3 = $FitImage3Name
-				FitImage4Name="Fitimage4Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-				wave FitImage4 = $FitImage4Name
-				FitImage5Name="Fitimage5Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-				wave FitImage5 = $FitImage5Name
-				FitImage6Name="Fitimage6Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage6Name = 0
-				wave FitImage6 = $FitImage6Name
-				j=0;
-				do
-					i=0;
-					do 
-						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011011111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
-						Fitimage1[i][j] = processedWcoef[2]
-						Fitimage2[i][j] = processedWcoef[5]
-						Fitimage3[i][j] = processedWcoef[8]
-						Fitimage4[i][j] = processedWcoef[11]
-						Fitimage5[i][j] = processedWcoef[14]
-						Fitimage6[i][j] = processedWcoef[17]
-						i+=1;
-					while(i<xNum)
-					j+=1;
-				while(j<yNum)
-				display;appendimage $FitImage1name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage1name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage2name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage2name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage3name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage3name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage4name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage4name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage5name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage5name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage6name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage6name ctab= {0,*,Grays,0}	
-				k+=1;
-			while(k<zNum)
-		break
-		
-		case 7:
-			print "Seven gauss fit"
-			CoefProcess(WCoef)
-			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-			
-			k=0
-			do
-				//define image names 
-				FitImage1Name="Fitimage1Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-				wave FitImage1 = $FitImage1name
-				FitImage2Name="Fitimage2Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-				wave FitImage2 = $FitImage2Name
-				FitImage3Name="Fitimage3Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-				wave FitImage3 = $FitImage3Name
-				FitImage4Name="Fitimage4Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-				wave FitImage4 = $FitImage4Name
-				FitImage5Name="Fitimage5Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-				wave FitImage5 = $FitImage5Name
-				FitImage6Name="Fitimage6Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage6Name = 0
-				wave FitImage6 = $FitImage6Name
-				FitImage7Name="Fitimage7Z"+num2str(k)
-				make/O/N=(xNum,yNum)/D $FitImage7Name = 0
-				wave FitImage7 = $FitImage7Name
-				j=0;
-				do
-					i=0;
-					do 
-						//define image names 
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						FitImage4Name="Fitimage4Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-						wave FitImage4 = $FitImage4Name
-						FitImage5Name="Fitimage5Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-						wave FitImage5 = $FitImage5Name
-						FitImage6Name="Fitimage6Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage6Name = 0
-						wave FitImage6 = $FitImage6Name
-						FitImage7Name="Fitimage7Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage7Name = 0
-						wave FitImage7 = $FitImage7Name
-						
-						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011011011" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
-						Fitimage1[i][j] = processedWcoef[2]
-						Fitimage2[i][j] = processedWcoef[5]
-						Fitimage3[i][j] = processedWcoef[8]
-						Fitimage4[i][j] = processedWcoef[11]
-						Fitimage5[i][j] = processedWcoef[14]
-						Fitimage6[i][j] = processedWcoef[17]
-						Fitimage7[i][j] = processedWcoef[20]
-						i+=1;
-					while(i<xNum)
-					j+=1;
-				while(j<yNum)
-				display;appendimage $FitImage1name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage1name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage2name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage2name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage3name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage3name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage4name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage4name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage5name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage5name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage6name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage6name ctab= {0,*,Grays,0}	
-				display;appendimage $FitImage7name;
-				ModifyGraph width=113.386,height={Aspect,yNum/xNum}
-				ModifyImage $FitImage7name ctab= {0,*,Grays,0}	
-				k+=1;
-			while(k<zNum)
-		break
-	endswitch 
+			ModifyImage $FitImagename ctab= {0,*,Grays,0}
+			j+=1
+		while(j<zNUm)
+		i+=1
+	while(i<NumOfGauss)
 end
+		
+	
 
 //preprocessing the coefs
 Function/wave CoefProcess(WCoef)
