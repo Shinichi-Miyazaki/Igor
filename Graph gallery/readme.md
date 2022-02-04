@@ -11,3 +11,5 @@
 
    3. Scatter plot with histgram 
    ![Graph0](https://user-images.githubusercontent.com/59829168/140646582-4e9a6828-3a1d-4ec6-a0e0-141744467672.png)
+
+2. Beaswarm plot
