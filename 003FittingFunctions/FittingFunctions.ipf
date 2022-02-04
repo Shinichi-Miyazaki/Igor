@@ -258,7 +258,7 @@ function InitialFit(wv, xaxis, wcoef)
 			print "Seven gauss fit"
 			wave ProcessedWCoef = CoefProcess(WCoef)
 			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
+			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef Tempwv[wavestart,waveend] /X=axis/D /C=Constraints;
 			// display each gauss
 			duplicate/o/R = [2,4] Processedwcoef coef1
 			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
@@ -322,9 +322,9 @@ function MakeFitImages(wv,wcoef, zNum)
 	string FitImage1name, FitImage2name, FitImage3name, FitImage4name
 	string FitImage5name, FitImage6name, FitImage7name
 	
-	xNum=dimsize(imchi3_data,1);
-	yNum=dimsize(imchi3_data,2);
-	pts=dimsize(imchi3_data,0);
+	xNum=dimsize(wv,1);
+	yNum=dimsize(wv,2);
+	pts=dimsize(wv,0);
 	
 	// check the num of coef, and gauss
 	variable NumOfCoef = dimsize(wcoef,0)
