@@ -303,7 +303,7 @@ function InitialFit(wv, xaxis, wcoef)
 			ModifyGraph lstyle(gauss7)=3,rgb(gauss7)=(0,0,0)
 		break
 	endswitch 
-	
+	wcoef = Processedwcoef
 	//wave fitResult = $fitname
 	// change fit color 
 	ModifyGraph rgb($fitname)=(1,12815,52428)
@@ -311,20 +311,20 @@ function InitialFit(wv, xaxis, wcoef)
 end 
 
 
-function MakeFitImages(wv,wcoef, zNum)
+function MakeFitImages(wv,xaxis,wcoef,zNum)
 	// arguments
-	wave wv, wcoef
+	wave wv, wcoef, xaxis
 	variable zNum;
 	// defined waves and variables
-	variable i,j, k,pts, frompix,endpix;
-	wave imchi3_data, re_ramanshift2, ProcessedWCoef, W
+	//wave xaxis
+	variable i,j,k,pts,frompix,endpix
 	variable xNum,yNum
 	string FitImage1name, FitImage2name, FitImage3name, FitImage4name
 	string FitImage5name, FitImage6name, FitImage7name
 	
-	xNum=dimsize(imchi3_data,1);
-	yNum=dimsize(imchi3_data,2);
-	pts=dimsize(imchi3_data,0);
+	xNum=dimsize(wv,1);
+	yNum=dimsize(wv,2);
+	pts=dimsize(wv,0);
 	
 	// check the num of coef, and gauss
 	variable NumOfCoef = dimsize(wcoef,0)
@@ -346,7 +346,6 @@ function MakeFitImages(wv,wcoef, zNum)
 		case 1:
 			print "Single gauss fit"
 			Make/O/T/N=1 Constraints={"K2>0"}
-			
 			k=0
 			do
 				// define image name 
@@ -364,8 +363,8 @@ function MakeFitImages(wv,wcoef, zNum)
 						
 						temp = wv[p][i][j][k]
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011111111111111111111"/NTHR=0 gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011111111111111111111"/NTHR=0 gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						Fitimage[i][j] = processedWcoef[2]
 						i+=1
 					while(i<xNum)
@@ -396,9 +395,9 @@ function MakeFitImages(wv,wcoef, zNum)
 					i=0;
 					do
 						temp= wv[p][i][j][k];
-						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						// wave ProcessedWCoef = CoefProcess(WCoef)
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						i+=1;
@@ -439,21 +438,11 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
-						// define image names
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						
+
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;					
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;					
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						Fitimage3[i][j] = processedWcoef[8]
@@ -499,25 +488,10 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
-						// define image names 
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						FitImage4Name="Fitimage4Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-						wave FitImage4 = $FitImage4Name
-						
-						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						Fitimage3[i][j] = processedWcoef[8]
@@ -569,27 +543,10 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
-						// define image names 
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						FitImage4Name="Fitimage4Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-						wave FitImage4 = $FitImage4Name
-						FitImage5Name="Fitimage5Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-						wave FitImage5 = $FitImage5Name
-						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011011111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						Fitimage3[i][j] = processedWcoef[8]
@@ -650,8 +607,8 @@ function MakeFitImages(wv,wcoef, zNum)
 					do
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011011111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011011011111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						Fitimage3[i][j] = processedWcoef[8]
@@ -717,33 +674,10 @@ function MakeFitImages(wv,wcoef, zNum)
 				do
 					i=0;
 					do 
-						//define image names 
-						FitImage1Name="Fitimage1Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage1Name = 0
-						wave FitImage1 = $FitImage1name
-						FitImage2Name="Fitimage2Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage2Name = 0
-						wave FitImage2 = $FitImage2Name
-						FitImage3Name="Fitimage3Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage3Name = 0
-						wave FitImage3 = $FitImage3Name
-						FitImage4Name="Fitimage4Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage4Name = 0
-						wave FitImage4 = $FitImage4Name
-						FitImage5Name="Fitimage5Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage5Name = 0
-						wave FitImage5 = $FitImage5Name
-						FitImage6Name="Fitimage6Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage6Name = 0
-						wave FitImage6 = $FitImage6Name
-						FitImage7Name="Fitimage7Z"+num2str(k)
-						make/O/N=(xNum,yNum)/D $FitImage7Name = 0
-						wave FitImage7 = $FitImage7Name
-						
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011011011" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011011011011" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						Fitimage1[i][j] = processedWcoef[2]
 						Fitimage2[i][j] = processedWcoef[5]
 						Fitimage3[i][j] = processedWcoef[8]
@@ -787,7 +721,7 @@ Function/wave CoefProcess(WCoef)
 // WCoef: coef wave
 	wave WCoef
 	variable CoefNum = dimsize(WCoef,0)
-	make/o/n=23 ProcessedWCoef = 0 
+	make/o/d/n=23 ProcessedWCoef = 0 
 	ProcessedWCoef[0,CoefNum-1]= WCoef[p]
 	return processedWcoef
 end
@@ -802,18 +736,18 @@ function/wave LinearBaseline(FromPx, EndPx, wv, axis)
 	return ProcessedWCoef
 end
 
-function MakeFitImageChunk(wv,wcoef, zNum)
+function MakeFitImageChunk(wv,wcoef,xaxis,zNum)
 	// arguments
-	wave wv, wcoef
+	wave wv, xaxis, wcoef
 	variable zNum;
 	// defined waves and variables
 	variable i,j, k,pts, frompix,endpix;
-	wave imchi3_data, re_ramanshift2, ProcessedWCoef, W
+	wave ProcessedWCoef, W
 	variable xNum,yNum
 	
-	xNum=dimsize(imchi3_data,1);
-	yNum=dimsize(imchi3_data,2);
-	pts=dimsize(imchi3_data,0);
+	xNum=dimsize(wv,1);
+	yNum=dimsize(wv,2);
+	pts=dimsize(wv,0);
 	
 	// check the num of coef, and gauss
 	variable NumOfCoef = dimsize(wcoef,0)
@@ -846,8 +780,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do
 						temp = wv[p][i][j][k]
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011111111111111111111"/NTHR=0 gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011111111111111111111"/NTHR=0 gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						i+=1
 					while(i<xNum)
@@ -869,8 +803,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do 
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						FitImageChunk[i][j][k][1] = processedWcoef[5]
 						i+=1;
@@ -893,8 +827,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do 
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[pcsr(A),pcsr(B)] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						FitImageChunk[i][j][k][1] = processedWcoef[5]
 						FitImageChunk[i][j][k][2] = processedWcoef[8]
@@ -918,8 +852,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do 
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						FitImageChunk[i][j][k][1] = processedWcoef[5]
 						FitImageChunk[i][j][k][2] = processedWcoef[8]
@@ -944,8 +878,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do 
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011011111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						FitImageChunk[i][j][k][1] = processedWcoef[5]
 						FitImageChunk[i][j][k][2] = processedWcoef[8]
@@ -971,8 +905,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do 
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011011111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011011011111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						FitImageChunk[i][j][k][1] = processedWcoef[5]
 						FitImageChunk[i][j][k][2] = processedWcoef[8]
@@ -999,8 +933,8 @@ function MakeFitImageChunk(wv,wcoef, zNum)
 					do 
 						temp= wv[p][i][j][k];
 						wave ProcessedWCoef = CoefProcess(WCoef)
-						wave processedWcoef = LinearBaseline(frompix, endpix, temp, re_ramanshift2)
-						Funcfit/Q/H="11011011011011011011011" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=re_ramanshift2/D /C=Constraints;
+						wave processedWcoef = LinearBaseline(frompix, endpix, temp, xaxis)
+						Funcfit/Q/H="11011011011011011011011" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=xaxis/D /C=Constraints;
 						FitImageChunk[i][j][k][0] = processedWcoef[2]
 						FitImageChunk[i][j][k][1] = processedWcoef[5]
 						FitImageChunk[i][j][k][2] = processedWcoef[8]
@@ -1024,7 +958,7 @@ variable frompix,endpix,gausNum,zNum;
 wave wcoef
 // defined waves and variables
 variable i,j, k,pts;
-wave imchi3_data, re_ramanshift2
+wave imchi3_data, xaxis
 Variable V_fitOptions=4
 variable xNum,yNum
 String wavestr,wavestr2,wavestr3,wavestr4,wavestr5,wavestr6,wavestr7
@@ -1056,7 +990,7 @@ if (gausNum==1)
 				W_coefQrG[14]=0;
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00000111111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00000111111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
 				make /o/n=(xNum,yNum) $(wavestr+"pk")
@@ -1103,7 +1037,7 @@ if (gausNum==2)
 				W_coefQrG[14]=0;
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00011011111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011011111111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				wavestr2="Fitimage2Z"+num2str(k)
 				make /o/n=(xNum,yNum) $wavestr
@@ -1145,7 +1079,7 @@ if (gausNum==3)
 				W_coefQrG[14]=0;
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00011011011111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011011011111111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				wavestr2="Fitimage2Z"+num2str(k)
 				wavestr3="Fitimage3Z"+num2str(k)
@@ -1193,7 +1127,7 @@ if (gausNum==4)
 				W_coefQrG[14]=0;
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00011011011011111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011011011011111111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				wavestr2="Fitimage2Z"+num2str(k)
 				wavestr3="Fitimage3Z"+num2str(k)
@@ -1246,7 +1180,7 @@ if (gausNum==5)
 				W_coefQrG[0,16]=wcoef[p]
 				W_coefQrG[17]=0;
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00011011011011011111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011011011011011111111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				wavestr2="Fitimage2Z"+num2str(k)
 				wavestr3="Fitimage3Z"+num2str(k)
@@ -1306,7 +1240,7 @@ if (gausNum==6)
 				temp= imchi3_data[p][j][i][k];
 				W_coefQrG[0,19]=wcoef[p]
 				W_coefQrG[20]=0;
-				Funcfit/Q/H="00011011011011011011111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011011011011011011111"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				wavestr2="Fitimage2Z"+num2str(k)
 				wavestr3="Fitimage3Z"+num2str(k)
@@ -1371,7 +1305,7 @@ if (gausNum==7)
 			do 
 				temp= imchi3_data[p][j][i][k];
 				W_coefQrG[0,22]=wcoef[p]
-				Funcfit/Q/H="00011011011011011011011"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=re_ramanshift2/D/C=T_constraint;
+				Funcfit/Q/H="00011011011011011011011"/NTHR=0 Gauss7 W_coefQrG temp[frompix,endpix]/X=xaxis/D/C=T_constraint;
 				wavestr="FitimageZ"+num2str(k)
 				wavestr2="Fitimage2Z"+num2str(k)
 				wavestr3="Fitimage3Z"+num2str(k)
