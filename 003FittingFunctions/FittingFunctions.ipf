@@ -341,23 +341,37 @@ function MakeFitImages(wv,axis,wcoef, zNum)
 	endpix = pcsr(B)
 	
 	//make text waves
-	make/o/T GasuuNumMessages={"One Gauss fit",\
+	make/o/T GasuuNumMessages={\
+								"One Gauss fit",\
 								"Two Gauss Fit",\
 								"Three Gauss Fit",\
 								"Four Gauss Fit",\
 								"Five Gauss Fit",\
 								"Six Gauss Fit",\
-								"Seven Gauss Fit"}
+								"Seven Gauss Fit"\
+								}
 	
 	make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
 	
-	make/o/T FittingParameters={"11011111111111111111111",\
+	make/o/T FittingParameters={\
+								"11011111111111111111111",\
 								"11011011111111111111111",\
 								"11011011011111111111111",\
 								"11011011011011111111111",\
 								"11011011011011011111111",\
 								"11011011011011011011111",\
-								"11011011011011011011011"}
+								"11011011011011011011011"\
+								}
+	make/o/T FittingParametersForPeakPositionAnalysis={\
+								"11000111111111111111111",\
+								"11000000111111111111111",\
+								"11000000000111111111111",\
+								"11000000000000111111111",\
+								"11000000000000000111111",\
+								"11000000000000000000111",\
+								"11000000000000000000000"\
+								}
+
 	// print guass num
 	print GasuuNumMessages[NumOfGauss-1]
 

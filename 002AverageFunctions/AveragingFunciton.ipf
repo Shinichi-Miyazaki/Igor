@@ -216,3 +216,102 @@ temp00/=cts
 
 
 end
+
+
+
+function SumFromImage(wv, discri, oriwv)
+// Author: Tanaka Kyosuke
+// イメージ内部のdiscri以上のピクセル点でスペクトルを足しこみます. 
+// 足しこんだ領域を示します.  
+wave wv,oriwv;
+variable discri;
+
+variable pts,xNum,yNum,pixnum;
+variable i,j,cts,judgeX,judgeY;
+
+
+Silent 1; PauseUpdate
+pts=dimsize(oriwv,0)
+xnum=dimsize(wv,0)
+ynum=dimsize(wv,1)
+make /o/n=(pts) temp00
+temp00=0;
+cts=0;
+
+make/o/n=(xnum,ynum) TargetFromImage
+
+targetfromimage=0
+
+
+i=0
+do
+	j=0
+	do
+		if(wv[i][j]>discri)
+		//if(imchi3_data[pixnum][i][j][0]>discri)
+			temp00[]+=oriwv[p][i][j][1]
+			cts+=1 
+			targetfromimage[i][j]=1
+		endif
+		j+=1
+	while(j<yNum)
+	i+=1
+while(i<xNum)
+
+i=0
+do
+	j=0
+	do
+		if(wv[i][j]>discri)
+		//if(imchi3_data[pixnum][i][j][0]>discri)
+			temp00[]+=oriwv[p][i][j][0]
+			cts+=1 
+		endif
+		j+=1
+	while(j<yNum)
+	i+=1
+while(i<xNum)
+temp00/=cts
+
+killwindow/z sumfromimage
+
+newimage/n=sumfromimage wv
+
+for(j=0;j<ynum;j+=1)
+ for(i=0;i<xnum;i+=1)
+  
+   judgeX=targetfromimage[i+1][j]-targetfromimage[i][j]
+   judgeY=targetfromimage[i][j+1]-targetfromimage[i][j]
+   
+   
+   if(judgex==1||judgex==-1)
+    setdrawenv/w=sumfromimage linefgc=(65535,0,0) 
+    drawline/w=sumfromimage (i+1)/xnum,(j)/ynum,(i+1)/xnum,(j+1)/ynum
+   endif
+   
+   if(judgey==1||judgey==-1)
+    setdrawenv/w=sumfromimage linefgc=(65535,0,0) 
+    drawline/w=sumfromimage (i)/xnum,(j+1)/ynum,(i+1)/xnum,(j+1)/ynum
+   endif
+   
+   if(targetfromimage[i][0]==1)
+    setdrawenv/w=sumfromimage linefgc=(65535,0,0) 
+    drawline/w=sumfromimage i/xnum,0,(i+1)/xnum,0
+
+   elseif(targetfromimage[i][ynum]==1)
+    setdrawenv/w=sumfromimage linefgc=(65535,0,0) 
+    drawline/w=sumfromimage i/xnum,1,(i+1)/xnum,1
+
+   elseif(targetfromimage[0][j]==1)
+    setdrawenv/w=sumfromimage linefgc=(65535,0,0) 
+    drawline/w=sumfromimage 0,j/ynum,0,(j+1)/ynum
+
+   elseif(targetfromimage[xnum][j]==1)
+    setdrawenv/w=sumfromimage linefgc=(65535,0,0) 
+    drawline/w=sumfromimage 1,j/ynum,1,(j+1)/ynum
+
+   endif
+
+ endfor
+endfor
+end
