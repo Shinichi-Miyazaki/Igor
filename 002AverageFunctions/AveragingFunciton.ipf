@@ -60,28 +60,11 @@ make/o/n=(xnum,ynum) TargetFromImage
 
 targetfromimage=0
 
-
 i=0
 do
 	j=0
 	do
 		if(wv[i][j]>discri)
-		//if(imchi3_data[pixnum][i][j][0]>discri)
-			temp00[]+=oriwv[p][i][j][1]
-			cts+=1 
-			targetfromimage[i][j]=1
-		endif
-		j+=1
-	while(j<yNum)
-	i+=1
-while(i<xNum)
-
-i=0
-do
-	j=0
-	do
-		if(wv[i][j]>discri)
-		//if(imchi3_data[pixnum][i][j][0]>discri)
 			temp00[]+=oriwv[p][i][j][0]
 			cts+=1 
 		endif
@@ -133,6 +116,8 @@ for(j=0;j<ynum;j+=1)
  endfor
 endfor
 end
+
+
 
 
 function AveragingWithImageAndThreshold(ImageWv,Threshold,OriginalWv)
