@@ -47,7 +47,7 @@ function InitialFit(wv, xaxis, wcoef)
 	wave wv, xaxis, wcoef
 	// predifined waves
 	wave ProcessedWCoef
-	variable NumOfGauss 
+	variable NumOfGauss
 	// for display each gauss 
 	wave singlegausswv
 	wave gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
@@ -341,23 +341,53 @@ function MakeFitImages(wv,axis,wcoef, zNum)
 	endpix = pcsr(B)
 	
 	//make text waves
+<<<<<<< HEAD
 	make/o/T GasuuNumMessages={"One Gauss fit",\
+=======
+	make/o/T GasuuNumMessages={\
+								"One Gauss fit",\
+>>>>>>> dff81b0773005e9765e4e5bd36daea13c55baedb
 								"Two Gauss Fit",\
 								"Three Gauss Fit",\
 								"Four Gauss Fit",\
 								"Five Gauss Fit",\
 								"Six Gauss Fit",\
+<<<<<<< HEAD
 								"Seven Gauss Fit"}
 	
 	make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
 	
 	make/o/T FittingParameters={"11011111111111111111111",\
+=======
+								"Seven Gauss Fit"\
+								}
+	
+	make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+	
+	make/o/T FittingParameters={\
+								"11011111111111111111111",\
+>>>>>>> dff81b0773005e9765e4e5bd36daea13c55baedb
 								"11011011111111111111111",\
 								"11011011011111111111111",\
 								"11011011011011111111111",\
 								"11011011011011011111111",\
 								"11011011011011011011111",\
+<<<<<<< HEAD
 								"11011011011011011011011"}
+=======
+								"11011011011011011011011"\
+								}
+	make/o/T FittingParametersForPeakPositionAnalysis={\
+								"11000111111111111111111",\
+								"11000000111111111111111",\
+								"11000000000111111111111",\
+								"11000000000000111111111",\
+								"11000000000000000111111",\
+								"11000000000000000000111",\
+								"11000000000000000000000"\
+								}
+
+>>>>>>> dff81b0773005e9765e4e5bd36daea13c55baedb
 	// print guass num
 	print GasuuNumMessages[NumOfGauss-1]
 
