@@ -67,6 +67,7 @@ do
 		if(wv[i][j]>discri)
 			temp00[]+=oriwv[p][i][j][0]
 			cts+=1 
+			targetfromimage[i][j]=1
 		endif
 		j+=1
 	while(j<yNum)
@@ -116,8 +117,6 @@ for(j=0;j<ynum;j+=1)
  endfor
 endfor
 end
-
-
 
 
 function AveragingWithImageAndThreshold(ImageWv,Threshold,OriginalWv)
