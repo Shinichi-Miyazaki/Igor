@@ -311,10 +311,10 @@ function InitialFit(wv, xaxis, wcoef)
 end 
 
 
-function MakeFitImages(wv,axis,wcoef, zNum)
+function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	// arguments
 	wave wv,axis, wcoef
-	variable zNum;
+	variable zNum, AnalysisType;
 	// defined waves and variables
 	variable i,j, k,l,pts, frompix,endpix;
 	wave ProcessedWCoef, wv_2d
@@ -354,7 +354,7 @@ function MakeFitImages(wv,axis,wcoef, zNum)
 	make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
 	
 	
-	make/o/T FittingParameters={\
+	make/o/T FittingParametersForAmpAnalysis={\
 								"11011111111111111111111",\
 								"11011011111111111111111",\
 								"11011011011111111111111",\
@@ -375,13 +375,27 @@ function MakeFitImages(wv,axis,wcoef, zNum)
 	// print guass num
 	print GasuuNumMessages[NumOfGauss-1]
 
+	//switch for analysis type
+	Killwaves/z FittingParameters
+	Switch (AnalysisType)
+		case 1:
+			print "Peak Position Analysis"
+			duplicate/t FittingParametersForPeakPositionAnalysis FittingParameters
+		break
+		default:
+			print "Peak Amplitude Analysis"
+			duplicate/t FittingParametersForAmpAnalysis FittingParameters
+	endswitch
+
+
 	// make 2d wave 
 	wave4Dto2DForFit(wv)
 	
 	make /n=(pts)/o temp
 
 	make/o/n= (xNUm,yNUm,znum,NumofGauss) ResultWv
-	make/o/n= (SpatialPoints,7) ResultWv_2d
+	make/o/n= (SpatialPoints,7) ResultWv2DAmp
+	make/o/n= (SpatialPoints,7) ResultWv2DPeakPos
 	
 	//Loop for spatial points
 	i=0
@@ -391,16 +405,24 @@ function MakeFitImages(wv,axis,wcoef, zNum)
 		wave ProcessedWCoef = CoefProcess(WCoef)
 		wave processedWcoef = LinearBaseline(frompix, endpix, temp, axis)
 		Funcfit/Q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef temp[frompix,endpix] /X=axis/D /C=tempConstraints;
-		ResultWv_2d[i][0] = processedWcoef[2]
-		ResultWv_2d[i][1] = processedWcoef[5]
-		ResultWv_2d[i][2] = processedWcoef[8]
-		ResultWv_2d[i][3] = processedWcoef[11]
-		ResultWv_2d[i][4] = processedWcoef[14]
-		ResultWv_2d[i][5] = processedWcoef[17]
-		ResultWv_2d[i][6] = processedWcoef[20]
+		ResultWv2DAmp[i][0] = processedWcoef[2]
+		ResultWv2DAmp[i][1] = processedWcoef[5]
+		ResultWv2DAmp[i][2] = processedWcoef[8]
+		ResultWv2DAmp[i][3] = processedWcoef[11]
+		ResultWv2DAmp[i][4] = processedWcoef[14]
+		ResultWv2DAmp[i][5] = processedWcoef[17]
+		ResultWv2DAmp[i][6] = processedWcoef[20]
+		// Peak Pos Wave
+		ResultWv2DPeakPos[i][0] = processedWcoef[3]
+		ResultWv2DPeakPos[i][1] = processedWcoef[6]
+		ResultWv2DPeakPos[i][2] = processedWcoef[9]
+		ResultWv2DPeakPos[i][3] = processedWcoef[12]
+		ResultWv2DPeakPos[i][4] = processedWcoef[15]
+		ResultWv2DPeakPos[i][5] = processedWcoef[18]
+		ResultWv2DPeakPos[i][6] = processedWcoef[21]
 		i+=1
 	while(i<SpatialPoints)
-	wave2Dto4DForFit(ResultWv_2d, xNum, ynum, znum)
+	wave2Dto4DForFit(ResultWv2DAmp, xNum, ynum, znum)
 
 	// make images 
 	//Loop for Gauss
@@ -928,8 +950,6 @@ endif
 end
 
 
-#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
 //Parabolic
 Function Parabolic(W,X)
    wave W;
