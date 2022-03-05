@@ -361,7 +361,8 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 								"11011011011011111111111",\
 								"11011011011011011111111",\
 								"11011011011011011011111",\
-								"11011011011011011011011"}
+								"11011011011011011011011"\
+								}
 
 	make/o/T FittingParametersForPeakPositionAnalysis={\
 								"11000111111111111111111",\
@@ -387,12 +388,10 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 			duplicate/t FittingParametersForAmpAnalysis FittingParameters
 	endswitch
 
-
 	// make 2d wave 
 	wave4Dto2DForFit(wv)
 	
 	make /n=(pts)/o temp
-
 	make/o/n= (xNUm,yNUm,znum,NumofGauss) ResultWv
 	make/o/n= (SpatialPoints,7) ResultWv2DAmp
 	make/o/n= (SpatialPoints,7) ResultWv2DPeakPos
