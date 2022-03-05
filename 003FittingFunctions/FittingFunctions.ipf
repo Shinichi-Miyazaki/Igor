@@ -441,6 +441,22 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 		while(j<zNUm)
 		i+=1
 	while(i<NumOfGauss)
+	
+	// make peak pos image
+	if (NumOfGauss == 1 && AnalysisType == 1)
+		wave2Dto4DForFit(ResultWv2DPeakPos, xNum, ynum, znum)
+		i = 0
+		do
+			// define image name 
+			FitImagename="PeakPosImage"+"Z"+num2str(i)
+			make/o/n=(xNum, yNUm) $FitImagename = resultwv[p][q][0][0]
+			display;appendimage $FitImagename;
+			ModifyGraph width=300,height={Aspect,yNum/xNum}
+			ModifyImage $FitImagename ctab= {0,*,Grays,0}
+			i+=1
+		while(i<zNUm)
+	endif
+
 end
 
 Function wave4Dto2DForFit(wv)	//rearrange the 4D wave to 2Dwave
