@@ -49,22 +49,39 @@ function InitialFit(wv, xaxis, wcoef)
 	// predifined waves
 	wave ProcessedWCoef
 	variable NumOfGauss, i
-	// for display each gauss 
-	wave singlegausswv
-	wave gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
-	
-	// name fit wave 
+	// define the fit wave name 
 	String fitName = "fit_" + nameOfWave(wv)
+	// obtain cursor position from graph
+	variable WaveStart = pcsr(A)
+	variable WaveEnd = pcsr(B)
+	
+	//Define the text waves
+	make/o/T GasuuNumMessages={\
+								"One Gauss fit",\
+								"Two Gauss Fit",\
+								"Three Gauss Fit",\
+								"Four Gauss Fit",\
+								"Five Gauss Fit",\
+								"Six Gauss Fit",\
+								"Seven Gauss Fit"\
+                                }
+
+    make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+	 make/o/T FittingParameters={\
+								"00000111111111111111111",\
+								"00000000111111111111111",\
+								"00000000000111111111111",\
+								"00000000000000111111111",\
+								"00000000000000000111111",\
+								"00000000000000000000111",\
+								"00000000000000000000000"\
+								}
 	
 	// Kill waves and remove graph, for repeated use
 	RemoveFromGraph/z $fitName
 	RemoveFromGraph/z FitGauss0, Fitgauss1, FitGauss2, FitGauss3, FitGauss4, FitGauss5, FitGauss6, FitGauss7
 	Killwaves/z fit_tempwv
 	Killwaves/z FitGauss0, Fitgauss1, FitGauss2, FitGauss3, FitGauss4, FitGauss5, FitGauss6, FitGauss7
-	
-	// obtain cursor position from graph
-	variable WaveStart = pcsr(A)
-	variable WaveEnd = pcsr(B)
 	
 	// Duplicate wv
 	Duplicate/o wv tempwv
@@ -82,28 +99,7 @@ function InitialFit(wv, xaxis, wcoef)
 	else
 		NumOfGauss = NumOfGaussCoef/3
 	endif	
-	print NumOfGauss
-	make/o/T GasuuNumMessages={\
-								"One Gauss fit",\
-								"Two Gauss Fit",\
-								"Three Gauss Fit",\
-								"Four Gauss Fit",\
-								"Five Gauss Fit",\
-								"Six Gauss Fit",\
-								"Seven Gauss Fit"\
-                                }
-
-    make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-
-	 make/o/T FittingParameters={\
-								"00000111111111111111111",\
-								"00000000111111111111111",\
-								"00000000000111111111111",\
-								"00000000000000111111111",\
-								"00000000000000000111111",\
-								"00000000000000000000111",\
-								"00000000000000000000000"\
-								}
+	
 	// print guass num
 	// make initial flag and constraints wave 
 	 print GasuuNumMessages[NumOfGauss-1]
