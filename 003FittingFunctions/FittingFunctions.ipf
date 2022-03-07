@@ -26,10 +26,11 @@ Function SingleGauss(axis, coef)
 	make/o/n = (dimsize(axis, 0)) singlegausswv = coef[0]*exp(-((axis-coef[1])/coef[2])^2)
 end
 
-Function SingleGaussWithLinearBaseline(axis, coef0, coef1, coef2, coef3, coef4)
+Function/wave SingleGaussWithLinearBaseline(axis, coef0, coef1, coef2, coef3, coef4)
 	wave axis
 	variable coef0, coef1, coef2, coef3, coef4
 	make/o/n = (dimsize(axis, 0)) singlegausswv = coef0+coef1*axis+coef2*exp(-((axis-coef3)/coef4)^2)
+	return singlegausswv
 end
 
 function InitBase(wv,axis, wcoef)
@@ -47,7 +48,7 @@ function InitialFit(wv, xaxis, wcoef)
 	wave wv, xaxis, wcoef
 	// predifined waves
 	wave ProcessedWCoef
-	variable NumOfGauss
+	variable NumOfGauss, i
 	// for display each gauss 
 	wave singlegausswv
 	wave gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
@@ -57,9 +58,9 @@ function InitialFit(wv, xaxis, wcoef)
 	
 	// Kill waves and remove graph, for repeated use
 	RemoveFromGraph/z $fitName
-	RemoveFromGraph/z gauss1,gauss2,gauss3, gauss4, gauss5, gauss6, gauss7
+	RemoveFromGraph/z FitGauss0, Fitgauss1, FitGauss2, FitGauss3, FitGauss4, FitGauss5, FitGauss6, FitGauss7
 	Killwaves/z fit_tempwv
-	Killwaves/z gauss1, gauss2, gauss3, gauss4, gauss5, gauss6, gauss7
+	Killwaves/z FitGauss0, Fitgauss1, FitGauss2, FitGauss3, FitGauss4, FitGauss5, FitGauss6, FitGauss7
 	
 	// obtain cursor position from graph
 	variable WaveStart = pcsr(A)
@@ -82,234 +83,49 @@ function InitialFit(wv, xaxis, wcoef)
 		NumOfGauss = NumOfGaussCoef/3
 	endif	
 	print NumOfGauss
-	
-	
+	make/o/T GasuuNumMessages={\
+								"One Gauss fit",\
+								"Two Gauss Fit",\
+								"Three Gauss Fit",\
+								"Four Gauss Fit",\
+								"Five Gauss Fit",\
+								"Six Gauss Fit",\
+								"Seven Gauss Fit"\
+                                }
+
+    make/o/T Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
+
+	 make/o/T FittingParameters={\
+								"00000111111111111111111",\
+								"00000000111111111111111",\
+								"00000000000111111111111",\
+								"00000000000000111111111",\
+								"00000000000000000111111",\
+								"00000000000000000000111",\
+								"00000000000000000000000"\
+								}
+	// print guass num
 	// make initial flag and constraints wave 
-	switch (NumOfGauss)
-		case 1:
-			print "Single gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=1 Constraints={"K2>0"}
-			Funcfit/H="00000111111111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=Constraints;
-			// show gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-		break
-		
-		case 2:
-			print "Double gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=2 Constraints={"K2>0","k5>0"}
-			Funcfit/H="00000000111111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=xaxis/D /C=Constraints;
-			// show gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-			
-			duplicate/o/R = [5,7] Processedwcoef coef2
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef2[0], coef2[1], coef2[2])
-			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs axis
-			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-		break
-		
-		case 3:
-			print "Triple gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=3 Constraints={"K2>0","k5>0","k8>0"}
-			Funcfit/H="00000000000111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=Constraints;
-			// display each gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-			
-			duplicate/o/R = [5,7] Processedwcoef coef2
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef2[0], coef2[1], coef2[2])
-			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs axis
-			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-			
-			duplicate/o/R = [8,10] Processedwcoef coef3
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef3[0], coef3[1], coef3[2])
-			duplicate/o singlegausswv gauss3
-			AppendToGraph gauss3 vs axis
-			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
-		break
-		
-		case 4:
-			print "Four gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=4 Constraints={"K2>0","k5>0","k8>0","k11>0"}
-			Funcfit/H="00000000000000111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=Constraints;
-			// display each gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-			
-			duplicate/o/R = [5,7] Processedwcoef coef2
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef2[0], coef2[1], coef2[2])
-			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs axis
-			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-			
-			duplicate/o/R = [8,10] Processedwcoef coef3
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef3[0], coef3[1], coef3[2])
-			duplicate/o singlegausswv gauss3
-			AppendToGraph gauss3 vs axis
-			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
-			
-			duplicate/o/R = [11,13] Processedwcoef coef4
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef4[0], coef4[1], coef4[2])
-			duplicate/o singlegausswv gauss4
-			AppendToGraph gauss4 vs axis
-			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
-		break
-		
-		case 5:
-			print "Five gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=5 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0"}
-			Funcfit/H="00000000000000000111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=Constraints;
-			// display each gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-			
-			duplicate/o/R = [5,7] Processedwcoef coef2
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef2[0], coef2[1], coef2[2])
-			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs axis
-			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-			
-			duplicate/o/R = [8,10] Processedwcoef coef3
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef3[0], coef3[1], coef3[2])
-			duplicate/o singlegausswv gauss3
-			AppendToGraph gauss3 vs axis
-			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
-			
-			duplicate/o/R = [11,13] Processedwcoef coef4
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef4[0], coef4[1], coef4[2])
-			duplicate/o singlegausswv gauss4
-			AppendToGraph gauss4 vs axis
-			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
-			
-			duplicate/o/R = [14,16] Processedwcoef coef5
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef5[0], coef5[1], coef5[2])
-			duplicate/o singlegausswv gauss5
-			AppendToGraph gauss5 vs axis
-			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
-		break
-		
-		case 6:
-			print "Six gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=6 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0"}
-			Funcfit/H="00000000000000000000111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=Constraints;
-			// display each gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-			
-			duplicate/o/R = [5,7] Processedwcoef coef2
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef2[0], coef2[1], coef2[2])
-			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs axis
-			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-			
-			duplicate/o/R = [8,10] Processedwcoef coef3
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef3[0], coef3[1], coef3[2])
-			duplicate/o singlegausswv gauss3
-			AppendToGraph gauss3 vs axis
-			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
-			
-			duplicate/o/R = [11,13] Processedwcoef coef4
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef4[0], coef4[1], coef4[2])
-			duplicate/o singlegausswv gauss4
-			AppendToGraph gauss4 vs axis
-			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
-			
-			duplicate/o/R = [14,16] Processedwcoef coef5
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef5[0], coef5[1], coef5[2])
-			duplicate/o singlegausswv gauss5
-			AppendToGraph gauss5 vs axis
-			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
-			
-			duplicate/o/R = [17,19] Processedwcoef coef6
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef6[0], coef6[1], coef6[2])
-			duplicate singlegausswv gauss6
-			AppendToGraph gauss6 vs axis
-			ModifyGraph lstyle(gauss6)=3,rgb(gauss6)=(0,0,0)
-		break
-		
-		case 7:
-			print "Seven gauss fit"
-			wave ProcessedWCoef = CoefProcess(WCoef)
-			Make/O/T/N=7 Constraints={"K2>0","k5>0","k8>0","k11>0","k14>0","k17>0", "k20>0"}
-			Funcfit/H="00000000000000000000000" gaussfunc ProcessedWCoef Tempwv[pcsr(A),pcsr(B)] /X=axis/D /C=Constraints;
-			// display each gauss
-			duplicate/o/R = [2,4] Processedwcoef coef1
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef1[0], coef1[1], coef1[2])
-			duplicate/o singlegausswv gauss1
-			AppendToGraph gauss1 vs axis
-			ModifyGraph lstyle(gauss1)=3,rgb(gauss1)=(0,0,0)
-			
-			duplicate/o/R = [5,7] Processedwcoef coef2
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef2[0], coef2[1], coef2[2])
-			duplicate/o singlegausswv gauss2
-			AppendToGraph gauss2 vs axis
-			ModifyGraph lstyle(gauss2)=3,rgb(gauss2)=(0,0,0)
-			
-			duplicate/o/R = [8,10] Processedwcoef coef3
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef3[0], coef3[1], coef3[2])
-			duplicate/o singlegausswv gauss3
-			AppendToGraph gauss3 vs axis
-			ModifyGraph lstyle(gauss3)=3,rgb(gauss3)=(0,0,0)
-			
-			duplicate/o/R = [11,13] Processedwcoef coef4
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef4[0], coef4[1], coef4[2])
-			duplicate/o singlegausswv gauss4
-			AppendToGraph gauss4 vs axis
-			ModifyGraph lstyle(gauss4)=3,rgb(gauss4)=(0,0,0)
-			
-			duplicate/o/R = [14,16] Processedwcoef coef5
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef5[0], coef5[1], coef5[2])
-			duplicate/o singlegausswv gauss5
-			AppendToGraph gauss5 vs axis
-			ModifyGraph lstyle(gauss5)=3,rgb(gauss5)=(0,0,0)
-			
-			duplicate/o/R = [17,19] Processedwcoef coef6
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef6[0], coef6[1], coef6[2])
-			duplicate singlegausswv gauss6
-			AppendToGraph gauss6 vs axis
-			ModifyGraph lstyle(gauss6)=3,rgb(gauss6)=(0,0,0)
-			
-			duplicate/o/R = [20,22] Processedwcoef coef7
-			SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], coef7[0], coef7[1], coef7[2])
-			duplicate/o singlegausswv gauss7
-			AppendToGraph gauss7 vs axis
-			ModifyGraph lstyle(gauss7)=3,rgb(gauss7)=(0,0,0)
-		break
-	endswitch 
-	wcoef = Processedwcoef
-	//wave fitResult = $fitname
+	 print GasuuNumMessages[NumOfGauss-1]
+	 make/t/o/n = (NumofGauss) tempConstraints = Constraints
+	 wave ProcessedWCoef = CoefProcess(WCoef)
+	 Funcfit/Q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
+    i=0
+    do
+	    variable CoefStart = i*3 + 2
+	    variable CoefEnd = i*3 + 4
+	    String FitGaussName="FitGauss"+num2str(i)
+	    duplicate/o/R = [CoefStart,CoefEnd] Processedwcoef tempcoef
+		 wave singlegausswv = SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], tempcoef[0], tempcoef[1], tempcoef[2])
+		 duplicate/o singlegausswv $FitGaussName
+		 AppendToGraph $FitGaussName vs axis
+		 ModifyGraph lstyle($FitGaussName)=3,rgb($FitGaussName)=(0,0,0)
+	    i+=1
+	 while (i<NumOfGauss)
+	 wcoef = Processedwcoef
 	// change fit color 
-	ModifyGraph rgb($fitname)=(1,12815,52428)
-
+	 ModifyGraph rgb($fitname)=(1,12815,52428)
 end 
-
 
 function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	// arguments

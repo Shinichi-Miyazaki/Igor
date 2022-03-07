@@ -77,7 +77,7 @@ function InitialFitnew(wv, xaxis, wcoef)
 	    variable CoefEnd = i*3 + 4
 	    String FitGaussName="FitGauss"+num2str(i)
 	    duplicate/o/R = [CoefStart,CoefEnd] Processedwcoef tempcoef
-		 SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], tempcoef[0], tempcoef[1], tempcoef[2])
+		 wave singlegausswv = SingleGaussWithLinearBaseline(axis, Processedwcoef[0], Processedwcoef[1], tempcoef[0], tempcoef[1], tempcoef[2])
 		 duplicate/o singlegausswv $FitGaussName
 		 AppendToGraph $FitGaussName vs axis
 		 ModifyGraph lstyle($FitGaussName)=3,rgb($FitGaussName)=(0,0,0)
