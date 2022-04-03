@@ -30,17 +30,20 @@ MEM後のスペクトルをガウスフィットして, 画像化したりする
 4. Ratiometric_analysis  
 強度比を用いて解析を行う際に使用する関数です.  
 
-5. Igor_tips  
+5. IgorTips  
 Igorの便利技等を書いていきます.   
 
-6. Image_plot  
+6. ImagePlot  
 Image plot用の関数を置いてあります. 
 
-7. Other_functions  
+7. OtherFunctions  
 その他関数, 古い関数などです.
 
 8. GUI  
-Imchi3_dataの解析用GUIです. 現時点ではmarkdownで書いていないのでマニュアルはpdf参照
+Imchi3_dataの解析用GUIです. マニュアルはpdf参照
+
+9. BaselineSubtraction
+Baseline引き算用の関数です
 
 ---
 ## 関数作成時のルール  
