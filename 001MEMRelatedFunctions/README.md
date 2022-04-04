@@ -11,9 +11,9 @@
 
 1. Igor8の起動  
 
-2. 関数をドラッグアンドドロップしてcompile (下のほうに小さくcompileとあるのでクリック)  
+2. DataLoad_Preprocessing.ipfをドラッグアンドドロップしてcompile (下のほうに小さくcompileとあるのでクリック)  
 もしくはあらかじめDocuments/WaveMetrics/Igor Pro 8 User Files/Igor Proceduresの中に入れておくと, 毎回compileしないで済みます.  
-ほかのscriptと干渉するとエラーが出るので注意  
+**ほかのscriptと干渉するとエラーが出るので注意**  
 ![1](https://user-images.githubusercontent.com/59829168/121983212-e93bd600-cdcb-11eb-948c-b44269385f91.png)  
 
 3. コマンドラインを呼び出して(ctrl+j), 以下のコード実行  
@@ -90,7 +90,6 @@ MEMprep(-3500,-500)
 ```Igor
 MEMit()
 	//もしくは, mem_time.ipfを読み込んでからmem_time()で実行すると実行時間を出してくれます. 
-	//(自分で作っといてなんですが, ほかの方法もある気がします)
 	//数分以上かかります
 ```
 ![5](https://user-images.githubusercontent.com/59829168/121981786-441ffe00-cdc9-11eb-820d-1ed8d821f09d.png)  
