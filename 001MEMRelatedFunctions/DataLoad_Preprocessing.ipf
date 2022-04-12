@@ -9,9 +9,9 @@
 /// @parameter Numz
 /// @parameter DataType: If the z direction is zigzag order, please put 1
 
-Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])	
+Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType,SlidePxNum])	
 	wave	wv;
-	variable	Numx,Numy,Numz,DataType;
+	variable	Numx,Numy,Numz,DataType, SlidePxNum;
 	variable	i,j,k,wvNum;
 	variable start,startnum,endnum, ZCenter, nextstartnum,nextendnum
 	
@@ -105,6 +105,30 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType])
 				endif
 			while(i<Numz)
 		break
+
+		case 3: 
+			print "one way capturing, xy scan"
+			for(j=0; j<Numy; j=j+1)
+				if (j==0)
+					startnum = j * Numx
+					endnum = (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					CARS[][][j][0] = tempwv[p][q];
+				elseif (mod(j,2) == 0)	
+					startnum = j * Numx
+					endnum = (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					CARS[][][j][0] = tempwv[p][q];
+				elseif (mod(j,2) == 1)
+					startnum = j * Numx
+					endnum = (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum+SlidePxNum,endnum+SlidePxNum] wv tempwv
+					imagetransform flipcols tempwv 
+					CARS[][][j][0] = tempwv[p][q];
+				endif
+			endfor
+		break
+
 			
 		default:
 			print "no z direction zigzag, axis order is xyZ"
@@ -735,42 +759,3 @@ Function TransposeLayersAndChunks(w4DIn, nameOut)
     w4DOut = w4DIn[p][q][s][r]          // s and r are reversed from normal
 End
 
-Function wave2Dto4DIIIS(wv,Numx,Numy,Numz)	//rearrange the 2D wave to 4Dwave
-	wave	wv;
-	variable	Numx,Numy,Numz;
-	variable	SampleNum,i,j,k,l;
-	
-	Silent 1;
-	Pauseupdate 
-	//prompt	SampleNum, "enter the number of image pixels";
-	//prompt	Numx, "enter the number of x direction";
-	//prompt	Numy, "enter the number of y direction";
-	//prompt	Numz, "enter the number of z direction";
-	//doprompt	"",SampleNum,Numx,Numy,Numz;
-	//doprompt	"",Numx,Numy,Numz;
-	//SampleNum=6561;
-	//Numx=81;
-	//Numy=81;
-	//Numz=1;
-	
-	make/O/N=(1340,Numx,Numy,Numz)/D CARS;
-	k = 0;
-	j = 0;
-	do
-		for(i=0;i<Numx;i=i+1)
-			for(l=0;l<1340;l=l+1)
-				if(mod(j,2)==0)
-					CARS[l][i][j][0] = wv[l][k];
-				else
-					CARS[l][Numx-1-i][j][0] = wv[l][k];
-				endif
-			endfor
-			k = k+1;
-		endfor
-		j = j+1;
-		if(j == Numy)
-			break
-
-		endif	
-	while(j <Numy)
-end
