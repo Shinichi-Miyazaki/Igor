@@ -41,20 +41,22 @@ end
 
 
 // Initial fitting function
-function InitialFit(wv, xaxis, wcoef)
+function InitialFit(wv, xaxis, wcoef, [SearchCoef])
 	// Author: Shinichi Miyazaki
 	
 	// arguments
 	wave wv, xaxis, wcoef
+	variable SearchCoef
 	// predifined waves
 	wave ProcessedWCoef
-	variable NumOfGauss, i
+	variable NumOfGauss, i, j,k, NumOfSearchLoop
 	// define the fit wave name 
 	String fitName = "fit_" + nameOfWave(wv)
 	// obtain cursor position from graph
 	variable WaveStart = pcsr(A)
 	variable WaveEnd = pcsr(B)
-	
+	// For error Catch
+	variable errorVal
 	//Define the text waves
 	make/o/T GasuuNumMessages={\
 								"One Gauss fit",\
@@ -105,7 +107,38 @@ function InitialFit(wv, xaxis, wcoef)
 	 print GasuuNumMessages[NumOfGauss-1]
 	 make/t/o/n = (NumofGauss) tempConstraints = Constraints
 	 wave ProcessedWCoef = CoefProcess(WCoef)
-	 Funcfit/Q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
+	 
+	 // loop for searching good coef
+	 if (SearchCoef == 1)
+		 k=0
+		 NumOfSearchLoop = 2*NumOfGauss
+		 make/o/n = 14 WcoefChangePos = {2,4,5,7,8,10,11,13,14,16,17,19,20,22}
+		 make/o/n = 10 Wcoefmagni = {0.01,0.1,0.125,0.25,0.5,2, 4, 8, 10, 100} 
+		 make/o/n = (23, 150) WCoefList = 0
+		 make/o/N = 150 ChiSqList = 100
+		 do
+		 	 variable Magni = WcoefMagni[k]
+		 	 j=0
+			 do 
+				 Funcfit/q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
+				 errorVal = GetRTError(1)
+				 if (errorVal == 0)
+					 WCoefList[][k*10+j] = ProcessedWCoef[p]
+					 ChiSqList[k*10+j] = V_Chisq
+			  	 else
+				 	 WCoefList[][k*10+j] = ProcessedWCoef[p]
+					 ChiSqList[k*10+j] = 10000
+				 endif
+				 wave ProcessedWCoef = CoefProcess(WCoef)
+				 ProcessedWcoef[WcoefChangePos[j]]*=Magni
+				 j+=1
+			 while (j<14)
+			 k+=1
+		 while(k<10)
+    	 wavestats/q ChisqList
+    	 ProcessedWcoef[] = WCoefList[p][V_minloc]
+    endif
+    Funcfit/q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
     i=0
     do
 	    variable CoefStart = i*3 + 2
