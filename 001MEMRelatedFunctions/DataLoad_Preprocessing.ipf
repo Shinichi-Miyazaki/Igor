@@ -1,4 +1,4 @@
-
+#pragma version = 0
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
