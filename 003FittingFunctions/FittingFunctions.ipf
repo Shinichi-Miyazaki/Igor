@@ -138,6 +138,8 @@ function InitialFit(wv, xaxis, wcoef, [SearchCoef])
     	 wavestats/q ChisqList
     	 ProcessedWcoef[] = WCoefList[p][V_minloc]
     endif
+    
+    // fit with passed wcoef
     Funcfit/q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
     i=0
     do
