@@ -1,30 +1,26 @@
-<<<<<<< HEAD
-=======
 #pragma version = 0
->>>>>>> f665159e354414a6095104f4a58cbb50f98410d5
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// This function rearrange the 2D wave to 4D wave
-/// @parameter wv: 2D wave (wavenum, xyz)
-/// @parameter Numx
-/// @parameter Numy
-/// @parameter Numz
-/// @parameter DataType: If the z direction is zigzag order, please put 1
-
 Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType,SlidePxNum])	
+	/// Author: Shinichi Miyazaki
+	/// This function rearrange the 2D wave to 4D wave
+	/// @params	wv: 2D wave (wavenum, xyz)
+	/// @params	Numx, Numy, Numz: variable (Number of spatial points)
+	/// @params	DataType: variable (default	: no z direction zigzag, axis order is xyZ
+	///										1		: z direction zigzag, axis order is xZy
+	///										2		: z direction zigzag, axis order is xyZ
+	///										3		: one way capturing, xy scan (for IIIS))
+	/// Outputs
+	/// CARS: 4D wave (wavenum, x, y, z)
 	wave	wv;
 	variable	Numx,Numy,Numz,DataType, SlidePxNum;
 	variable	i,j,k,wvNum;
 	variable start,startnum,endnum, ZCenter, nextstartnum,nextendnum
-	
 	// make destination wave. the name is CARS
 	wvNum = dimsize(wv, 0)
 	make/O/N=(wvNum,Numx,Numy,Numz)/D CARS;
-	
 	// Switch depend on data type
-	// The default is "no zigzag, xyZ"
-	
 	Switch (DataType)
 		case 1:
 			print "z direction zigzag, axis order is xZy"
@@ -34,9 +30,9 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType,SlidePxNum])
 			else
 				ZCenter=(Numy-1)/2
 			endif
-				i=0;
-				j=0;
-				k=0;
+			i=0;
+			j=0;
+			k=0;
 			do
 				do
 					start = i * Numx * Numy
@@ -150,49 +146,60 @@ Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType,SlidePxNum])
 		Endswitch
 end
 
-Function/wave darkNonres(rawwv, bgwv, nrwv)
+Function darkNonres(rawwv, bgwv, nrwv)
+	/// Author: Shinichi Miyazaki
+	/// This function subtracts bg from rawwv and nrwv
+	/// After it divides rawwv with nrwv
+	/// @params rawwv	: 2D wave		(wavenum, xyz)
+	/// @params	bgwv	: 1D or 2D wave	(wavenum, spatial)
+	/// @params	nrwv	: 1D or 2D wave	(wavenum, spatial)
+	/// Output
+	/// None, rawwv will be overwritten
 	wave rawwv, bgwv, nrwv
 	variable numofwv, bgnum, nrnum
 
 	numofwv = dimsize(rawwv, 1)
 	bgnum = dimsize(bgwv, 1)
+	// for 1D bg wave
 	if(bgnum==0)
 		bgnum=1
 	endif
 	nrnum = dimsize(nrwv, 1)
+	// for 1D nr wave
 	if(nrnum==0)
 		nrnum=1
 	endif
-
+	// averaging the bg wave
 	matrixOP/free/O sumbgwv = sumRows(bgwv)
 	matrixOP/free/O bgwv = sumbgwv / bgnum
+	// avearging the nr wave
 	matrixOP/free/O sumnrwv = sumRows(nrwv)
 	matrixOP/free/O nrwv = sumnrwv / nrnum
+	// Subtract bg wave from nr wave and raw wave
 	matrixOP/free/o nrwv = nrwv-bgwv
 	matrixop/free/o tempbg = colRepeat(bgwv, numofwv)
 	matrixop/o rawwv = rawwv - tempbg
+	// Devide raw wave with nr wave
 	matrixop/free/o tempnr = colRepeat(nrwv, numofwv)
 	matrixOP/O rawwv = rawwv / tempnr
 end
 
-
-Function darkV2(wv1, wv2)	//this function gives wave of wv1 - wv2
+Function darkV2(wv1, wv2)	
+	/// 	Old function
+	///	Author Shinichi Miyazaki
+	///	this function gives wave of wv1 - wv2
 	wave	wv1, wv2;
 	variable	i;
-
 	variable numofwv
 	numofwv = dimsize(wv1, 1)
-
-	Silent 1;
-	Pauseupdate
-
 	matrixOP/O/FREE temp = colRepeat(wv2, numofwv)
 	matrixop/O wv1 = wv1-temp
-
-
 end
 
 Function nonresV2(wv3, wv4)
+	/// 	Old function
+	///	Author Shinichi Miyazaki
+	///	this function gives wave of wv3/wv4
 	wave	wv3, wv4;
 	variable numofwv
 	numofwv = dimsize(wv3, 1)
@@ -200,11 +207,13 @@ Function nonresV2(wv3, wv4)
 	matrixop/o wv3 = wv3/temp
 end
 
-Function/wave makeramanshift4(wv)		//making new Ramanshift wave after MEM
+Function/wave makeramanshift4(wv)		
+	/// Author: Unknown
+	/// making new Ramanshift wave after MEM
+	/// @params wv: m_ramanshift1
 	wave	wv;
 	variable	pixNum;
 	variable	i;
-	
 	pixNum=DimSize(wv,0);
 	print pixNum
 	make/O/N=(pixNum) /D re_ramanshift2;
@@ -214,49 +223,45 @@ Function/wave makeramanshift4(wv)		//making new Ramanshift wave after MEM
 	return	re_ramanshift2;
 end
 
-
 Function ImageCreate(wv,pixel,Numx,Numy,Numz)    
-	// make 2d image at particular pixel point
-   // written by Miyazaki Shinichi
-   
-   wave wv;
-   variable pixel,Numx,Numy,Numz;
-   variable ImageSize,i
-   String ImageName
-   
+	/// Author: Shinichi Miyazaki
+	/// make 2d image at particular pixel point
+   /// @params wv						: 	wave
+	/// @params pixel					:	variable, pixel value for wavenumber that you want to visualize
+	/// @params Numx, Numy, Numz	:	variable, number of spatial points
+	/// Output
+	/// None, Image create
+	wave wv;
+	variable pixel,Numx,Numy,Numz;
+	variable ImageSize,i, WaveDimSize
+	String ImageName
 	ImageSize = Numx*Numy
-	// i:current z position
-	i=0
-	do
-		ImageName="ImageZ="+num2str(i)
-		make/O/N=(Numx,Numy) $ImageName;
-		duplicate/O/R=[pixel][0,Numx][0,Numy][i] wv $ImageName
-		redimension/n=(imagesize) $ImageName
-    	redimension/n=(Numx, Numy) $ImageName
-		newimage $ImageName
-		ModifyGraph width=283.465,height={Aspect,1}
-		i+=1
-	while(i<=Numz)
+	WaveDimSize = dimsize(wv, 2)
+	switch (WaveDimSize)
+		case 0:
+			make/O/N=(Numx,Numy)/D im;
+			duplicate/O/R=[pixel][0, imagesize] wv im
+			redimension/n=(imagesize) im
+			redimension/n = (Numx, Numy) im
+			newimage im
+			break
+		default:
+			i=0
+			do
+				ImageName="ImageZ="+num2str(i)
+				make/O/N=(Numx,Numy) $ImageName;
+				duplicate/O/R=[pixel][0,Numx][0,Numy][i] wv $ImageName
+				redimension/n=(imagesize) $ImageName
+				redimension/n=(Numx, Numy) $ImageName
+				newimage $ImageName
+				ModifyGraph width=283.465,height={Aspect,1}
+				i+=1
+			while(i<=Numz)
+		endswitch
 end
-
-
-Function ImageMS(wv,pixel,Numx,Numy)    //make 2d data at particular pixel point
-    wave    wv;
-    variable    pixel, Numx,Numy;
-    variable imagesize
-    imagesize = Numx*Numy
-    make/O/N=(Numx,Numy)/D im;
-    duplicate/O/R=[pixel][0, imagesize] wv im
-    redimension/n=(imagesize) im
-    redimension/n = (Numx, Numy) im
-    newimage im
-end
-
 
 // WinSpec file (*.spe) loader v 1.0
-//
 
-#pragma rtGlobals=1		// Use modern global access method.
 
 Menu "Data"
 	SubMenu "Import"
@@ -669,13 +674,12 @@ function SpeLoaderM([skip, frames, verbose, compact, fullpath])
 	return num;
 end
 
-Function/wave MEM_time()
+Function MEM_time()
 	wave imchi3_data
 	Variable start = dateTime
 	memit()
 	Variable timeElapsed = dateTime - start
 	print "This procedure took " + num2str(timeElapsed) + " in seconds."
-	return imchi3_data
 end
 
 function Pickup_nr(xsize, xNum1,xNum2,yNum1,yNum2, oriwv)
@@ -684,7 +688,6 @@ variable xsize, xNum1,xNum2,yNum1,yNum2;
 variable pts;
 variable i,cts,first, last;
 
-Silent 1; PauseUpdate
 pts=dimsize(oriwv,0)
 make /o/n=(pts) tempnrwv
 tempnrwv=0;
@@ -710,8 +713,6 @@ Function wave4Dto2D(wv,Numx,Numy)	//rearrange the 4D wave to 2Dwave
 	variable	SampleNum,i,j,k,l, wvNum;
 	variable start, startnum, endnum, pixelnum, num
 
-	Silent 1;
-	Pauseupdate
 	wvNum = dimsize(wv, 0)
 	pixelnum = Numx*Numy
 
