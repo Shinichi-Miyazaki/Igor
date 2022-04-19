@@ -1,4 +1,3 @@
-
 #pragma TextEncoding = "Shift_JIS"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
@@ -210,6 +209,45 @@ Function/wave makeramanshift4(wv)		//making new Ramanshift wave after MEM
 	endfor
 	return	re_ramanshift2;
 end
+
+
+Function ImageCreate(wv,pixel,Numx,Numy,Numz)    
+	// make 2d image at particular pixel point
+   // written by Miyazaki Shinichi
+   
+   wave wv;
+   variable pixel,Numx,Numy,Numz;
+   variable ImageSize,i
+   String ImageName
+   
+	ImageSize = Numx*Numy
+	// i:current z position
+	i=0
+	do
+		ImageName="ImageZ="+num2str(i)
+		make/O/N=(Numx,Numy) $ImageName;
+		duplicate/O/R=[pixel][0,Numx][0,Numy][i] wv $ImageName
+		redimension/n=(imagesize) $ImageName
+    	redimension/n=(Numx, Numy) $ImageName
+		newimage $ImageName
+		ModifyGraph width=283.465,height={Aspect,1}
+		i+=1
+	while(i<=Numz)
+end
+
+
+Function ImageMS(wv,pixel,Numx,Numy)    //make 2d data at particular pixel point
+    wave    wv;
+    variable    pixel, Numx,Numy;
+    variable imagesize
+    imagesize = Numx*Numy
+    make/O/N=(Numx,Numy)/D im;
+    duplicate/O/R=[pixel][0, imagesize] wv im
+    redimension/n=(imagesize) im
+    redimension/n = (Numx, Numy) im
+    newimage im
+end
+
 
 // WinSpec file (*.spe) loader v 1.0
 //
@@ -489,45 +527,6 @@ Static function dump_header(h)
 	endfor
 end
 
-
-Function ImageCreate(wv,pixel,Numx,Numy,Numz)    
-	// make 2d image at particular pixel point
-   // written by Miyazaki Shinichi
-   
-   wave wv;
-   variable pixel,Numx,Numy,Numz;
-   variable ImageSize,i
-   String ImageName
-   
-	ImageSize = Numx*Numy
-	// i:current z position
-	i=0
-	do
-		ImageName="ImageZ="+num2str(i)
-		make/O/N=(Numx,Numy) $ImageName;
-		duplicate/O/R=[pixel][0,Numx][0,Numy][i] wv $ImageName
-		redimension/n=(imagesize) $ImageName
-    	redimension/n=(Numx, Numy) $ImageName
-		newimage $ImageName
-		ModifyGraph width=283.465,height={Aspect,1}
-		i+=1
-	while(i<=Numz)
-end
-
-
-Function ImageMS(wv,pixel,Numx,Numy)    //make 2d data at particular pixel point
-    wave    wv;
-    variable    pixel, Numx,Numy;
-    variable imagesize
-    Silent 1;
-    Pauseupdate
-    imagesize = Numx*Numy
-    make/O/N=(Numx,Numy)/D im;
-    duplicate/O/R=[pixel][0, imagesize] wv im
-    redimension/n=(imagesize) im
-    redimension/n = (Numx, Numy) im
-    newimage im
-end
 
 
 function SpeLoaderM([skip, frames, verbose, compact, fullpath])

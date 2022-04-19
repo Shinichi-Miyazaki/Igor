@@ -13,7 +13,7 @@ Function GaussFunc(W,X)
 	// X: X axis
 	// Amp: variable return
 	// W: coef wave padded with 0, if the coefw had 14 values (4 gauss), value15~23 is 0. 
-	wave w;
+	wave w;		
 	variable	X;
 	variable Amp;
 	Amp=W[0]+W[1]*X+W[2]*exp(-((X-W[3])/W[4])^2)+W[5]*exp(-((X-W[6])/W[7])^2)+W[8]*exp(-((X-W[9])/W[10])^2)+W[11]*exp(-((X-W[12])/W[13])^2)+ W[14]*exp(-((X-W[15])/W[16])^2)+W[17]*exp(-((X-W[18])/W[19])^2)+W[20]*exp(-((X-W[21])/W[22])^2);
@@ -116,11 +116,12 @@ function InitialFit(wv, xaxis, wcoef, [SearchCoef])
 		 make/o/n = 10 Wcoefmagni = {0.01,0.1,0.125,0.25,0.5,2, 4, 8, 10, 100} 
 		 make/o/n = (23, 150) WCoefList = 0
 		 make/o/N = 150 ChiSqList = 100
+		 make/o/n=23 ewave = 1e-5
 		 do
 		 	 variable Magni = WcoefMagni[k]
 		 	 j=0
 			 do 
-				 Funcfit/q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
+				 Funcfit/q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints /E=ewave;
 				 errorVal = GetRTError(1)
 				 if (errorVal == 0)
 					 WCoefList[][k*10+j] = ProcessedWCoef[p]
@@ -238,7 +239,7 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	
 	make /n=(pts)/o temp
 	make/o/n= (xNUm,yNUm,znum,NumofGauss) ResultWv
-	make/o/n= (SpatialPoints,7) ResultWv2DAmp
+	make/o/n= (SpatialPoints,7) ResultWv2DAmp=0
 	make/o/n= (SpatialPoints,7) ResultWv2DPeakPos
 	
 	//Loop for spatial points
