@@ -11,9 +11,8 @@ Function BaselineArPLS(rawWave, lam, ratio)
 	variable lam, ratio
 	wave weightWave
 	wave destWave, weightedDiffWave
-	variable numofPoints, count
+	variable numofPoints, i, t, count
 	variable meanOfNegativeDiffWave, SDOfNegativeDiffWave
-	Variable start = dateTime
 	
 	numOfPoints = dimsize(rawWave,0)
 	// initialize the weightWave and weightWaveDiag
@@ -24,27 +23,38 @@ Function BaselineArPLS(rawWave, lam, ratio)
 	MakeWeightedDiffWave(numOfPoints)
 	matrixop/o/free weightedDiffWave = lam *  weightedDiffWave^t x weightedDiffWave 
 	
+	t=0
 	count = 0
 	do
 		matrixop/o/free weightWaveDiag = diagonal(weightWave)
 		// (W+H)^-1Wy
-		matrixop/o destWave = inv(weightWaveDiag+weightedDiffWave) x weightWaveDiag x rawWave
+		matrixop/o/free invWeight = inv(weightWaveDiag+weightedDiffWave)
+		matrixop/o destWave = invWeight x weightWaveDiag x rawWave
 		matrixop/o/free diffWave = rawWave - destWave
+		
 		// make d- only with di<0
 		// set positive val to 0
 		Extract/o diffWave, negativeDiffWave, diffWave < 0
+		//matrixop/o/free negativeDiffWave = clip(diffWave, -Inf, 0)
+		// or this?
+		// Extract diffwave negativeDiffWave diffwave<0
 		//calc mean and SD of negativeDiffWave
 		wavestats/q negativeDiffwave
-		nextweightWave = 1/(1+exp(2*(diffwave-(-V_avg+2*V_sdev))/v_sdev))
+		meanOfNegativeDiffWave = V_avg
+		SDOfNegativeDiffWave = V_sdev
+		i=0
+		do
+			nextweightWave[i] = 1/(1+exp(2*(diffwave[i]-(-meanOfNegativeDiffWave + 2*SDOfNegativeDiffWave))/SDOfNegativeDiffWave))
+			i+=1
+		while(i<numOfPoints)
+		t+=1
 		matrixop/o tempRatioWv = abs(weightwave-nextweightwave)/abs(weightwave)
-		matrixop/o weightwave = nextweightwave
+		variable tempRatio = tempRatiowv[0]
+		weightwave = nextweightwave
 		count +=1
-	while(tempRatiowv[0]>ratio)
-	matrixop/o destWave = inv(weightWaveDiag+weightedDiffWave) x weightWaveDiag x rawWave
+	while(tempRatio>ratio)
 	matrixop/o BLSub = rawwave - destWave
 	print count
-	Variable timeElapsed = dateTime - start
-	print "This procedure took " + num2str(timeElapsed) + " in seconds."
 end
 
 Function MakeWeightedDiffWave(numOfPoints)
