@@ -26,7 +26,7 @@ function/wave NNLS(Z, xvec, tolerance)
 	make/o/n = (ZColumn) PVec = 0
 	// A2
 	// R_vec is indices which is not updated
-	make/o/n = (ZColumn) RVec = 1
+	make/o/n = (ZColumn) RVec = p
 	// A3
 	make/o/n = (ZColumn) d = 0
 	// A4
@@ -35,31 +35,33 @@ function/wave NNLS(Z, xvec, tolerance)
 	
 	//B1 
 	do
-		if (dimsize(RVec,0)!=0 && (wavemax(w)>tolerance))
+		if (dimsize(RVec,0)!=1 && (wavemax(w)>tolerance))
 			mainLoopJudge = 1
+			wavestats/Q w
+			// there is no empty wave
+			// dimsize(RVec, 0) == 0 is impossible
+			Extract/O RVec, RVec, RVec!=RVec[V_maxRowLoc+1]
+			PVec[V_maxRowLoc+1] = 1
+			matrixop/o Zp = Z x PVec
+			matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
+			do
+				matrixop/o/free dp = d^t x PVec
+				matrixop/o/free alphaWave = (dp/(dp-sp))
+				wavestats/q alphawave
+				variable alpha = -V_min
+				d = d + alpha * (s-d)
+				//update R and P 
+				
+				matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
+				matrixop/o sr = 0
+				wavestats/Q sp
+			while (V_min <= 0)
+			d = s
+			matrixop/o w = Z^t x (xVec- Z x d)
+			
 		else
 			mainLoopJudge = 0
 		endif
-		
-		wavestats/Q w
-		PVec[V_maxRowLoc] = 1
-		RVec[V_maxRowLoc] = 0
-		matrixop/o Zp = Z x PVec
-		matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
-		do
-			matrixop/o/free dp = d^t x PVec
-			matrixop/o/free alphaWave = (dp/(dp-sp))
-			wavestats/q alphawave
-			variable alpha = -V_min
-			d = d + alpha * (s-d)
-			//update R and P 
-			
-			matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
-			matrixop/o sr = 0
-			wavestats/Q sp
-		while (V_min <= 0)
-		d = s
-		matrixop/o w = Z^t x (xVec- Z x d)
 	while (mainLoopJudge==1)
 	
 	return d
