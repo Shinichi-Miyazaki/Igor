@@ -26,3 +26,11 @@ dはMx1のベクタ
 初期値はすべて0
 
 wもMx1のベクタ
+
+### 5/18までの開発  
+NNLSが紛い物だが完成した。
+あとはMCR-ALSを組み立てる。  
+D = CS<sup>T</sup> + &epsilon;  
+より
+D - CS<sup>T</sup>　をNNLSで最小化すれば良い
+ここで、各ステップにおいてC or S<sup>T</sup>を固定化して
