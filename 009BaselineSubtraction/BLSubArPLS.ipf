@@ -20,7 +20,7 @@ Function BaselineArPLS(rawWave, lam, ratio)
 	make/o/free/n=(numOfPoints) nextweightWave = 1
 	matrixop/o/free weightWaveDiag = diagonal(weightWave)
 	// make weightedDiffWave (H)
-	MakeWeightedDiffWave(numOfPoints)
+	wave weightedDiffWave = MakeWeightedDiffWave(numOfPoints)
 	matrixop/o/free weightedDiffWave = lam *  weightedDiffWave^t x weightedDiffWave 
 	
 	t=0
@@ -57,7 +57,7 @@ Function BaselineArPLS(rawWave, lam, ratio)
 	print count
 end
 
-Function MakeWeightedDiffWave(numOfPoints)
+Function/wave MakeWeightedDiffWave(numOfPoints)
 	/// This function make the wave for differentiation 
 	/// Author: Shinichi Miyazaki
 	variable numOfPoints
@@ -71,4 +71,5 @@ Function MakeWeightedDiffWave(numOfPoints)
 		weightedDiffWave[i][i+2] =1
 		i+=1
 	while(i<numOfPoints-2)
+	return weightedDiffWave
 end
