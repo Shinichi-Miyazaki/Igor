@@ -237,7 +237,7 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	endswitch
 
 	// make 2d wave 
-	wave4Dto2DForFit(wv)
+	wave wv_2d = wave4Dto2DForFit(wv)
 	
 	make /n=(pts)/o temp
 	make/o/n= (xNUm,yNUm,znum,NumofGauss) ResultWv
@@ -307,7 +307,7 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 
 end
 
-Function wave4Dto2DForFit(wv)	//rearrange the 4D wave to 2Dwave
+Function/wave wave4Dto2DForFit(wv)	//rearrange the 4D wave to 2Dwave
 	wave	wv;
 	variable Numx,Numy,Numz;
 	variable i,j,k,l, wvNum;
@@ -339,6 +339,7 @@ Function wave4Dto2DForFit(wv)	//rearrange the 4D wave to 2Dwave
 		while(j<Numy)
 		k += 1
 	while(k < Numz)
+	return wv_2d
 end
 
 Function wave2Dto4DForFit(wv, nUmx, numy, numz)	//rearrange the 4D wave to 2Dwave
