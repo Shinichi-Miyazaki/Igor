@@ -1,6 +1,29 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Function/wave remove_blank_cols(inwave)
+	wave inwave
+	matrixop/o/free inwaveCopy = inwave^t
+
+	variable nrows = dimsize(inwaveCopy,0)  // includes NaN rows
+	variable ncols = dimsize(inwaveCopy,1)
+	Redimension /N=(nrows*ncols) inwaveCopy
+	WaveTransform zapNaNs  inwaveCopy
+	variable nrows2 = numpnts(inwaveCopy)/ncols // always divisable by ncols
+	Redimension /N=(nrows2, ncols) inwaveCopy
+	matrixop/o removedWave = inwaveCopy^t
+	return removedwave
+end
+
+Function/wave extractCols(wv, indexwv)
+	wave wv, indexwv
+	matrixop/o/free inwave = wv+1
+	matrixop/o/free extractedWave = scalecols(inwave, indexwv)
+	matrixop/o/free extractedWave = replace(extractedWave, 0, NaN)
+	wave destWave = remove_blank_cols(extractedWave)
+	matrixop/o destWave = destwave-1
+	return destWave
+end
 
 function NNLS(Z, xvec, tolerance)
 	//Author: Shinichi Miyazaki
@@ -38,6 +61,7 @@ function NNLS(Z, xvec, tolerance)
 	do
 		//B1
 		matrixop/o WnR = w * RVecExtract
+		//wave WnR = extractCols(w, RvecExtract)
 		if (sum(RVecExtract)!=0 && (wavemax(WnR)>tolerance))
 			mainLoopJudge = 1
 			//B2
@@ -52,8 +76,7 @@ function NNLS(Z, xvec, tolerance)
 			//B4
 			// following code make Zp = 1 d 
 			// change PVexExtract to matrix which can extract p colomns from Z or d
-			matrixop/o PVecExtractMat = colrepeat(PVecExtract, Zrow)^T
-			matrixop/o Zp = bitand(Z, PVecExtractMat)
+			wave Zp = extractCols(Z, PVecExtract)
 			//matrixop/o Zp = Z x PVecExtractMat
 			// solve least square only using passive values 
 			matrixop/o Sp = inv(Zp^t x Zp) x Zp^t x xVec
@@ -86,3 +109,4 @@ function NNLS(Z, xvec, tolerance)
 	matrixop/o residual = (Z x d - XVec)^t x (Z x d - XVec) 
 	print residual[0]^0.5
 end
+
