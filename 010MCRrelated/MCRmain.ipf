@@ -5,24 +5,35 @@ Function/wave remove_blank_cols(inwave)
 	wave inwave
 	matrixop/o/free inwaveCopy = inwave^t
 
-	variable nrows = dimsize(inwaveCopy,0)  // includes NaN rows
-	variable ncols = dimsize(inwaveCopy,1)
-	Redimension /N=(nrows*ncols) inwaveCopy
+	variable numOfRows = dimsize(inwaveCopy,0) 
+	variable numOfCOls = dimsize(inwaveCopy,1)
+	// redimension to 1D wave
+	Redimension /N=(numOfRows*numOfCOls) inwaveCopy
 	WaveTransform zapNaNs  inwaveCopy
-	variable nrows2 = numpnts(inwaveCopy)/ncols // always divisable by ncols
-	Redimension /N=(nrows2, ncols) inwaveCopy
-	matrixop/o removedWave = inwaveCopy^t
-	return removedwave
+	variable numOfRowsChanged = numpnts(inwaveCopy)/numOfCOls 
+	Redimension /N=(numOfRowsChanged, numOfCOls) inwaveCopy
+	matrixop/o destWave = inwaveCopy^t
+	return destWave
 end
 
-Function/wave extractCols(wv, indexwv)
-	wave wv, indexwv
+Function/wave extractCols(wv, colMaskwv)
+	wave wv, colMaskwv
 	matrixop/o/free inwave = wv+1
-	matrixop/o/free extractedWave = scalecols(inwave, indexwv)
+	matrixop/o/free extractedWave = scalecols(inwave, colMaskwv)
 	matrixop/o/free extractedWave = replace(extractedWave, 0, NaN)
 	wave destWave = remove_blank_cols(extractedWave)
 	matrixop/o destWave = destwave-1
 	return destWave
+end
+
+Function/wave extractRows1D(wv, rowMaskWv)
+	wave wv, rowMaskWv
+	
+	matrixop/o/free inwave = wv+1
+	matrixop/o/free extractedWave = replace(inwave*rowMaskWv, 0, NaN)
+	wavetransform zapNaNs extractedWave
+	matrixop/o extractedWave=extractedWave-1
+	return extractedWave
 end
 
 function NNLS(Z, xvec, tolerance)
@@ -38,6 +49,7 @@ function NNLS(Z, xvec, tolerance)
 	
 	wave Z, xVec
 	variable tolerance
+	wave removeVec
 	variable mainLoopJudge, innerLoopJudge
 	
 	//obtain matrix size
@@ -85,20 +97,24 @@ function NNLS(Z, xvec, tolerance)
 				if (wavemin(Sp)<=0)
 					innerLoopJudge = 1
 					//C2
-					matrixop/o/free dp = d^t x PVecExtract
+					wave dp = extractRows1D(d, PVecExtract)
 					matrixop/o/free alphaWave = (dp/(dp-sp))
 					variable alpha = -wavemin(sp)
 					//C3
 					d = d + alpha * (Swave-d)
 					//update R and P 
+					removeVec = (d[p]==0) ? 0 : 1
+					matrixop/o PVecExtract = PVecExtract * removeVec
+					matrixop/o RVecExtract = -(PVecExtract-1)
 					matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
 				else
 					innerLoopJudge = 0
 				endif
 			while (innerLoopJudge == 1)
+			// followin code is incorrect
 			Swave = d + Sp[0] * PVecExtract
 			d = Swave
-			Swave = 0
+			//Swave = 0
 			// maybe following row is not needed
 			//PVecExtract=0
 			matrixop/o w = Z^t x (xVec- Z x d)
@@ -109,4 +125,5 @@ function NNLS(Z, xvec, tolerance)
 	matrixop/o residual = (Z x d - XVec)^t x (Z x d - XVec) 
 	print residual[0]^0.5
 end
+
 
