@@ -4,11 +4,17 @@
 Function/wave remove_blank_cols(inwave)
 	wave inwave
 	matrixop/o/free inwaveCopy = inwave^t
+<<<<<<< HEAD
 
 	variable numOfRows = dimsize(inwaveCopy,0) 
 	variable numOfCOls = dimsize(inwaveCopy,1)
 	// redimension to 1D wave
 	Redimension /N=(numOfRows*numOfCOls) inwaveCopy
+=======
+	variable nrows = dimsize(inwaveCopy,0)  // includes NaN rows
+	variable ncols = dimsize(inwaveCopy,1)
+	Redimension /N=(nrows*ncols) inwaveCopy
+>>>>>>> aacb3d4d4a24e3f1ada918b38a8a32c0013d2071
 	WaveTransform zapNaNs  inwaveCopy
 	variable numOfRowsChanged = numpnts(inwaveCopy)/numOfCOls 
 	Redimension /N=(numOfRowsChanged, numOfCOls) inwaveCopy
