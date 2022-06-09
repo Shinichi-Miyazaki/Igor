@@ -43,6 +43,19 @@ Function/wave extractRows1D(wv, rowMaskWv)
 	return extractedWave
 end
 
+Function/wave colSelectMatGen(colIndices)
+	wave colIndices
+	variable i
+	variable matSize = numpnts(colIndices)
+	matrixop/o colSelectMat = identity(matSize)
+	i=0
+	do 
+		colSelectMat[i][i] = colIndices[i]
+		i+=1
+	while(i<matSize)
+	return colSelectMat
+end
+
 function NNLS(Z, xvec, tolerance)
 	//Author: Shinichi Miyazaki
 	//ref "A FAST NON-NEGATIVITY-CONSTRAINED LEAST SQUARES ALGORITHM" 1997
@@ -99,6 +112,13 @@ function NNLS(Z, xvec, tolerance)
 			//matrixop/o Zp = Z x PVecExtractMat
 			// solve least square only using passive values 
 			matrixop/o Sp = inv(Zp^t x Zp) x Zp^t x xVec
+			
+			make/o/n=(Zcolumn) indexwave = p
+			matrixop/o indexWave = (indexWave+1)*PVecExtract
+			indexWave = indexWave == 0 ? NaN : indexWave
+			WaveTransform zapNaNs indexwave
+			indexwave -= 1
+			
 			do
 				//C1
 				if (wavemin(Sp)<=0)
@@ -114,13 +134,18 @@ function NNLS(Z, xvec, tolerance)
 					matrixop/o PVecExtract = PVecExtract * removeVec
 					matrixop/o RVecExtract = -(PVecExtract-1)
 					matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
+					
+					make/o/n=(Zcolumn) indexwave = p
+					matrixop/o indexWave = (indexWave+1)*PVecExtract
+					indexWave = indexWave == 0 ? NaN : indexWave
+					WaveTransform zapNaNs indexwave
+					indexwave -= 1
 				else
 					innerLoopJudge = 0
 				endif
 			while (innerLoopJudge == 1)
 			// followin code is incorrect
-			// concatenate Sp and Sr
-			Swave = d + Sp[0] * PVecExtract
+			Swave[indexWave] = {Sp}
 			d = Swave
 			//Swave = 0
 			// maybe following row is not needed
@@ -134,16 +159,10 @@ function NNLS(Z, xvec, tolerance)
 	print residual[0]^0.5
 end
 
-Function/wave colSelectMatGen(colIndices)
-	wave colIndices
-	variable i
-	variable matSize = numpnts(colIndices)
-	matrixop/o colSelectMat = identity(matSize)
-	i=0
-	do 
-		colSelectMat[i][i] = colIndices[i]
-		i+=1
-	while(i<matSize)
-	return colSelectMat
-end
 
+function MCRALS(data, initSpec, xNum, yNum)
+	wave data, initSpec
+	variable xNum, yNum
+	
+	
+end 
