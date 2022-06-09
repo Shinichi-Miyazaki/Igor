@@ -13,7 +13,7 @@ function MakeRatiometricImage(image1, image2, LowerThreshold)
 	matrixop/o RatioImage=image1/tempimage
 	matrixop/o ratioimage = replacenans(ratioimage, 0)
    NewImage RatioImage
+   ModifyGraph noLabel=2,axThick=0
+   ModifyGraph margin(right)=141,width=425.197,height={Aspect,1}
+   ColorScale/C/N=text0/F=0/A=MC/X=-15.00/Y=0.00 image=RatioImage
 end
-	
-
-

@@ -4,17 +4,11 @@
 Function/wave remove_blank_cols(inwave)
 	wave inwave
 	matrixop/o/free inwaveCopy = inwave^t
-<<<<<<< HEAD
 
 	variable numOfRows = dimsize(inwaveCopy,0) 
 	variable numOfCOls = dimsize(inwaveCopy,1)
 	// redimension to 1D wave
 	Redimension /N=(numOfRows*numOfCOls) inwaveCopy
-=======
-	variable nrows = dimsize(inwaveCopy,0)  // includes NaN rows
-	variable ncols = dimsize(inwaveCopy,1)
-	Redimension /N=(nrows*ncols) inwaveCopy
->>>>>>> aacb3d4d4a24e3f1ada918b38a8a32c0013d2071
 	WaveTransform zapNaNs  inwaveCopy
 	variable numOfRowsChanged = numpnts(inwaveCopy)/numOfCOls 
 	Redimension /N=(numOfRowsChanged, numOfCOls) inwaveCopy
@@ -29,6 +23,13 @@ Function/wave extractCols(wv, colMaskwv)
 	matrixop/o/free extractedWave = replace(extractedWave, 0, NaN)
 	wave destWave = remove_blank_cols(extractedWave)
 	matrixop/o destWave = destwave-1
+	return destWave
+end
+
+
+Function/wave extractCols2(wv, colMaskwv)
+	wave wv, colMaskwv
+	matrixop/o/free destwave = scalecols(wv, colMaskwv)
 	return destWave
 end
 
@@ -118,6 +119,7 @@ function NNLS(Z, xvec, tolerance)
 				endif
 			while (innerLoopJudge == 1)
 			// followin code is incorrect
+			// concatenate Sp and Sr
 			Swave = d + Sp[0] * PVecExtract
 			d = Swave
 			//Swave = 0
@@ -132,4 +134,16 @@ function NNLS(Z, xvec, tolerance)
 	print residual[0]^0.5
 end
 
+Function/wave colSelectMatGen(colIndices)
+	wave colIndices
+	variable i
+	variable matSize = numpnts(colIndices)
+	matrixop/o colSelectMat = identity(matSize)
+	i=0
+	do 
+		colSelectMat[i][i] = colIndices[i]
+		i+=1
+	while(i<matSize)
+	return colSelectMat
+end
 
