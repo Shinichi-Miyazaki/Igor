@@ -56,7 +56,7 @@ Function/wave colSelectMatGen(colIndices)
 	return colSelectMat
 end
 
-function NNLS(Z, xvec, tolerance)
+function/wave NNLS(Z, xvec, tolerance)
 	//Author: Shinichi Miyazaki
 	//ref "A FAST NON-NEGATIVITY-CONSTRAINED LEAST SQUARES ALGORITHM" 1997
 	//this function solve Ax = b about x 
@@ -156,13 +156,57 @@ function NNLS(Z, xvec, tolerance)
 		endif
 	while (mainLoopJudge==1)
 	matrixop/o residual = (Z x d - XVec)^t x (Z x d - XVec) 
-	print residual[0]^0.5
+	return d
+	//print residual[0]^0.5
 end
 
 
-function MCRALS(data, initSpec, xNum, yNum)
-	wave data, initSpec
-	variable xNum, yNum
+function MCRALS(indata, initSpec, xNum, yNum, maxIter)
+	wave indata, initSpec
+	variable xNum, yNum, maxIter
+	variable i, j
 	
+	variable tolerance = 1
+	variable specNum = dimsize(initSpec, 1)
+	variable wavenum = dimsize(initSpec, 0)
+	variable spatialPnts = xNum*yNum
 	
+	//make empty waves 
+	make/o/n = (spatialPnts, specNum) Concentration = 0
+	make/o/n = (waveNum, specNum) Spectrum = 0
+	
+	i = 0
+	do 
+		j=0
+		if (i == 0)
+			do
+				matrixop/o Zwave = indata^t
+				make/o/n = (wavenum) xVec = 0 
+				xVec = initSpec[p][j]
+				wave ans = NNLS(Zwave, xvec, tolerance)
+				Concentration[][j] = ans[p]
+				j+=1
+			while (j<specNum)
+		elseif (mod(i,2)==1)
+			do
+				matrixop/o tempConcentration = Concentration
+				matrixop/o Zwave = indata
+				make/o/n  = (spatialPnts) xVec = 0
+				xVec = tempConcentration[p][j]
+				wave ans = NNLS(Zwave, xvec, tolerance)
+				Spectrum[][j] = ans[p]
+				j+=1
+			while (j<specNum)
+		else 
+			do
+				matrixop/o Zwave = indata^t
+				make/o/n  = (waveNum) xVec = 0
+				xVec = Spectrum[p][j]
+				wave ans = NNLS(Zwave, xvec, tolerance)
+				Concentration[][j] = ans[p]
+				j+=1
+			while (j<specNum)
+		endif 
+		i += 1
+	while (i<maxIter)
 end 
