@@ -130,7 +130,7 @@ function/wave NNLS(Z, xvec, tolerance)
 					//C3
 					d = d + alpha * (Swave-d)
 					//update R and P 
-					removeVec = (d[p]==0) ? 0 : 1
+					make/o/n=(Zcolumn) removeVec = (d[p]==0) ? 0 : 1
 					matrixop/o PVecExtract = PVecExtract * removeVec
 					matrixop/o RVecExtract = -(PVecExtract-1)
 					matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
@@ -166,7 +166,7 @@ function MCRALS(indata, initSpec, xNum, yNum, maxIter)
 	variable xNum, yNum, maxIter
 	variable i, j
 	
-	variable tolerance = 1
+	variable tolerance = 0
 	variable specNum = dimsize(initSpec, 1)
 	variable wavenum = dimsize(initSpec, 0)
 	variable spatialPnts = xNum*yNum
