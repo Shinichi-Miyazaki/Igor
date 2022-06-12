@@ -77,12 +77,10 @@ function/wave NNLS(Z, xvec, tolerance)
 	variable ZColumn = dimsize(Z, 1) 
 	
 	// A1 
-	// P_vec is indices which already changed
-	make/o/n = 0 PVec
+	// P_vec is indices which are not fixed
 	make/o/n = (Zcolumn) PVecExtract=0
 	// A2
-	// R_vec is indices which is not updated
-	//make/o/n = (ZColumn) RVec = p
+	// R_vec is indices which is fixed to zero
 	make/o/n = (Zcolumn) RVecExtract=1
 	// A3
 	make/o/n = (ZColumn) d = 0
@@ -93,32 +91,19 @@ function/wave NNLS(Z, xvec, tolerance)
 	do
 		//B1
 		matrixop/o WnR = w * RVecExtract
-		//wave WnR = extractCols(w, RvecExtract)
 		if (sum(RVecExtract)!=0 && (wavemax(WnR)>tolerance))
 			mainLoopJudge = 1
 			//B2
 			wavestats/Q WnR
 			//B3
 			//Remove from Rvec
-			//Extract/O RVec, RVec, RVec!=RVec[V_maxRowLoc]
 			RVecExtract[V_maxRowLoc] = 0
 			//Include in PVec
-			PVec[V_maxRowLoc] = {1}
 			PVecExtract[V_maxRowLoc] = 1
 			//B4
-			// following code make Zp = 1 d 
-			// change PVexExtract to matrix which can extract p colomns from Z or d
 			wave Zp = extractCols(Z, PVecExtract)
-			//matrixop/o Zp = Z x PVecExtractMat
 			// solve least square only using passive values 
 			matrixop/o Sp = inv(Zp^t x Zp) x Zp^t x xVec
-			
-			make/o/n=(Zcolumn) indexwave = p
-			matrixop/o indexWave = (indexWave+1)*PVecExtract
-			indexWave = indexWave == 0 ? NaN : indexWave
-			WaveTransform zapNaNs indexwave
-			indexwave -= 1
-			
 			do
 				//C1
 				if (wavemin(Sp)<=0)
@@ -126,24 +111,26 @@ function/wave NNLS(Z, xvec, tolerance)
 					//C2
 					wave dp = extractRows1D(d, PVecExtract)
 					matrixop/o/free alphaWave = (dp/(dp-sp))
-					variable alpha = -wavemin(sp)
+					variable alpha = -wavemin(alphaWave)
 					//C3
 					d = d + alpha * (Swave-d)
 					//update R and P 
 					make/o/n=(Zcolumn) removeVec = (d[p]==0) ? 0 : 1
 					matrixop/o PVecExtract = PVecExtract * removeVec
 					matrixop/o RVecExtract = -(PVecExtract-1)
+					wave Zp = extractCols(Z, PVecExtract)
 					matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
-					
-					make/o/n=(Zcolumn) indexwave = p
-					matrixop/o indexWave = (indexWave+1)*PVecExtract
-					indexWave = indexWave == 0 ? NaN : indexWave
-					WaveTransform zapNaNs indexwave
-					indexwave -= 1
 				else
 					innerLoopJudge = 0
 				endif
 			while (innerLoopJudge == 1)
+			
+			make/o/n=(Zcolumn) indexwave = p
+			matrixop/o indexWave = (indexWave+1)*PVecExtract
+			indexWave = indexWave == 0 ? NaN : indexWave
+			WaveTransform zapNaNs indexwave
+			indexwave -= 1
+			
 			// followin code is incorrect
 			Swave[indexWave] = {Sp}
 			d = Swave
