@@ -90,7 +90,8 @@ function/wave NNLS(Z, xvec, tolerance)
 
 	do
 		//B1
-		matrixop/o WnR = w * RVecExtract
+		wave WnR = extractRows1D(w, RVecExtract)
+		//matrixop/o WnR = w * RVecExtract
 		if (sum(RVecExtract)!=0 && (wavemax(WnR)>tolerance))
 			mainLoopJudge = 1
 			//B2
@@ -120,6 +121,14 @@ function/wave NNLS(Z, xvec, tolerance)
 					matrixop/o RVecExtract = -(PVecExtract-1)
 					wave Zp = extractCols(Z, PVecExtract)
 					matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
+					
+					make/o/n=(Zcolumn) indexwave = p
+					matrixop/o indexWave = (indexWave+1)*PVecExtract
+					indexWave = indexWave == 0 ? NaN : indexWave
+					WaveTransform zapNaNs indexwave
+					indexwave -= 1
+					
+					Swave[indexWave] = {Sp}
 				else
 					innerLoopJudge = 0
 				endif
@@ -134,9 +143,6 @@ function/wave NNLS(Z, xvec, tolerance)
 			// followin code is incorrect
 			Swave[indexWave] = {Sp}
 			d = Swave
-			//Swave = 0
-			// maybe following row is not needed
-			//PVecExtract=0
 			matrixop/o w = Z^t x (xVec- Z x d)
 		else
 			mainLoopJudge = 0
