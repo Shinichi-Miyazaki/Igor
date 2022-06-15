@@ -54,7 +54,7 @@ function/wave NNLS(Z, xvec, tolerance)
 	wave removeVec
 	variable mainLoopJudge, innerLoopJudge
 	
-	variable alphaTol = 1e-10
+	variable alphaTol = 1e-15
 	variable/G residual = 0
 	
 	//obtain matrix size
@@ -249,6 +249,7 @@ Function/wave SVDandPlots(rawData, xAxis, componentNum, xNum, yNum, [startWaveNu
 	matrixSVD/DACA/PART=(componentNum) rawData2d
 	
 	// make spectrum graphs
+	wave M_U = M_U
 	i=1
 	display M_U[][0] vs xAxis
 	do
@@ -294,13 +295,13 @@ Function/wave wave4Dto2DSVD(wv,Numx,Numy)
 end
 
 
-function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter, startWaveNum, endWaveNum)
+function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
 	wave indata, xaxis
-	variable componentNum, xnum, ynum, maxiter, startWaveNum, endWaveNum
+	variable componentNum, xnum, ynum, maxiter
 	variable i
 	wave M_U, concentration
 	string imagename
-	wave rawdata2d = SVDandPlots(indata, xAxis, componentNum, xNum, yNum, startWaveNum=Startwavenum, endWaveNum = endwavenum)
+	wave rawdata2d = SVDandPlots(indata, xAxis, componentNum, xNum, yNum)
 	matrixop/o rawdata2d = rawdata2d^t
 	MCRALS(rawdata2d, M_U, xNum, yNum, maxIter)
 	i=0
