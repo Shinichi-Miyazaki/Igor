@@ -1,59 +1,41 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function/wave remove_blank_cols(inwave)
-	wave inwave
-	matrixop/o/free inwaveCopy = inwave^t
-
-	variable numOfRows = dimsize(inwaveCopy,0) 
-	variable numOfCOls = dimsize(inwaveCopy,1)
-	// redimension to 1D wave
-	Redimension /N=(numOfRows*numOfCOls) inwaveCopy
-	WaveTransform zapNaNs  inwaveCopy
-	variable numOfRowsChanged = numpnts(inwaveCopy)/numOfCOls 
-	Redimension /N=(numOfRowsChanged, numOfCOls) inwaveCopy
-	matrixop/o destWave = inwaveCopy^t
-	return destWave
-end
-
 Function/wave extractCols(wv, colMaskwv)
 	wave wv, colMaskwv
-	matrixop/o/free inwave = wv+1
-	matrixop/o/free extractedWave = scalecols(inwave, colMaskwv)
-	matrixop/o/free extractedWave = replace(extractedWave, 0, NaN)
-	wave destWave = remove_blank_cols(extractedWave)
-	matrixop/o destWave = destwave-1
-	return destWave
+	string outWvName = "extractedCols" + nameofWave(wv)
+	duplicate/o wv $outWvName
+	wave outwave = $outWvName
+	
+	matrixop/o/free outwave = scalecols((outwave+1), colMaskwv)
+	matrixop/o/free outwave = replace(outwave, 0, NaN)
+	matrixop/o/free outwave = outwave^t
+	variable numOfRows = dimsize(outwave,0) 
+	variable numOfCOls = dimsize(outwave,1)
+	Redimension /N=(numOfRows*numOfCOls) outwave
+	WaveTransform zapNaNs  outwave
+	variable numOfRowsChanged = numpnts(outwave)/numOfCOls 
+	Redimension /N=(numOfRowsChanged, numOfCOls) outwave
+	matrixop/o outwave = outwave^t
+	matrixop/o/free outwave = outwave-1
+	return outwave
 end
 
-
-Function/wave extractCols2(wv, colMaskwv)
-	wave wv, colMaskwv
-	matrixop/o/free destwave = scalecols(wv, colMaskwv)
-	return destWave
-end
 
 Function/wave extractRows1D(wv, rowMaskWv)
 	wave wv, rowMaskWv
+	string outWvName = "extracted" + nameofWave(wv)
+	duplicate/o wv $outWvName
+	wave outwave = $outWvName
 	
-	matrixop/o/free inwave = wv+1
-	matrixop/o/free extractedWave = replace(inwave*rowMaskWv, 0, NaN)
-	wavetransform zapNaNs extractedWave
-	matrixop/o extractedWave=extractedWave-1
-	return extractedWave
-end
-
-Function/wave colSelectMatGen(colIndices)
-	wave colIndices
-	variable i
-	variable matSize = numpnts(colIndices)
-	matrixop/o colSelectMat = identity(matSize)
-	i=0
-	do 
-		colSelectMat[i][i] = colIndices[i]
-		i+=1
-	while(i<matSize)
-	return colSelectMat
+	matrixop/o/free outwave = replace((outwave+1) * rowMaskWv, 0, NaN)
+	wavetransform zapNaNs outwave
+	if (dimsize(outwave, 0) == 0)
+		matrixop/o/free outwave=0
+	else 
+		matrixop/o/free outwave=outwave-1
+	endif
+	return outwave
 end
 
 function/wave NNLS(Z, xvec, tolerance)
@@ -72,6 +54,9 @@ function/wave NNLS(Z, xvec, tolerance)
 	wave removeVec
 	variable mainLoopJudge, innerLoopJudge
 	
+	variable alphaTol = 1e-10
+	variable/G residual = 0
+	
 	//obtain matrix size
 	variable ZRow = dimsize(Z, 0) 
 	variable ZColumn = dimsize(Z, 1) 
@@ -83,56 +68,32 @@ function/wave NNLS(Z, xvec, tolerance)
 	// R_vec is indices which is fixed to zero
 	make/o/n = (Zcolumn) RVecExtract=1
 	// A3
-	make/o/n = (ZColumn) d = 0
-	make/o/n = (ZColumn) Swave = 0
+	make/o/d/n = (ZColumn) d = 0
+	make/o/d/n = (ZColumn) Swave = 0
 	// A4
 	matrixop/o w = Z^t x (xVec- Z x d)
+	make/o/n=(Zcolumn) WIdwave = p
 
 	do
 		//B1
 		wave WnR = extractRows1D(w, RVecExtract)
-		//matrixop/o WnR = w * RVecExtract
-		if (sum(RVecExtract)!=0 && (wavemax(WnR)>tolerance))
+		wave WIdWaveR = extractRows1D(WIdWave, RVecExtract)
+		variable WnRmax = wavemax(WnR)
+		if (sum(RVecExtract)!=0 && (WnRmax>tolerance))
 			mainLoopJudge = 1
 			//B2
 			wavestats/Q WnR
+			variable m = WIdWaveR[V_maxRowLoc]
+			
 			//B3
 			//Remove from Rvec
-			RVecExtract[V_maxRowLoc] = 0
+			RVecExtract[m] = 0
 			//Include in PVec
-			PVecExtract[V_maxRowLoc] = 1
+			PVecExtract[m] = 1
 			//B4
 			wave Zp = extractCols(Z, PVecExtract)
 			// solve least square only using passive values 
 			matrixop/o Sp = inv(Zp^t x Zp) x Zp^t x xVec
-			do
-				//C1
-				if (wavemin(Sp)<=0)
-					innerLoopJudge = 1
-					//C2
-					wave dp = extractRows1D(d, PVecExtract)
-					matrixop/o/free alphaWave = (dp/(dp-sp))
-					variable alpha = -wavemin(alphaWave)
-					//C3
-					d = d + alpha * (Swave-d)
-					//update R and P 
-					make/o/n=(Zcolumn) removeVec = (d[p]==0) ? 0 : 1
-					matrixop/o PVecExtract = PVecExtract * removeVec
-					matrixop/o RVecExtract = -(PVecExtract-1)
-					wave Zp = extractCols(Z, PVecExtract)
-					matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
-					
-					make/o/n=(Zcolumn) indexwave = p
-					matrixop/o indexWave = (indexWave+1)*PVecExtract
-					indexWave = indexWave == 0 ? NaN : indexWave
-					WaveTransform zapNaNs indexwave
-					indexwave -= 1
-					
-					Swave[indexWave] = {Sp}
-				else
-					innerLoopJudge = 0
-				endif
-			while (innerLoopJudge == 1)
 			
 			make/o/n=(Zcolumn) indexwave = p
 			matrixop/o indexWave = (indexWave+1)*PVecExtract
@@ -140,26 +101,79 @@ function/wave NNLS(Z, xvec, tolerance)
 			WaveTransform zapNaNs indexwave
 			indexwave -= 1
 			
-			// followin code is incorrect
 			Swave[indexWave] = {Sp}
+			
+			do
+				//C1
+				if (wavemin(Sp)<=0)
+					innerLoopJudge = 1
+					//C2
+					wave dp = extractRows1D(d, PVecExtract)
+					
+					// get negative index
+					make/o/n=(numpnts(Sp)) negativeIndex = (Sp[p]<=0) ? p+1 : 0
+					negativeIndex = negativeIndex == 0 ? NaN : negativeIndex
+					WaveTransform zapNaNs negativeIndex
+					negativeIndex -= 1
+					make/o/n=(numPnts(negativeIndex)) Snegative = Sp[negativeIndex]
+					make/o/n=(numPnts(negativeIndex)) Dnegative = dp[negativeIndex]
+										
+					matrixop/o alphaWave = (Dnegative/(Dnegative-Snegative))
+					variable alpha = wavemin(alphaWave)
+					if (alpha < alphaTol)
+						Sp = Dp
+						make/o/n=(Zcolumn) indexwave = p
+						matrixop/o indexWave = (indexWave+1)*PVecExtract
+						indexWave = indexWave == 0 ? NaN : indexWave
+						WaveTransform zapNaNs indexwave
+						indexwave -= 1
+						make/o/d/n = (ZColumn) Swave = 0
+						Swave[indexWave] = {Sp}
+						
+						innerLoopJudge = 0
+					else
+						//C3
+						d = d + alpha * (Swave-d)
+						//update R and P 
+						make/o/n=(Zcolumn) removeVec = (d[p]<=0) ? 0 : 1
+						matrixop/o PVecExtract = PVecExtract * removeVec
+						matrixop/o RVecExtract = -(PVecExtract-1)
+						
+						wave Zp = extractCols(Z, PVecExtract)
+						matrixop/o sp = inv(Zp^t x Zp) x Zp^t x xVec
+						
+						make/o/n=(Zcolumn) indexwave = p
+						matrixop/o indexWave = (indexWave+1)*PVecExtract
+						indexWave = indexWave == 0 ? NaN : indexWave
+						WaveTransform zapNaNs indexwave
+						indexwave -= 1
+						
+						make/o/d/n = (ZColumn) Swave = 0
+						Swave[indexWave] = {Sp}
+					endif
+				else
+					innerLoopJudge = 0
+				endif
+			while (innerLoopJudge == 1)
 			d = Swave
 			matrixop/o w = Z^t x (xVec- Z x d)
 		else
 			mainLoopJudge = 0
 		endif
 	while (mainLoopJudge==1)
-	matrixop/o residual = (Z x d - XVec)^t x (Z x d - XVec) 
+	matrixop/o tempresidual = (Z x d - XVec)^t x (Z x d - XVec) 
+	residual = residual + tempresidual[0]
 	return d
-	//print residual[0]^0.5
 end
-
 
 function MCRALS(indata, initSpec, xNum, yNum, maxIter)
 	wave indata, initSpec
 	variable xNum, yNum, maxIter
 	variable i, j
+	variable/G residual
 	
-	variable tolerance = 0
+	variable tolerance = 1e-15
+	variable spatialNum = dimsize(indata, 0)
 	variable specNum = dimsize(initSpec, 1)
 	variable wavenum = dimsize(initSpec, 0)
 	variable spatialPnts = xNum*yNum
@@ -172,34 +186,131 @@ function MCRALS(indata, initSpec, xNum, yNum, maxIter)
 	do 
 		j=0
 		if (i == 0)
+			matrixop/o Zwave = indata^t
+			variable meanresidual = 0
 			do
-				matrixop/o Zwave = indata^t
-				make/o/n = (wavenum) xVec = 0 
-				xVec = initSpec[p][j]
-				wave ans = NNLS(Zwave, xvec, tolerance)
-				Concentration[][j] = ans[p]
+				make/o/n = (waveNum) tempZ = Zwave[p][j]
+				wave ans = NNLS(InitSpec, tempZ, tolerance)
+				Concentration[j][] = ans[q]
+				meanresidual += residual
 				j+=1
-			while (j<specNum)
+			while (j<spatialNum)
+			meanresidual /= spatialNum
+			print "Iter: " + num2str(i) + " (C), mse = " + num2Str(meanresidual)
 		elseif (mod(i,2)==1)
+			matrixop/o Zwave = indata
+			meanresidual = 0
 			do
-				matrixop/o tempConcentration = Concentration
-				matrixop/o Zwave = indata
-				make/o/n  = (spatialPnts) xVec = 0
-				xVec = tempConcentration[p][j]
-				wave ans = NNLS(Zwave, xvec, tolerance)
-				Spectrum[][j] = ans[p]
+				make/o/n = (spatialNum) tempZ = Zwave[p][j]
+				wave ans = NNLS(Concentration, tempZ, tolerance)
+				Spectrum[j][] = ans[q]
+				meanresidual += residual
 				j+=1
-			while (j<specNum)
+			while (j<waveNum)
+			meanresidual /= waveNum
+			print "Iter: " + num2str(i) + " (ST), mse = " + num2Str(meanresidual)
 		else 
+			matrixop/o Zwave = indata^t
+			meanresidual = 0
 			do
-				matrixop/o Zwave = indata^t
-				make/o/n  = (waveNum) xVec = 0
-				xVec = Spectrum[p][j]
-				wave ans = NNLS(Zwave, xvec, tolerance)
-				Concentration[][j] = ans[p]
+				make/o/n = (waveNum) tempZ = Zwave[p][j]
+				wave ans = NNLS(Spectrum, tempZ, tolerance)
+				Concentration[j][] = ans[q]
+				meanresidual += residual
 				j+=1
-			while (j<specNum)
+			while (j<SPatialnum)
+			meanresidual /= spatialNum
+			print "Iter: " + num2str(i) + " (C), mse = " + num2Str(meanresidual)
 		endif 
 		i += 1
 	while (i<maxIter)
 end 
+
+
+
+Function/wave SVDandPlots(rawData, xAxis, componentNum, xNum, yNum, [startWaveNum, endWaveNum])
+	/// Author: Shinichi Miyazaki
+	/// This function conduct SVD and plot spectrum and make images
+	/// @params	rawData:			4D wave 	(waveNum, x, y, z) 
+	/// @params	xAxis:			1D wave 	(waveNum)
+	/// @params	componentNum:	variable	(how many componets do you want to divide into)
+	/// @params	xNum, yNUm:		variable	(spatial points)
+	/// @params	startWavenum	variable	(optional, wavenum ROI)
+	
+	wave rawData, xAxis
+	variable componentNum, xNum, yNum, startWaveNum, endWaveNum
+	wave M_U, M_V, rawData2D
+	variable i
+	String imageName
+	
+	wave rawData2D = wave4dto2dSVD(rawData, xNum, yNum)
+	
+	// svd 
+	matrixSVD/DACA/PART=(componentNum) rawData2d
+	
+	// make spectrum graphs
+	i=1
+	display M_U[][0] vs xAxis
+	do
+		AppendtoGraph M_U[][i] vs xAxis
+		i+=1
+	while (i<componentNum-1)	
+	SetAxis/A/R bottom
+	
+	// make images
+	i=0
+	do 
+		imageName = "image" + num2str(i)
+		make/o/n = (xNum*yNum)/D $imageName = M_V[p][i]
+		redimension/n =(xNum, yNum) $imageName 
+		display; appendimage $imageName
+		ModifyGraph width=200, height = {Aspect, yNum/xNum}
+		i+=1
+	while (i<componentNum)
+	return rawdata2d
+end
+
+Function/wave wave4Dto2DSVD(wv,Numx,Numy)
+	wave	wv;
+	variable	Numx,Numy;
+	variable	SampleNum,i,j,k,l, wvNum;
+	variable start, startnum, endnum, pixelnum, num
+
+	wvNum = dimsize(wv, 0)
+	pixelnum = Numx*Numy
+
+	make/O/N=(wvNum,pixelnum)/D imchi3_2d;
+	k = 0;
+	num=0
+
+	do
+		for(j=0;j<Numx;j=j+1)
+			imchi3_2D[][num] = wv[p][j][k][0];
+			num+=1
+		endfor
+		k += 1
+	while(k < Numy)
+	return imchi3_2d
+end
+
+
+function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter, startWaveNum, endWaveNum)
+	wave indata, xaxis
+	variable componentNum, xnum, ynum, maxiter, startWaveNum, endWaveNum
+	variable i
+	wave M_U, concentration
+	string imagename
+	wave rawdata2d = SVDandPlots(indata, xAxis, componentNum, xNum, yNum, startWaveNum=Startwavenum, endWaveNum = endwavenum)
+	matrixop/o rawdata2d = rawdata2d^t
+	MCRALS(rawdata2d, M_U, xNum, yNum, maxIter)
+	i=0
+	do
+		imagename = "component" + num2str(i)
+		make/o/n=(xNUm*yNUm) $imagename = concentration[p][i]
+		redimension/N= (xnUm, yNum) $imagename
+		display;appendimage $Imagename;
+		ModifyGraph width=200,height={Aspect,yNum/xNum}
+		ModifyImage $Imagename ctab= {*,50,YellowHot,0}
+		i+=1
+	while (i<componentNum)
+end
