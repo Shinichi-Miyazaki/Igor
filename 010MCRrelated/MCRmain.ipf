@@ -248,6 +248,7 @@ Function [wave rawdata2d, wave M_U] SVDandPlots(wave rawData, wave xAxis,variabl
 	
 	// make spectrum graphs
 	wave M_U = M_U
+	wave M_V = M_V
 	i=1
 	display M_U[][0] vs xAxis
 	do
@@ -302,6 +303,7 @@ function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
 	[rawdata2d, M_U] = SVDandPlots(indata, xAxis, componentNum, xNum, yNum)
 	matrixop/o rawdata2d = rawdata2d^t
 	[concentration, SPectrum] = MCRALS(rawdata2d, M_U, xNum, yNum, maxIter)
+	//show concentration
 	i=0
 	do
 		imagename = "component" + num2str(i)
@@ -309,7 +311,19 @@ function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
 		redimension/N= (xnUm, yNum) $imagename
 		display;appendimage $Imagename;
 		ModifyGraph width=200,height={Aspect,yNum/xNum}
-		ModifyImage $Imagename ctab= {*,50,YellowHot,0}
+		ModifyImage $Imagename ctab= {*,3,ColdWarm,0}
 		i+=1
+	while (i<componentNum)
+	
+	// show spectrum
+	i=0
+	do 
+		if (i==0)
+			display spectrum[][i] vs xaxis
+		else
+			AppendToGraph Spectrum[][i] vs xaxis
+		endif
+		i+=1
+		SetAxis/A/R bottom
 	while (i<componentNum)
 end
