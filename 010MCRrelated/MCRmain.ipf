@@ -166,9 +166,7 @@ function/wave NNLS(Z, xvec, tolerance)
 	return d
 end
 
-function MCRALS(indata, initSpec, xNum, yNum, maxIter)
-	wave indata, initSpec
-	variable xNum, yNum, maxIter
+function [wave concentration, wave spectrum] MCRALS(wave indata, wave initSpec,variable xNum,variable yNum,variable maxIter)
 	variable i, j
 	variable/G residual
 	
@@ -224,11 +222,12 @@ function MCRALS(indata, initSpec, xNum, yNum, maxIter)
 		endif 
 		i += 1
 	while (i<maxIter)
+	return [Concentration, spectrum]
 end 
 
 
 
-Function/wave SVDandPlots(rawData, xAxis, componentNum, xNum, yNum, [startWaveNum, endWaveNum])
+Function [wave rawdata2d, wave M_U] SVDandPlots(wave rawData, wave xAxis,variable componentNum,variable xNum,variable yNum)
 	/// Author: Shinichi Miyazaki
 	/// This function conduct SVD and plot spectrum and make images
 	/// @params	rawData:			4D wave 	(waveNum, x, y, z) 
@@ -237,11 +236,10 @@ Function/wave SVDandPlots(rawData, xAxis, componentNum, xNum, yNum, [startWaveNu
 	/// @params	xNum, yNUm:		variable	(spatial points)
 	/// @params	startWavenum	variable	(optional, wavenum ROI)
 	
-	wave rawData, xAxis
-	variable componentNum, xNum, yNum, startWaveNum, endWaveNum
 	wave M_U, M_V, rawData2D
 	variable i
 	String imageName
+	
 	
 	wave rawData2D = wave4dto2dSVD(rawData, xNum, yNum)
 	
@@ -268,7 +266,7 @@ Function/wave SVDandPlots(rawData, xAxis, componentNum, xNum, yNum, [startWaveNu
 		ModifyGraph width=200, height = {Aspect, yNum/xNum}
 		i+=1
 	while (i<componentNum)
-	return rawdata2d
+	return [rawdata2d, M_U]
 end
 
 Function/wave wave4Dto2DSVD(wv,Numx,Numy)
@@ -299,11 +297,11 @@ function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
 	wave indata, xaxis
 	variable componentNum, xnum, ynum, maxiter
 	variable i
-	wave M_U, concentration
+	wave rawdata2d, M_U, concentration, spectrum
 	string imagename
-	wave rawdata2d = SVDandPlots(indata, xAxis, componentNum, xNum, yNum)
+	[rawdata2d, M_U] = SVDandPlots(indata, xAxis, componentNum, xNum, yNum)
 	matrixop/o rawdata2d = rawdata2d^t
-	MCRALS(rawdata2d, M_U, xNum, yNum, maxIter)
+	[concentration, SPectrum] = MCRALS(rawdata2d, M_U, xNum, yNum, maxIter)
 	i=0
 	do
 		imagename = "component" + num2str(i)
