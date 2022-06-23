@@ -327,3 +327,29 @@ function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
 		SetAxis/A/R bottom
 	while (i<componentNum)
 end
+
+
+function weightedAverageWithComponent(indata, componentwave)
+	wave indata 
+	wave componentwave
+	variable wavenum, xnum, ynum, i, j
+	
+	// obtain dimsizes
+	wavenum = dimsize(indata, 0)
+	xnum = dimsize(indata, 1)
+	yNum = dimsize(indata, 2)
+	
+	make/o/n = (wavenum) weightedAv=0
+	
+	// loop 
+	i = 0
+	do
+		j = 0
+		do
+			weightedAv += indata[p][i][j][0] * componentwave[i][j]
+			j+=1
+		while (j<ynum)
+		i+=1
+	while (i<xNum)
+end
+
