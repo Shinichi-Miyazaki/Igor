@@ -28,12 +28,12 @@ Function/wave extractRows1D(wv, rowMaskWv)
 	duplicate/o wv $outWvName
 	wave outwave = $outWvName
 	
-	matrixop/o/free outwave = replace((outwave+1) * rowMaskWv, 0, NaN)
+	matrixop/o outwave = replace((outwave+1) * rowMaskWv, 0, NaN)
 	wavetransform zapNaNs outwave
 	if (dimsize(outwave, 0) == 0)
-		matrixop/o/free outwave=0
+		matrixop/o outwave=0
 	else 
-		matrixop/o/free outwave=outwave-1
+		matrixop/o outwave=outwave-1
 	endif
 	return outwave
 end
@@ -227,7 +227,7 @@ end
 
 
 
-Function [wave rawdata2d, wave M_U] SVDandPlots(wave rawData, wave xAxis,variable componentNum,variable xNum,variable yNum)
+Function [wave rawdata2d,wave subxaxis, wave M_U] SVDandPlots(wave rawData, wave xAxis,variable componentNum, variable startWvNum, variable endWvNum)
 	/// Author: Shinichi Miyazaki
 	/// This function conduct SVD and plot spectrum and make images
 	/// @params	rawData:			4D wave 	(waveNum, x, y, z) 
@@ -236,15 +236,26 @@ Function [wave rawdata2d, wave M_U] SVDandPlots(wave rawData, wave xAxis,variabl
 	/// @params	xNum, yNUm:		variable	(spatial points)
 	/// @params	startWavenum	variable	(optional, wavenum ROI)
 	
-	wave M_U, M_V, rawData2D
-	variable i
+	wave M_U, M_V
+	variable i, xnum, ynum
 	String imageName
 	
+	xNum = dimsize(rawdata,1)
+	yNUm = dimsize(rawdata,2)
 	
+	// subrange waves
+	make/o/n=(dimsize(xaxis,0)) maskwave = 1
+	maskwave = xaxis <= startwvnum ? 0 : maskwave
+	maskwave = xaxis >= endwvnUm ? 0 : maskwave
+	wave subxaxis = extractRows1D(xaxis, maskwave)
 	wave rawData2D = wave4dto2dSVD(rawData, xNum, yNum)
+	matrixop/o rawdata2d = rawdata2d^t
+	wave subrawdata = extractCols(rawdata2d, maskwave)
+	matrixop/o subrawdata = subrawdata^t
+	
 	
 	// svd 
-	matrixSVD/DACA/PART=(componentNum) rawData2d
+	matrixSVD/DACA/PART=(componentNum) subrawdata
 	
 	// make spectrum graphs
 	wave M_U = M_U
@@ -267,7 +278,7 @@ Function [wave rawdata2d, wave M_U] SVDandPlots(wave rawData, wave xAxis,variabl
 		ModifyGraph width=200, height = {Aspect, yNum/xNum}
 		i+=1
 	while (i<componentNum)
-	return [rawdata2d, M_U]
+	return [subrawdata,subxaxis, M_U]
 end
 
 Function/wave wave4Dto2DSVD(wv,Numx,Numy)
@@ -294,13 +305,16 @@ Function/wave wave4Dto2DSVD(wv,Numx,Numy)
 end
 
 
-function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
+function SVD_MCRALS(indata, xaxis, componentNum, startwvNum, endwvNum, maxiter)
 	wave indata, xaxis
-	variable componentNum, xnum, ynum, maxiter
-	variable i
-	wave rawdata2d, M_U, concentration, spectrum
+	variable componentNum, startwvNum, endwvNum, maxiter
+	variable i, xnum, ynum
+	wave rawdata2d, M_U, concentration, spectrum, subaxis
 	string imagename
-	[rawdata2d, M_U] = SVDandPlots(indata, xAxis, componentNum, xNum, yNum)
+	
+	xnum = dimsize(indata, 1)
+	ynUm = dimsize(indata,2)
+	[rawdata2d,subaxis, M_U] = SVDandPlots(indata, xAxis, componentNum, startwvNum, endwvNum)
 	matrixop/o rawdata2d = rawdata2d^t
 	[concentration, SPectrum] = MCRALS(rawdata2d, M_U, xNum, yNum, maxIter)
 	//show concentration
@@ -319,9 +333,9 @@ function SVD_MCRALS(indata, xaxis, componentNum, xnum, ynum, maxiter)
 	i=0
 	do 
 		if (i==0)
-			display spectrum[][i] vs xaxis
+			display spectrum[][i] vs subaxis
 		else
-			AppendToGraph Spectrum[][i] vs xaxis
+			AppendToGraph Spectrum[][i] vs subaxis
 		endif
 		i+=1
 		SetAxis/A/R bottom
