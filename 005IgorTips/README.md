@@ -78,7 +78,28 @@ Igor のredimensionは便利そうだが, 挙動がよくわからなかった�
 このように, redimensionを成功させるには, 次元総数があっているだけではなく, 移動先の次元が元の次元と同じデータ点数か多くないとデータが0で埋められてしまう.  
 
 ---
+## Baseline fitの導入方法
 
+1. 以下よりUpdaterというファイルをダウンロード  
+https://www.wavemetrics.com/project/Updater  
+Updaterは有志が作ってくれたファイルで、Igor Exchangeにアップされたプロジェクトを直接手元のIgorに入れられるようになります
+アップデートがIgor上でできるようになるのでとても便利
+
+
+3. ダウンロードしたファイルを以下の場所に移動  
+Documents/Wavemetrics/Igor Pro 8 User Files/Igor Procedures
+
+
+5. Igor を開くと、以下の画像のようにMisc内にIgorExchange Projectsという項目ができているので、こちらをクリック
+
+6. 開くウィンドウの中のFilterというところに"baseline"と打つと以下が出るので、Baseline fittingを選んでインストール
+
+7. あとは、ベースラインフィットをしたいグラフを開いて、Analysis/Baseline
+
+8. GUIに従って解析して、Subtractを押すと元のwaveの名前に_subがついたwaveが引き算後のwaveとして保存される。
+
+9. parameter は spline, arc hull, 1~2程度がおすすめ
+---
 ## 解析虎の巻よりフィット時の初期値まとめ  
 ここでは, fit時に有用な数字を紹介します.  
 元は解析虎の巻というファイルです (どなたが作ったかはわかりません)  
