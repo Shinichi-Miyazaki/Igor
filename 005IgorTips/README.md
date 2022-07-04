@@ -91,14 +91,19 @@ Documents/Wavemetrics/Igor Pro 8 User Files/Igor Procedures
 
 
 5. Igor を開くと、以下の画像のようにMisc内にIgorExchange Projectsという項目ができているので、こちらをクリック
+![image2](https://user-images.githubusercontent.com/59829168/177090909-48a1043a-23d7-4d6d-9503-11b5c0c1aac5.png)
 
 6. 開くウィンドウの中のFilterというところに"baseline"と打つと以下が出るので、Baseline fittingを選んでインストール
+![image1](https://user-images.githubusercontent.com/59829168/177090945-342592f6-edf7-4bab-8846-b9792b59427e.png)
 
 7. あとは、ベースラインフィットをしたいグラフを開いて、Analysis/Baseline
 
 8. GUIに従って解析して、Subtractを押すと元のwaveの名前に_subがついたwaveが引き算後のwaveとして保存される。
+![image3](https://user-images.githubusercontent.com/59829168/177090865-cad436bb-91c5-46d8-951a-5e39b90bb78f.PNG)
 
 9. parameter は spline, arc hull, 1~2程度がおすすめ
+![image4](https://user-images.githubusercontent.com/59829168/177090831-e6c30205-460e-4681-a24a-554e46094571.PNG)
+
 ---
 ## 解析虎の巻よりフィット時の初期値まとめ  
 ここでは, fit時に有用な数字を紹介します.  
