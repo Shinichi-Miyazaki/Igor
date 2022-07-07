@@ -1,7 +1,7 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function BaselineArPLS(rawWave, lam, ratio)
+Function/wave BaselineArPLS(rawWave, lam, ratio)
 	/// This function subtract baseline from rawWave
 	/// based on Baek et al., 2014 Analyst
 	/// Author: Shinichi Miyazaki
@@ -48,6 +48,7 @@ Function BaselineArPLS(rawWave, lam, ratio)
 	
 	matrixop/o BLSub = rawwave - destWave
 	print count
+	return BLSub
 	Variable timeElapsed = dateTime - start
 	print "This procedure took" + num2str(timeElapsed) + "in seconds."
 end
@@ -67,4 +68,31 @@ Function/wave MakeWeightedDiffWave(numOfPoints)
 		i+=1
 	while(i<numOfPoints-2)
 	return weightedDiffWave
+end
+
+
+Function BaselineArPLS2D(wave_2d, lam, ratio)
+	/// This function subtract baseline from rawWave
+	/// based on Baek et al., 2014 Analyst
+	/// Author: Shinichi Miyazaki
+	/// @params: Wave_2d, wave, 2 dimensional wave
+	/// @params: lam, variable, parameter for differentiation weight
+	wave wave_2d
+	variable lam, ratio
+	variable i, spatialpnts, wavenum
+	
+	Variable start = dateTime
+	wavenum = dimsize(wave_2d, 0)
+	spatialpnts =dimsize(wave_2d, 1)
+	duplicate/o wave_2d wave_blsub
+	i=0
+	make/o/n = (wavenum) BLSub = 0
+	do 
+		make/o/n = (wavenum) tempwave = wave_2d[p][i]
+		wave BLSub = BaselineArPLS(tempwave, lam, ratio)
+		wave_blsub[][i] = BLsub[p]
+		i+=1
+	while(i<spatialpnts)
+	Variable timeElapsed = dateTime - start
+	print "This procedure took" + num2str(timeElapsed) + "in seconds."
 end
