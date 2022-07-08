@@ -42,8 +42,10 @@ Image plot用の関数を置いてあります.
 8. GUI  
 Imchi3_dataの解析用GUIです. マニュアルはpdf参照
 
-9. BaselineSubtraction
-Baseline引き算用の関数です
+9. BaselineSubtraction  
+ベースラインの引き算用関数です
+10. MCRrelated  
+MCR ALS用の関数です
 
 ---
 ## 関数作成時のルール  
