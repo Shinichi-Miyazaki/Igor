@@ -7,9 +7,9 @@ Function/wave extractCols(wv, colMaskwv)
 	duplicate/o wv $outWvName
 	wave outwave = $outWvName
 	
-	matrixop/o/free outwave = scalecols((outwave+1), colMaskwv)
-	matrixop/o/free outwave = replace(outwave, 0, NaN)
-	matrixop/o/free outwave = outwave^t
+	matrixop/o outwave = scalecols((outwave+1), colMaskwv)
+	matrixop/o outwave = replace(outwave, 0, NaN)
+	matrixop/o  outwave = outwave^t
 	variable numOfRows = dimsize(outwave,0) 
 	variable numOfCOls = dimsize(outwave,1)
 	Redimension /N=(numOfRows*numOfCOls) outwave
@@ -17,7 +17,7 @@ Function/wave extractCols(wv, colMaskwv)
 	variable numOfRowsChanged = numpnts(outwave)/numOfCOls 
 	Redimension /N=(numOfRowsChanged, numOfCOls) outwave
 	matrixop/o outwave = outwave^t
-	matrixop/o/free outwave = outwave-1
+	matrixop/o  outwave = outwave-1
 	return outwave
 end
 

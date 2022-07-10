@@ -58,7 +58,7 @@ Fitがある程度うまくいったら, Fit imageを作成します.
 MakeFitImages(wv,wcoef, zNum)
 	//最初の引数はfit したい4次元waveの名前 (例 imchi3_data)
 	//2つめはパラメータを入れたwaveの名前 (ここでは wcoef)
-	//3つめはz方向の枚数-1 (z stackしていないなら0)
+	//3つめはz方向の枚数　(z stackしていないなら1)
 ```
 ----
 
