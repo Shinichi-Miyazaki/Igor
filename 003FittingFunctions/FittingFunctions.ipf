@@ -228,15 +228,15 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	Killwaves/z FittingParameters
 	Switch (AnalysisType)
 		case 1:
-			print "Peak Position Analysis"
+			print "Amplitude and Peak Position Analysis"
 			duplicate/t FittingParametersForPeakPositionAnalysis FittingParameters
 		break
 		case 2:
-			print "Area Analysis"
+			print "Amplitude and Area Analysis"
 			duplicate/t FittingParametersForAmpAnalysis FittingParameters
 		break
 		default:
-			print "Peak Amplitude Analysis"
+			print "Amplitude Analysis"
 			duplicate/t FittingParametersForAmpAnalysis FittingParameters
 	endswitch
 
@@ -283,10 +283,10 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 		ResultWv2DPeakPos[i][6] = processedWcoef[21]
 		i+=1
 	while(i<SpatialPoints)
-	wave2Dto4DForFit(ResultWv2DAmp, xNum, ynum, znum)
-
+	
 	// make Amplitude images 
 	//Loop for Gauss
+	wave2Dto4DForFit(ResultWv2DAmp, xNum, ynum, znum)
 	i=0
 	do
 		//Loop for z direction 
