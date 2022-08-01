@@ -231,6 +231,10 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 			print "Peak Position Analysis"
 			duplicate/t FittingParametersForPeakPositionAnalysis FittingParameters
 		break
+		case 2:
+			print "Area Analysis"
+			duplicate/t FittingParametersForAmpAnalysis FittingParameters
+		break
 		default:
 			print "Peak Amplitude Analysis"
 			duplicate/t FittingParametersForAmpAnalysis FittingParameters
@@ -242,7 +246,8 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	make /n=(pts)/o temp
 	make/o/n= (xNUm,yNUm,znum,NumofGauss) ResultWv
 	make/o/n= (SpatialPoints,7) ResultWv2DAmp=0
-	make/o/n= (SpatialPoints,7) ResultWv2DPeakPos
+	make/o/n= (SpatialPoints,7) ResultWv2DPeakPos=0
+	make/o/n= (SpatialPoints,7) ResultWv2DArea=0
 	
 	//Loop for spatial points
 	i=0
@@ -252,6 +257,7 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 		wave ProcessedWCoef = CoefProcess(WCoef)
 		wave processedWcoef = LinearBaseline(frompix, endpix, temp, axis)
 		Funcfit/Q/H=FittingParameters[NumOfGauss-1] gaussfunc ProcessedWCoef temp[frompix,endpix] /X=axis/D /C=tempConstraints;
+		// Amplitude image
 		ResultWv2DAmp[i][0] = processedWcoef[2]
 		ResultWv2DAmp[i][1] = processedWcoef[5]
 		ResultWv2DAmp[i][2] = processedWcoef[8]
@@ -259,6 +265,14 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 		ResultWv2DAmp[i][4] = processedWcoef[14]
 		ResultWv2DAmp[i][5] = processedWcoef[17]
 		ResultWv2DAmp[i][6] = processedWcoef[20]
+		// Area (Amplitude * Width)
+		ResultWv2DArea[i][0] = processedWcoef[2] * processedWcoef[4]
+		ResultWv2DArea[i][1] = processedWcoef[5] * processedWcoef[7]
+		ResultWv2DArea[i][2] = processedWcoef[8] * processedWcoef[10]
+		ResultWv2DArea[i][3] = processedWcoef[11] * processedWcoef[13]
+		ResultWv2DArea[i][4] = processedWcoef[14] * processedWcoef[16]
+		ResultWv2DArea[i][5] = processedWcoef[17] * processedWcoef[19]
+		ResultWv2DArea[i][6] = processedWcoef[20] * processedWcoef[22]
 		// Peak Pos Wave
 		ResultWv2DPeakPos[i][0] = processedWcoef[3]
 		ResultWv2DPeakPos[i][1] = processedWcoef[6]
@@ -271,7 +285,7 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 	while(i<SpatialPoints)
 	wave2Dto4DForFit(ResultWv2DAmp, xNum, ynum, znum)
 
-	// make images 
+	// make Amplitude images 
 	//Loop for Gauss
 	i=0
 	do
@@ -279,7 +293,7 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 		j=0
 		do
 			// define image name 
-			FitImagename="FitimageGauss"+num2str(i)+"Z"+num2str(j)
+			FitImagename="AmplitudeImage"+num2str(i)+"Z"+num2str(j)
 			make/O/N=(xNum,yNum)/D $FitImagename = ResultWv[p][q][j][i]
 			wave FitImage = $FitImagename
 			display;appendimage $FitImagename;
@@ -289,6 +303,28 @@ function MakeFitImages(wv,axis,wcoef, zNum, [AnalysisType])
 		while(j<zNUm)
 		i+=1
 	while(i<NumOfGauss)
+	
+	// make Area images 
+	//Loop for Gauss
+	if (AnalysisType == 2)
+		wave2Dto4DForFit(ResultWv2DArea, xNum, ynum, znum)
+		i=0
+		do
+			//Loop for z direction 
+			j=0
+			do
+				// define image name 
+				FitImagename="AreaImage"+num2str(i)+"Z"+num2str(j)
+				make/O/N=(xNum,yNum)/D $FitImagename = ResultWv[p][q][j][i]
+				wave FitImage = $FitImagename
+				display;appendimage $FitImagename;
+				ModifyGraph width=300,height={Aspect,yNum/xNum}
+				ModifyImage $FitImagename ctab= {0,*,Grays,0}
+				j+=1
+			while(j<zNUm)
+			i+=1
+		while(i<NumOfGauss)
+	endif
 	
 	// make peak pos image
 	if (NumOfGauss == 1 && AnalysisType == 1)
