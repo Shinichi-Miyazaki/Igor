@@ -12,24 +12,17 @@ Function RegionAveraging(wv, roiwv, znum)
 	yNum = dimsize(wv, 2)
 	
 	//extract z position = znum 
-	duplicate/Free/O/R=[0,*][0,*][0,*][znum] wv tempwv
-	
+	duplicate/O/R=[0,*][0,*][0,*][znum] wv tempwv
+	//redimension
+	wave tempwv_2d = wave4dto2dAveraging(tempwv, xnum, ynum)
+
 	//inverse roiwv
-	matrixop/Free/O temproi = -(roiwv-1)
+	matrixop/O temproi = -(roiwv-1)
+	//Redimension ROI
+	Redimension/n = (xNum*yNUM) temproi
 	
 	//make new wave 
-	make/Free/o/n=(pts, xNum, yNum) extractedwv
-	
-	// loop
-	i=0
-	do
-	j=0
-	do
-	  extractedwv[][i][j] = tempwv[p][i][j][0] * temproi[i][j]
-	  j+=1
-	while(j<yNUm)
-	i+=1
-	while(i<xNum)
+	wave extractedwv = extractColsForAveraging(tempwv_2d, tempROI)
 	
 	matrixop/Free/o temp = sumrows(extractedwv)
 	matrixop/Free/o roinum = sum(temproi)
@@ -194,3 +187,45 @@ function DropSaturatedPixel(wv,image, threshold)
 	temp00/=cts
 end
 
+Function/wave extractColsForAveraging(wv, colMaskwv)
+	wave wv, colMaskwv
+	string outWvName = "extractedCols" + nameofWave(wv)
+	duplicate/o wv $outWvName
+	wave outwave = $outWvName
+	
+	matrixop/o outwave = scalecols((outwave+1), colMaskwv)
+	matrixop/o outwave = replace(outwave, 0, NaN)
+	matrixop/o  outwave = outwave^t
+	variable numOfRows = dimsize(outwave,0) 
+	variable numOfCOls = dimsize(outwave,1)
+	Redimension /N=(numOfRows*numOfCOls) outwave
+	WaveTransform zapNaNs  outwave
+	variable numOfRowsChanged = numpnts(outwave)/numOfCOls 
+	Redimension /N=(numOfRowsChanged, numOfCOls) outwave
+	matrixop/o outwave = outwave^t
+	matrixop/o  outwave = outwave-1
+	return outwave
+end
+
+Function/wave wave4Dto2DAveraging(wv,Numx,Numy)
+	wave	wv;
+	variable	Numx,Numy;
+	variable	SampleNum,i,j,k,l, wvNum;
+	variable start, startnum, endnum, pixelnum, num
+
+	wvNum = dimsize(wv, 0)
+	pixelnum = Numx*Numy
+
+	make/O/N=(wvNum,pixelnum)/D imchi3_2d;
+	k = 0;
+	num=0
+
+	do
+		for(j=0;j<Numx;j=j+1)
+			imchi3_2D[][num] = wv[p][j][k][0];
+			num+=1
+		endfor
+		k += 1
+	while(k < Numy)
+	return imchi3_2d
+end
