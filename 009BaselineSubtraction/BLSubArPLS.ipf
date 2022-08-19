@@ -7,9 +7,14 @@ Function/wave BaselineArPLS(rawWave)
 	/// Author: Shinichi Miyazaki
 	/// @params: rawWave, wave, 1 dimensional wave
 	/// @params: lam, variable, parameter for differentiation weight
+	
+	/// recomended parameters 
+	
+	/// for representative spectrum Lam = 2500000, ratio = 0.0001
+	/// for baseline subtraction from all of spatial points,  lam = 1000000, ratio = 0.01 
 	wave rawWave
-	variable lam = 100000
-	variable ratio = 0.1
+	variable lam = 2500000
+	variable ratio = 0.0001
 	wave weightWave
 	wave destWave, weightedDiffWave
 	variable numofPoints, i, t, count
@@ -62,15 +67,13 @@ Function/wave MakeWeightedDiffWave(numOfPoints)
 end
 
 
-Function BaselineArPLS2D(wave_2d)
+Function BLSubArPLS(wave_2d)
 	/// This function subtract baseline from rawWave
 	/// based on Baek et al., 2014 Analyst
 	/// Author: Shinichi Miyazaki
 	/// @params: Wave_2d, wave, 2 dimensional wave
 	/// @params: lam, variable, parameter for differentiation weight
 	wave wave_2d
-	variable lam = 10000000
-	variable ratio = 0.1
 	variable i, spatialpnts, wavenum
 	
 	Variable start = dateTime

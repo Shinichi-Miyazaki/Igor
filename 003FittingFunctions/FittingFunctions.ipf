@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+make/o/n = 11 wcoef = {0,0,0.15, 1670, 10, 0.1, 1654, 10, 0.1, 1681, 28} #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 // Following function fit the data with gauss function
@@ -72,8 +72,8 @@ function InitialFit(wv, xaxis, wcoef, [SearchCoef])
 	 make/o/T FittingParameters={\
 								"00000111111111111111111",\
 								"00000000111111111111111",\
-								"00000000000111111111111",\
-								"00000000000000111111111",\
+								"00010010010111111111111",\
+								"00010010010010111111111",\
 								"00000000000000000111111",\
 								"00000000000000000000111",\
 								"00000000000000000000000"\
