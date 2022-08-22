@@ -30,6 +30,29 @@ Function RegionAveraging(wv, roiwv, znum)
 end
 
 
+Function PixelValueExtract(Imagewv, roi)
+	wave ImageWv, roi;
+
+	variable pts, xNum, yNum;
+	variable i, j;
+	//obtain data dimensions
+	xNum = dimsize(imagewv, 0)
+	yNum = dimsize(imagewv, 1)
+
+	//inverse roiwv
+	matrixop/O temproi = -(roi-1)
+	//Redimension ROI
+	matrixop/o  maskedImage = imagewv * tempRoi
+	
+	//make new wave 
+	redimension/n = (xNUm*yNum) maskedImage
+	matrixop/o maskedImage = replace(maskedImage, 0, NaN)
+	WaveTransform zapNaNs  maskedImage
+	
+end
+
+
+
 function SumFromImageAndShowROI(wv, discri, oriwv)
 	// Author: Tanaka Kyosuke
 	// Add the spectra at pixel points inside the image that are greater than or equal to discri. 
