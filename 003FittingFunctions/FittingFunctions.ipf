@@ -378,7 +378,7 @@ Function/wave wave4Dto2DForFit(wv)	//rearrange the 4D wave to 2Dwave
 	return wv_2d
 end
 
-Function wave2Dto4DForFit(wv, nUmx, numy, numz)	//rearrange the 4D wave to 2Dwave
+Function wave2Dto4DForFit(wv, nUmx, numy, numz)	
 	wave	wv;
 	variable Numx,Numy,Numz;
 	variable i,j,k,l, wvNum, SpatialPoints;
@@ -1371,3 +1371,202 @@ function InitialFitFixAmpWidth(wv, xaxis, wcoef)
 	// change fit color 
 	 ModifyGraph rgb($fitname)=(1,12815,52428)
 end 
+
+function FitAndNormalize(wv,axis,wcoef, zNum)
+	// Use initial fit for setting wcoef before running this script
+	// Only One gauss
+	// Author Shinichi Miyazaki
+	// 20220826
+	
+	// arguments
+	wave wv,axis, wcoef
+	variable zNum
+	// defined waves and variables
+	variable i,j, k,l,pts, frompix,endpix;
+	wave ProcessedWCoef, wv_2d
+	variable xNum,yNum, SpatialPoints
+	string FitImagename
+	
+	// obtain dimension size
+	xNum=dimsize(wv,1);
+	yNum=dimsize(wv,2);
+	SpatialPoints = xNum*yNUm*zNUm
+	pts=dimsize(wv,0);
+	
+	// get frompix and endpix
+	frompix = pcsr(A)
+	endpix = pcsr(B)
+
+	make/o/T Constraints={"K2>0"}
+
+	// make 2d wave 
+	wave wv_2d = wave4Dto2DForFit(wv)
+	
+	make /n=(pts)/o temp
+	make/o/n= (xNUm,yNUm,znum,7) ResultWv
+	make/o/n= (SpatialPoints,7) ResultWv2DAmp=0
+	make/o/n= (SpatialPoints,7) ResultWv2DPeakPos=0
+	make/o/n= (SpatialPoints,7) ResultWv2DArea=0
+	
+	Duplicate/o wv_2d AnsWave_2d
+	//Loop for spatial points
+	i=0
+	do
+		temp = wv_2d[p][i]
+		wave ProcessedWCoef = CoefProcess(WCoef)
+		wave processedWcoef = LinearBaseline(frompix, endpix, temp, axis)
+		Funcfit/Q/H="11011111111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=axis/D /C=Constraints;
+		
+		if (processedWcoef[2]<10-5e)
+			AnsWave_2d[p][i] = 0
+		else
+			AnsWave_2d[p][i] = wv_2d[p][i]/processedWcoef[2]
+		endif
+		i+=1
+	while (i<spatialPoints)
+	wave2dto4DForNorm(AnsWave_2d, xNum, yNum, zNum)
+end
+
+Function Wave2Dto4DforNorm(wv,Numx,Numy,Numz,[DataType,SlidePxNum])	
+	/// Author: Shinichi Miyazaki
+	/// This function rearrange the 2D wave to 4D wave
+	/// @params	wv: 2D wave (wavenum, xyz)
+	/// @params	Numx, Numy, Numz: variable (Number of spatial points)
+	/// @params	DataType: variable (default	: no z direction zigzag, axis order is xyZ
+	///										1		: z direction zigzag, axis order is xZy
+	///										2		: z direction zigzag, axis order is xyZ
+	///										3		: one way capturing, xy scan (for IIIS))
+	/// Outputs
+	/// CARS: 4D wave (wavenum, x, y, z)
+	wave	wv;
+	variable	Numx,Numy,Numz,DataType, SlidePxNum;
+	variable	i,j,k,wvNum;
+	variable start,startnum,endnum, ZCenter, nextstartnum,nextendnum
+	// make destination wave. the name is CARS
+	wvNum = dimsize(wv, 0)
+	make/O/N=(wvNum,Numx,Numy,Numz)/D CARS;
+	// Switch depend on data type
+	Switch (DataType)
+		case 1:
+			print "z direction zigzag, axis order is xZy"
+			//judgement for even or odd
+			if(mod(Numy,2)==0)
+				ZCenter=(Numy)/2
+			else
+				ZCenter=(Numy-1)/2
+			endif
+			i=0;
+			j=0;
+			k=0;
+			do
+				do
+					start = i * Numx * Numy
+					startnum =  start + k * Numx
+					endnum = start + (k+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					nextstartnum =  start + (k+1) * Numx
+					nextendnum = start + (k+2) * Numx
+					Duplicate/Free/R=[0,*][nextstartnum,nextendnum] wv nexttempwv
+					if(j==0)
+						CARS[][][ZCenter][i]=tempwv[p][q]
+						j+=1
+						k+=1
+					else
+						CARS[][][ZCEnter+j][i]=tempwv[p][q]
+						CARS[][][ZCenter-j][i]=nexttempwv[p][q]
+						j+=1
+						k+=2
+					endif
+				while(j<=ZCenter)
+				i+=1
+			while(i<Numz)
+		break
+			
+		case 2:
+			print "z direction zigzag, axis order is xyZ"
+			//judgement for even or odd
+			if(mod(Numz,2)==0)
+				ZCenter=(Numz)/2
+			else
+				ZCenter=(Numz-1)/2
+			endif
+			//i for z num 
+			i=0;
+			j=0;
+			// count for mod
+			k=0;
+			do
+				j=0
+				do
+					if(i==0)
+						start = i * Numx * Numy
+						startnum = start + j * Numx
+						endnum = start + (j+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						CARS[][][j][Zcenter] =tempwv[p][q]
+						j+=1
+					elseif(mod(i,2)==1)
+						start = i * Numx * Numy
+						startnum = start + j * Numx
+						endnum = start + (j+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						CARS[][][j][Zcenter+k] =tempwv[p][q]
+						j+=1
+					elseif(mod(i,2)==0)
+						start = i * Numx * Numy
+						startnum = start + j * Numx
+						endnum = start + (j+1) * Numx
+						Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+						CARS[][][j][Zcenter-k] =tempwv[p][q]
+						j+=1
+					endif
+				while(j<Numy)
+				i+=1
+				if(mod(i,2)==1)
+					k=(i+1)/2
+				else
+					k=i/2
+				endif
+			while(i<Numz)
+		break
+
+		case 3: 
+			print "one way capturing, xy scan"
+			for(j=0; j<Numy; j=j+1)
+				if (j==0)
+					startnum = j * Numx
+					endnum = (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					CARS[][][j][0] = tempwv[p][q];
+				elseif (mod(j,2) == 0)	
+					startnum = j * Numx
+					endnum = (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					CARS[][][j][0] = tempwv[p][q];
+				elseif (mod(j,2) == 1)
+					startnum = j * Numx
+					endnum = (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum+SlidePxNum,endnum+SlidePxNum] wv tempwv
+					imagetransform flipcols tempwv 
+					CARS[][][j][0] = tempwv[p][q];
+				endif
+			endfor
+		break
+
+			
+		default:
+			print "no z direction zigzag, axis order is xyZ"
+			i=0;
+			j=0;
+			do
+				for(j=0;j<Numy;j=j+1)
+					start = i * Numx * Numy
+					startnum =  start + j * Numx
+					endnum = start + (j+1) * Numx
+					Duplicate/Free/R=[0,*][startnum,endnum] wv tempwv
+					CARS[][][j][i] = tempwv[p][q];
+				endfor
+				i+=1
+			while(i<Numz)
+		Endswitch
+end
