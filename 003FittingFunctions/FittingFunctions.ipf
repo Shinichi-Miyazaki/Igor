@@ -1417,10 +1417,10 @@ function FitAndNormalize(wv,axis,wcoef, zNum)
 		wave processedWcoef = LinearBaseline(frompix, endpix, temp, axis)
 		Funcfit/Q/H="11011111111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=axis/D /C=Constraints;
 		
-		if (processedWcoef[2]<10-5e)
-			AnsWave_2d[p][i] = 0
+		if (processedWcoef[2]<0.01)
+			AnsWave_2d[][i] = 0
 		else
-			AnsWave_2d[p][i] = wv_2d[p][i]/processedWcoef[2]
+			AnsWave_2d[][i] = wv_2d[p][i]/processedWcoef[2]
 		endif
 		i+=1
 	while (i<spatialPoints)
