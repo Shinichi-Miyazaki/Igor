@@ -1387,6 +1387,9 @@ function FitAndNormalize(wv,axis,wcoef, zNum)
 	variable xNum,yNum, SpatialPoints
 	string FitImagename
 	
+	//Threshold 
+	variable threshold = 0.05 
+	
 	// obtain dimension size
 	xNum=dimsize(wv,1);
 	yNum=dimsize(wv,2);
@@ -1417,7 +1420,7 @@ function FitAndNormalize(wv,axis,wcoef, zNum)
 		wave processedWcoef = LinearBaseline(frompix, endpix, temp, axis)
 		Funcfit/Q/H="11011111111111111111111" gaussfunc ProcessedWCoef temp[frompix,endpix] /X=axis/D /C=Constraints;
 		
-		if (processedWcoef[2]<0.01)
+		if (processedWcoef[2]<Threshold)
 			AnsWave_2d[][i] = 0
 		else
 			AnsWave_2d[][i] = wv_2d[p][i]/processedWcoef[2]
