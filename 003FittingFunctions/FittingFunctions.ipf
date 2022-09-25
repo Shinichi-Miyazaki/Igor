@@ -1388,7 +1388,7 @@ function FitAndNormalize(wv,axis,wcoef, zNum)
 	string FitImagename
 	
 	//Threshold 
-	variable threshold = 0.05 
+	variable threshold = 0.01
 	
 	// obtain dimension size
 	xNum=dimsize(wv,1);

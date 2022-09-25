@@ -11,10 +11,10 @@ Function/wave BaselineArPLS(rawWave)
 	/// recomended parameters 
 	
 	/// for representative spectrum Lam = 2500000, ratio = 0.0001
-	/// for baseline subtraction from all of spatial points,  lam = 1000000, ratio = 0.01 
+	/// for baseline subtraction from all of spatial points,  lam = 1000000, ratio = 0.01 (or 1 for short calc time) 
 	wave rawWave
-	variable lam = 2500000
-	variable ratio = 0.0001
+	variable lam = 1000000
+	variable ratio = 1
 	wave weightWave
 	wave destWave, weightedDiffWave
 	variable numofPoints, i, t, count
