@@ -1,4 +1,4 @@
-make/o/n = 11 wcoef = {0,0,0.15, 1670, 10, 0.1, 1654, 10, 0.1, 1681, 28} #pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 // Following function fit the data with gauss function
