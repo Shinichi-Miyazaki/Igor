@@ -756,3 +756,21 @@ Function TransposeLayersAndChunks(w4DIn, nameOut)
     w4DOut = w4DIn[p][q][s][r]          // s and r are reversed from normal
 End
 
+Function extractWaveFromStack(inwave, repeattime, numX, numY, offset)
+	wave inwave
+	variable repeattime, numX, numY, offset
+	variable i, waveNum, num
+	// i for spatial point
+	// num for loop count
+	
+	waveNum  = dimsize(inwave, 0)
+	make/o/n=(waveNum,numx*numy)/D extractedWave = 0
+	i=offset
+	num=0
+	do
+		extractedWave[][num] = inwave[p][i]
+		i += repeattime
+		num += 1 
+	while(i<NumX*NumY*repeatTime)
+end
+	
