@@ -1,5 +1,5 @@
 #pragma version = 0
-#pragma TextEncoding = "Shift_JIS"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function Wave2Dto4D(wv,Numx,Numy,Numz,[DataType,SlidePxNum])	
@@ -674,6 +674,13 @@ function SpeLoaderM([skip, frames, verbose, compact, fullpath])
 	return num;
 end
 
+Function MEM_time()
+	wave imchi3_data
+	Variable start = dateTime
+	memit()
+	Variable timeElapsed = dateTime - start
+	print "This procedure took " + num2str(timeElapsed) + " in seconds."
+end
 
 function Pickup_nr(xsize, xNum1,xNum2,yNum1,yNum2, oriwv)
 wave oriwv
