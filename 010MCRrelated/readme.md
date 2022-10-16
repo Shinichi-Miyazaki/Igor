@@ -10,7 +10,7 @@ MEM後のデータ(4次元) (baselineを引いたものでもOK)
 SVD_MCRALS(indata, xaxis, componentNum, startwvNum, endwvNum, maxiter)
 ```
 
-引数は以下です。
+引数は以下です。  
 indata: 解析対象のデータ (4次元)  
 xaxis: 対応する軸 (1次元)  
 componentNum: データを幾つのコンポーネントに分けるか (数値)  
