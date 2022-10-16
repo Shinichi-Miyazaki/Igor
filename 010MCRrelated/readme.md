@@ -11,12 +11,12 @@ SVD_MCRALS(indata, xaxis, componentNum, startwvNum, endwvNum, maxiter)
 ```
 
 引数は以下です。
-indata: 解析対象のデータ (4次元)
-xaxis: 対応する軸 (1次元)
-componentNum: データを幾つのコンポーネントに分けるか (数値)
-StartWvNum: 解析対象の波数範囲開始地点 (数値)
-EndWvNum: 解析対象の波数範囲終了地点 (数値) 
-MaxIter: 繰り返しの回数 (数値)
+indata: 解析対象のデータ (4次元)  
+xaxis: 対応する軸 (1次元)  
+componentNum: データを幾つのコンポーネントに分けるか (数値)  
+StartWvNum: 解析対象の波数範囲開始地点 (数値)  
+EndWvNum: 解析対象の波数範囲終了地点 (数値)   
+MaxIter: 繰り返しの回数 (数値)   
 
 (例)
 SVD_MCRALS(data, re_ramanshift2, 7, 800, 1800, 20)
