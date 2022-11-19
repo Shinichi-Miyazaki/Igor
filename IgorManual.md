@@ -1,7 +1,8 @@
 - [はじめに](#はじめに)
-	- [Igorインストールについて (from Igorインストール虎の巻, modified by Miyazaki)](#igorインストールについて-from-igorインストール虎の巻-modified-by-miyazaki)
-	- [関数の種類](#関数の種類)
+	- [Igor pro 8インストールについて](#igor-pro-8インストールについて)
+- [関数の種類](#関数の種類)
 	- [関数作成時のルール](#関数作成時のルール)
+	- [毎回コンパイルしないで関数を使うために](#毎回コンパイルしないで関数を使うために)
 	- [License](#license)
 - [MEMによる自発ラマン相当のスペクトル (Imchi3) 取得](#memによる自発ラマン相当のスペクトル-imchi3-取得)
 	- [データの読み込みからMEMのやり方](#データの読み込みからmemのやり方)
@@ -43,7 +44,7 @@
 ---
 ## はじめに
 
-### Igorインストールについて (from Igorインストール虎の巻, modified by Miyazaki)
+### Igor pro 8インストールについて 
 1. マイドキュメント→wavemetrics→Igor Pro8 User Filesという名でフォルダ作成(この中にigor8インストール)  
 2. google ドライブ→研究室共用ソフト→igor8をダウンロード  
 3. 全て展開→setupIgor8開いて進んでいきinstallまで進む(上のフォルダに保存)  
@@ -56,7 +57,7 @@ User Procedure→そのままコピペ
 IgorProcedure →CARS_GenerateTileImage, CARS_GenerateTileImagePMT, mem_approximate, MM procedures, Other_fitのみ移動  
 
 ---
-### 関数の種類
+## 関数の種類
 
 1. MEM related functions  
 MEM (maximum entropy method) 関連の関数です.  
@@ -82,8 +83,11 @@ Image plot用の関数を置いてあります.
 8. GUI  
 Imchi3_dataの解析用GUIです. マニュアルはpdf参照
 
-9. BaselineSubtraction
-Baseline引き算用の関数です
+9. BaselineSubtraction  
+ベースラインの引き算用関数です  
+
+10. MCRrelated  
+MCR ALS用の関数です
 
 ---
 ### 関数作成時のルール  
@@ -106,17 +110,19 @@ WaveTransformer2Dto4D
 定数はなるべく関数の最初に定義を行う.  
 マジックナンバー (42-wavenum　のようにみただけではわからない具体的な数値) には必ずコメントをつける 
 
+### 毎回コンパイルしないで関数を使うために
+
+
 ### License
 The source code is licensed MIT. The website content is licensed MIT license.
 
-<div style="page-break-before:always"></div>
+---
 
 ## MEMによる自発ラマン相当のスペクトル (Imchi3) 取得
 
 ### データの読み込みからMEMのやり方
 
 0. 用意するもの  
-   Igor8  
    測定データ (.spe)  
    バックグラウンドデータ (.spe)  
    ノンレゾナントバックグラウンド(.spe)  
