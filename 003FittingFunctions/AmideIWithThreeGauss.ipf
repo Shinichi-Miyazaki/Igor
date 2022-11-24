@@ -19,8 +19,8 @@ function AmideIFitWithThreeGauss(wv, xaxis)
 	variable errorVal
 	//Define the text waves
 
-    make/o/T tempConstraints={"K2>0","K4<15","k5>0","K7<15","k8>0","K10<15"}
-	make/o/n=11 wcoef ={0,0,0.1, 1655, 10, 0.1, 1670, 10, 0.1, 1680, 10} 
+    make/o/T tempConstraints={"K2>0","K4<15","k5>0","K7<15","k8>0","-15<K10<15"}
+	make/o/n=11 wcoef ={0,0,0.1, 1655, 10, 0.1, 1670, 10, 0.1, 1685, 10} 
 	// Kill waves and remove graph, for repeated use
 	RemoveFromGraph/z $fitName
 	RemoveFromGraph/z FitGauss0, Fitgauss1, FitGauss2
