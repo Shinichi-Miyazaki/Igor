@@ -256,18 +256,6 @@ Function ImageCreate(wv,pixel,Numx,Numy,Numz)
 		endswitch
 end
 
-Function MEM_time()
-	// Author: Shinichi Miyazaki
-	// Measure time spend for MEM
-	// @params None
-	// Output None
-	wave imchi3_data
-	Variable start = dateTime
-	memit()
-	Variable timeElapsed = dateTime - start
-	print "This procedure took " + num2str(timeElapsed) + " in seconds."
-end
-
 Function wave4Dto2D(wv,Numx,Numy)	
 	// Author: Shinichi Miyazaki
 	// rearrange the 4D wave to 2Dwave
