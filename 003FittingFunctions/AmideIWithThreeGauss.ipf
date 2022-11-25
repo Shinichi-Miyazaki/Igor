@@ -2,6 +2,8 @@
 #pragma rtGlobals=3				// Use modern global access method and strict wave access
 #pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 
+
+
 function AmideIFitWithThreeGauss(wv, xaxis)
 	// Author: Shinichi Miyazaki
 	
@@ -19,8 +21,8 @@ function AmideIFitWithThreeGauss(wv, xaxis)
 	variable errorVal
 	//Define the text waves
 
-    make/o/T tempConstraints={"K2>0","K4<15","k5>0","K7<15","k8>0","K10<15"}
-	make/o/n=11 wcoef ={0,0,0.1, 1655, 10, 0.1, 1670, 10, 0.1, 1680, 10} 
+    make/o/T/N=6 tempConstraints={"K2>0","20>K4>0","k5>0","20>K7>0","k8>0","20>K10>0", "K11>0", "K13>30"}
+	make/o/n=14 wcoef ={0,0,0.1, 1655, 10, 0.1, 1670, 10, 0.1, 1685, 10, 0.1, 1650, 35} 
 	// Kill waves and remove graph, for repeated use
 	RemoveFromGraph/z $fitName
 	RemoveFromGraph/z FitGauss0, Fitgauss1, FitGauss2
@@ -52,7 +54,7 @@ function AmideIFitWithThreeGauss(wv, xaxis)
 			 		variable Magni3 = WcoefChangePos[l]
 			 		make/o/n=23 magniwave = {0,0,0,Magni1,0,0,Magni2,0,0,Magni3,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			 		matrixop/o ProcessedWcoef = ProcessedwCoef + Magniwave
-			 		Funcfit/q/H="00010010010111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints /E=ewave;
+			 		Funcfit/q/H="00010010010000111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints /E=ewave;
 					errorVal = GetRTError(1)
 					if (errorVal == 0)
 						WCoefList[][l+j*7+k*49] = ProcessedWCoef[p]
@@ -74,7 +76,7 @@ function AmideIFitWithThreeGauss(wv, xaxis)
 	
 	
     // fit with passed wcoef
-    Funcfit/q/H="00010010010111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /C=tempConstraints;
+    Funcfit/q/H="11111111111111111111111" gaussfunc ProcessedWCoef wv[wavestart,waveend] /X=axis/D /E=ewave;
     i=0
     do
 	    variable CoefStart = i*3 + 2
