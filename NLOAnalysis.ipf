@@ -256,6 +256,18 @@ Function ImageCreate(wv,pixel,Numx,Numy,Numz)
 		endswitch
 end
 
+Function MEM_time()
+	// Author: Shinichi Miyazaki
+	// Measure time spend for MEM
+	// @params None
+	// Output None
+	wave imchi3_data
+	Variable start = dateTime
+	memit()
+	Variable timeElapsed = dateTime - start
+	print "This procedure took " + num2str(timeElapsed) + " in seconds."
+end
+
 Function wave4Dto2D(wv,Numx,Numy)	
 	// Author: Shinichi Miyazaki
 	// rearrange the 4D wave to 2Dwave
@@ -315,7 +327,7 @@ Function TransposeLayersAndChunks(w4DIn, nameOut)
     w4DOut = w4DIn[p][q][s][r]          // s and r are reversed from normal
 End
 
-Function extractWaveFromStack(inwave, repeattime, numX, numY, offset)
+Function extractWaveFromRepeatedMeasuredData(inwave, repeattime, numX, numY, offset)
 	// Author: Shinichi Miyazaki
 	// extract data from 4D wave
 	// Useful for multiple stack data 
@@ -342,6 +354,41 @@ Function extractWaveFromStack(inwave, repeattime, numX, numY, offset)
 		num += 1 
 	while(i<NumX*NumY*repeatTime)
 end
+
+Function AveragingRepeatedMeasuredData(inwave, repeattime, numX, numY)
+	// Author: Shinichi Miyazaki
+	// extract data from 4D wave
+	// Useful for repeated measured data 
+	// for example, when you take 2 data / 1 spatial point for 40 * 40, you get 3200 data points (16x16x2)
+	// to extract 1st data (40x40) you should use this script
+	// @params inwave		:2D wave 
+	// @params repeattime	:variable (how many data you get each spatial point)
+	// @params NumX			:variable (x spatial points)
+	// @params NumY			:variable (y spatial points)
+	// @params offset		:variable (which data you want to get, if you want to get 1st image, please put 0)
+	// Output extractedWave :2D wave
+	wave inwave
+	variable repeattime, numX, numY
+	variable i, waveNum, num, j
+	// i for spatial point
+	// num for loop count
+	waveNum  = dimsize(inwave, 0)
+	make/o/n=(waveNum,numx*numy)/D extractedWave = 0
+	make/o/n=(waveNum,numx*numy)/D AveragedWave = 0
+	j=0
+	do 
+		i=0
+		num=0
+		do
+			extractedWave[][num] = inwave[p][i]
+			i += repeattime
+			num += 1 
+		while(i<NumX*NumY*repeatTime)
+		averagedWave+=extractedWave
+		j+=1
+	while(j<repeattime)
+end
+
 
 ///// 002AvearagingFunction ///// 
 // Following sctipts are for averaging signal. 
@@ -714,7 +761,7 @@ end
 Function/wave SingleGaussWithLinearBaseline(axis, coef0, coef1, coef2, coef3, coef4)
 	wave axis
 	variable coef0, coef1, coef2, coef3, coef4
-	make/o/n = (dimsize(axis, 0)) singlegausswv = coef0+coef1*axis+coef2*exp(-((axis-coef3)/coef4)^2)
+	make/o/n = (dimsize(axis, 0)) singlegausswv = coef2*exp(-((axis-coef3)/coef4)^2)
 	return singlegausswv
 end
 
@@ -2707,7 +2754,7 @@ Function/wave BaselineArPLS(rawWave)
 	/// for baseline subtraction from all of spatial points,  lam = 1000000, ratio = 0.01 (or 1 for short calc time) 
 	wave rawWave
 	variable lam = 1000000
-	variable ratio = 1
+	variable ratio = 0.1
 	wave weightWave
 	wave destWave, weightedDiffWave
 	variable numofPoints, i, t, count
@@ -2717,46 +2764,19 @@ Function/wave BaselineArPLS(rawWave)
 	// initialize the weightWave and weightWaveDiag
 	make/o/free/n=(numOfPoints) weightWave = 1
 	make/o/free/n=(numOfPoints) nextweightWave = 1
-	matrixop/o/free weightWaveDiag = diagonal(weightWave)
 	matrixop/o/free weightedDiffWave = lam *  weightedDiffWave^t x weightedDiffWave 
-	count = 0
 	do
-		matrixop/o/free weightWaveDiag = diagonal(weightWave)
 		// (W+H)^-1Wy
-		matrixop/o/free invWeight = inv(weightWaveDiag+weightedDiffWave)
-		matrixop/o destWave = invWeight x weightWaveDiag x rawWave
-		matrixop/o/free diffWave = rawWave - destWave
-		
+		matrixop/o/free diffWave = rawWave - inv(diagonal(weightWave)+weightedDiffWave) x diagonal(weightWave) x rawWave
 		// make d- only with di<0, set positive val to 0
 		Extract/o diffWave, negativeDiffWave, diffWave < 0
 		//calc mean and SD of negativeDiffWave
 		wavestats/q negativeDiffwave
-		meanOfNegativeDiffWave = V_avg
-		SDOfNegativeDiffWave = V_sdev	
-		make/o/n = (numofPoints) nextweightWave = 1/(1+exp(2*(diffwave[p]-(-meanOfNegativeDiffWave + 2*SDOfNegativeDiffWave))/SDOfNegativeDiffWave))
+		nextweightWave = 1/(1+exp(2*(diffwave[p]-(-V_avg+2*V_sdev))/V_sdev))
 		matrixop/o tempRatioWv = abs(weightwave-nextweightwave)/abs(weightwave)
 		weightwave = nextweightwave
-		count +=1
 	while(tempRatiowv[0]>ratio)
-	//print count
 	return diffwave
-end
-
-Function/wave MakeWeightedDiffWave(numOfPoints)
-	/// This function make the wave for differentiation 
-	/// Author: Shinichi Miyazaki
-	variable numOfPoints
-	variable i, j
-
-	make/o/n = (numOfPoints-2, numOfPoints) weightedDiffWave=0
-	i=0
-	do
-		weightedDiffWave[i][i] =1
-		weightedDiffWave[i][i+1] =-2
-		weightedDiffWave[i][i+2] =1
-		i+=1
-	while(i<numOfPoints-2)
-	return weightedDiffWave
 end
 
 
@@ -2768,14 +2788,12 @@ Function BLSubArPLS(wave_2d)
 	/// @params: lam, variable, parameter for differentiation weight
 	wave wave_2d
 	variable i, spatialpnts, wavenum
-	
 	Variable start = dateTime
 	wavenum = dimsize(wave_2d, 0)
 	spatialpnts =dimsize(wave_2d, 1)
 	duplicate/o wave_2d wave_blsub
 	i=0
 	make/o/n = (wavenum) BLSub = 0
-	// make weightedDiffWave (H)
 	wave weightedDiffWave = MakeWeightedDiffWave(wavenum)
 	do 
 		make/o/n = (wavenum) tempwave = wave_2d[p][i]
@@ -2785,6 +2803,22 @@ Function BLSubArPLS(wave_2d)
 	while(i<spatialpnts)
 	Variable timeElapsed = dateTime - start
 	print "This procedure took" + num2str(timeElapsed) + "in seconds."
+end
+
+Function/wave MakeWeightedDiffWave(numOfPoints)
+	/// This function make the wave for differentiation 
+	/// Author: Shinichi Miyazaki
+	variable numOfPoints
+	variable i, j
+	make/o/n = (numOfPoints-2, numOfPoints) weightedDiffWave=0
+	i=0
+	do
+		weightedDiffWave[i][i] =1
+		weightedDiffWave[i][i+1] =-2
+		weightedDiffWave[i][i+2] =1
+		i+=1
+	while(i<numOfPoints-2)
+	return weightedDiffWave
 end
 
 
@@ -3574,3 +3608,19 @@ function SpeLoaderM([skip, frames, verbose, compact, fullpath])
 	return num;
 end
 
+Function CalcSNR(inwave, axis)
+	wave inwave, axis
+	variable signalAmp, noiseAmp, SNR
+	SetScale/P x, axis[0], axis[1]-axis[0], inwave
+	
+	make/o/n=5 wcoef={0,0,0.1, 1660, 30}
+	wave ProcessedWCoef = CoefProcess(WCoef)
+	Funcfit/q/H="00000111111111111111111" gaussfunc processedwcoef inwave[X2Pnt(inwave,1600),X2Pnt(inwave,1700)] /X=axis/D 
+	SignalAmp = processedwcoef[2]
+	
+	Duplicate/o/R=[X2Pnt(inwave,1800),X2Pnt(inwave,2000)] inwave noisewv 
+	wavestats/q noiseWv
+	NoiseAmp = V_max-V_min
+	SNR = SignalAmp/NoiseAmp
+	print "SNR is " + num2str(SNR) 
+End
