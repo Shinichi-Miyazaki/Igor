@@ -8,8 +8,8 @@ Function AmideINormalize(inwave)
 	
 	make/o/n=5 wcoef={0,0,0.1, 1660, 30}
 	wave ProcessedWCoef = CoefProcess(WCoef)
-	Funcfit/q/H="00000111111111111111111" gaussfunc processedwcoef inwave[X2Pnt(inwave,1600),X2Pnt(inwave,1700)]/D 
+	Funcfit/q/H="00000111111111111111111" gaussfunc processedwcoef inwave[X2Pnt(inwave,1600),X2Pnt(inwave,1700)]
 	SignalAmp = processedwcoef[2]
 	
-	make/o Normwave = inwave / signalAmp
+	matrixop/o inwave = inwave / signalAmp
 End
