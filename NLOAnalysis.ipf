@@ -375,9 +375,10 @@ Function AveragingRepeatedMeasuredData(inwave, repeattime, numX, numY)
 	waveNum  = dimsize(inwave, 0)
 	make/o/n=(waveNum,numx*numy)/D extractedWave = 0
 	make/o/n=(waveNum,numx*numy)/D AveragedWave = 0
+	i=0
 	j=0
 	do 
-		i=0
+		i=j
 		num=0
 		do
 			extractedWave[][num] = inwave[p][i]
@@ -387,6 +388,7 @@ Function AveragingRepeatedMeasuredData(inwave, repeattime, numX, numY)
 		averagedWave+=extractedWave
 		j+=1
 	while(j<repeattime)
+	averagedWave/=repeattime
 end
 
 
@@ -3618,7 +3620,7 @@ Function CalcSNR(inwave, axis)
 	Funcfit/q/H="00000111111111111111111" gaussfunc processedwcoef inwave[X2Pnt(inwave,1600),X2Pnt(inwave,1700)] /X=axis/D 
 	SignalAmp = processedwcoef[2]
 	
-	Duplicate/o/R=[X2Pnt(inwave,1800),X2Pnt(inwave,2000)] inwave noisewv 
+	Duplicate/o/R=[X2Pnt(inwave,1800),X2Pnt(inwave,1900)] inwave noisewv 
 	wavestats/q noiseWv
 	NoiseAmp = V_max-V_min
 	SNR = SignalAmp/NoiseAmp
